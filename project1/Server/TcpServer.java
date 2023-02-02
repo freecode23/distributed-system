@@ -1,26 +1,32 @@
 
 /**
  * Author: Sherly Hartono
- * Email: s.hartono@northeastern.edu
+ * Email: hartono.s@northeastern.edu
  */
 import java.io.*;
 import java.net.*;
 import java.util.Scanner;
+import java.util.HashMap;
+import java.util.Map;
 
-public class TcpServer extends Thread {
+public class TcpServer implements Server {
 
     private int port;
     private ServerSocket serverSocket;
+    private Command commandObj = new Command();
+    private Map<Integer, Integer> keyVal = new HashMap<>();
 
     /**
-     * Constructor
-     * 
+     * 1. Constructor
+     * that initialise server socket which creates TCP connection
      * @param port the port number
      */
     public TcpServer(int port) {
 
-        // init port
+        // - init port
         this.port = port;
+
+        // - create socket using this port
         try {
             this.serverSocket = new ServerSocket(port);
         } catch (IOException e) {
@@ -41,37 +47,30 @@ public class TcpServer extends Thread {
         @Override
         public void run() {
             while (true) {
-
                 try {
                     System.out.println("Thread name: " + Thread.currentThread().getName());
+
+                    // 0. Wait for a client to connect
                     Socket socket = serverSocket.accept();
 
                     // 1. Read data from the client
                     Scanner scannerSocketInput = new Scanner(socket.getInputStream());
                     String clientInput = scannerSocketInput.nextLine();
-
-                    // 2. Reverse the characters
-                    StringBuilder reversedStr = new StringBuilder(clientInput).reverse();
-
-                    // 3. Reverse capitalize
-                    for (int i = 0; i < reversedStr.length(); i++) {
-                        char c = reversedStr.charAt(i);
-                        if (Character.isLowerCase(c)) {
-                            reversedStr.setCharAt(i, Character.toUpperCase(c));
-                        } else {
-                            reversedStr.setCharAt(i, Character.toLowerCase(c));
-                        }
-                    }
-                    String outputStr = reversedStr.toString();
-
-                    // 5. Send back to client
+                    
+                    // 2. do put, get, delete based on the first command
+                    String response = commandObj.go(clientInput, keyVal);
+                    
+          
+                    // 3. Send back to client
                     // - create printwriter object
                     PrintWriter printWriter = new PrintWriter(socket.getOutputStream(), true);
+          
+                    // - Send back response to client using printWriter
+                    // System.out.println("response="+ response);
+                    printWriter.println("response="+response);
+        
 
-                    // - Send the modified string back to the client using printWriter
-                    printWriter.println(outputStr);
-
-                    // // - close socket
+                    // - close socket
                     // socket.close();
 
                 } catch (IOException e) {

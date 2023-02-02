@@ -1,0 +1,5 @@
+Put 1 4
+Put 10 12
+Get 10
+Get 12 
+Delete 1
