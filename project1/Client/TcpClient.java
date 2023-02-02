@@ -37,33 +37,29 @@ public class TcpClient extends ClientDefault {
             // 1. run thread(s)
             this.executor.execute(new Runnable() {
                 public void run() {
-                    // System.out.println("request=" + requestNum);
                     try {
-
-                        // - init socket
-                        Socket socket = new Socket("localhost", port);
 
                         // - read from textfile
                         ArrayList<String> commands = parseTextFile();
-                        // System.out.println(commands);
-
-                        // - OUT: create output obj and send message to server
-                        PrintWriter printWriter = new PrintWriter(socket.getOutputStream(), true);
                         
-                        // - send command
+                        // - for each command:
                         for(String command: commands) {
-                            System.out.println(command);
+                            // - init socket
+                            Socket socket = new Socket("localhost", port);
+
+                            // - OUT: create output obj and send message to server
+                            PrintWriter printWriter = new PrintWriter(socket.getOutputStream(), true);
                             printWriter.println(command);
+                            // - IN: init input object to get input from server
+                            Scanner inputScanner = new Scanner(socket.getInputStream());
+                            String response = inputScanner.nextLine();
+    
+                            // - print response to terminal
+                            System.out.println("response " + requestNum + "=" + response);
+
+                            socket.close();
                         }
-
-                        // - IN: init input object to get input from server
-                        Scanner input = new Scanner(socket.getInputStream());
-                        String response = input.nextLine();
-
-                        // // - print response to terminal
-                        // System.out.println("response " + finalI + "=" + response);
-
-                        socket.close();
+                        
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
