@@ -4,5 +4,7 @@ public interface Client {
      */
     public void startClient();
 
+    public void validateCommand(String command);
 
+    public String getDate();
 }

@@ -1,12 +1,16 @@
 import java.util.HashMap;
 import java.util.Map;
+
+/**
+ * This class implements to put, get, and delete method
+ * that the TCP server need to do its operation on its hashmap
+ * It will use the helper function go() and depending on the command * string it will execute one of the 3 commands
+ */
 public class Command {
 
-    
     public String go(String command, Map<Integer, Integer> keyVal) {
         String[] commandArr = command.split(" ");
         String response = "";
-        
         switch (commandArr[0].toLowerCase()) {
             case "put":
  
@@ -16,7 +20,6 @@ public class Command {
                 break;
 
             case "get":
-   
                 response = this.get(keyVal, Integer.parseInt(commandArr[1]));
                 break;
             
@@ -26,8 +29,7 @@ public class Command {
                 break;
             
             default:
-
-                response = "INVALID_REQUEST";
+                response = command;
                 break;
         }
         return response;
@@ -54,9 +56,6 @@ public class Command {
             System.out.println(keyVal);
             return "OK";
         }
-        
-
-  
     }
 
     private String delete(Map<Integer, Integer> keyVal, int key) {

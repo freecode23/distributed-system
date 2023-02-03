@@ -4,4 +4,6 @@ public interface Server {
      * program
      */
     public void startThread();
+
+    public void validateClientInput(String clientInput) throws IllegalArgumentException;
 }

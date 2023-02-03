@@ -9,7 +9,7 @@ import java.util.Scanner;
 import java.util.HashMap;
 import java.util.Map;
 
-public class TcpServer implements Server {
+public class TcpServer extends ServerDefault {
 
     private int port;
     private ServerSocket serverSocket;
@@ -48,7 +48,7 @@ public class TcpServer implements Server {
         public void run() {
             while (true) {
                 try {
-                    System.out.println("Thread name: " + Thread.currentThread().getName());
+                    // System.out.println("Thread name: " + Thread.currentThread().getName());
 
                     // 0. Wait for a client to connect
                     Socket socket = serverSocket.accept();
@@ -56,23 +56,40 @@ public class TcpServer implements Server {
                     // 1. Read data from the client
                     Scanner scannerSocketInput = new Scanner(socket.getInputStream());
                     String clientInput = scannerSocketInput.nextLine();
+
+                    // 2. log>>>
+                    System.out.println("\nclientInput>>>="+clientInput);
+
+                    try {
+
+                        Thread.sleep(6000);
+                    } catch (InterruptedException e) {
+                        PrintWriter printWriter = new PrintWriter(socket.getOutputStream(), true);
+                        printWriter.println("sleep interrupted");
+
+                    }
+
+                    // 3. validate client input
+                    try {
+                        validateClientInput(clientInput);
+                    } catch (IllegalArgumentException e) {
+                        System.out.println(e.getMessage());
+                        continue;
+                    }
                     
-                    // 2. do put, get, delete based on the first command
+
+                    // 4. do put, get, delete based on the first command
                     String response = commandObj.go(clientInput, keyVal);
                     
-          
-                    // 3. Send back to client
+                    // 5. Send back to client
                     // - create printwriter object
                     PrintWriter printWriter = new PrintWriter(socket.getOutputStream(), true);
           
                     // - Send back response to client using printWriter
-                    // System.out.println("response="+ response);
-                    printWriter.println("response="+response);
-        
+                    printWriter.println(response);
 
-                    // - close socket
+                    // - TODO: close socket
                     // socket.close();
-
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
