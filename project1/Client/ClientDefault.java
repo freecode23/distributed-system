@@ -67,7 +67,7 @@ public class ClientDefault implements Client {
             }
 
         } else {
-            throw new IllegalArgumentException("Illegal command should be put, delete, or get");
+            throw new IllegalArgumentException("Illegal command. Command should be put, delete, or get with integer arguments");
         }
         
     }

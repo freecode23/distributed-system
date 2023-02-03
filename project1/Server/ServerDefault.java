@@ -1,3 +1,6 @@
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 public class ServerDefault implements Server{
 
     @Override
@@ -13,10 +16,20 @@ public class ServerDefault implements Server{
         if (!"put".equals(commandArr[0]) && 
             !"get".equals(commandArr[0]) &&
                 !"delete".equals(commandArr[0])) {
+                    String time = getDate();
 
-            throw new IllegalArgumentException("Illegal command should be put, delete, or get");
+                throw new IllegalArgumentException(String.format(
+                        "[%s] Illegal command from user. Command should only be put, delete, or get with two integer argument",
+                        time));
         }
-        
+    }
+
+    @Override
+    public String getDate() {
+        SimpleDateFormat formatter = new SimpleDateFormat("HH:mm:ss.SSS");
+        long timestamp = System.currentTimeMillis();
+        String currentTimestamp = formatter.format(new Date(timestamp));
+        return currentTimestamp;
     }
     
 }

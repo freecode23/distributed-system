@@ -58,16 +58,22 @@ public class TcpServer extends ServerDefault {
                     String clientInput = scannerSocketInput.nextLine();
 
                     // 2. log>>>
-                    System.out.println("\nclientInput>>>="+clientInput);
+                    String currentTimeStamp = getDate();
+                    System.out.println(
+                        String.format("\n[%s] clientInput>>>=%s", 
+                        currentTimeStamp, 
+                        clientInput
+                        ));
 
-                    try {
 
-                        Thread.sleep(6000);
-                    } catch (InterruptedException e) {
-                        PrintWriter printWriter = new PrintWriter(socket.getOutputStream(), true);
-                        printWriter.println("sleep interrupted");
+                    // Uncomment this to test timeout
+                    // try {
 
-                    }
+                    //     Thread.sleep(6000);
+                    // } catch (InterruptedException e) {
+                    //     PrintWriter printWriter = new PrintWriter(socket.getOutputStream(), true);
+                    //     printWriter.println("sleep interrupted");
+                    // }
 
                     // 3. validate client input
                     try {
