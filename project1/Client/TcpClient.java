@@ -120,8 +120,10 @@ public class TcpClient extends ClientDefault {
 
                             // 7. print response to terminal
                             String currentTimestamp = getDate();
+                            String reqIdLast3 = reqId.substring(reqId.length() - 3);
                             System.out.println(String.format(
-                                "[%s] response received for reqId=[%s]: %s", currentTimestamp, reqId, resString
+                                "[%s] response received for reqId XXXX%s: %s", currentTimestamp, 
+                                    reqIdLast3, resString
                                 ));
 
                             // 8. end of client request
