@@ -8,9 +8,26 @@ import java.util.Map;
  */
 public class Command {
 
-    public String go(String command, Map<Integer, Integer> keyVal) {
+    public String[] splitIdString(String response) {
+        String[] parts = response.split(" ", 2);
+        // System.out.print("server split string id**= " + parts[0] + "\n");
+        // System.out.println("command**= " + parts[1]);
+        return parts;
+    }
+
+    public String go(String clientInput, Map<Integer, Integer> keyVal) {
+
+        // 1. split client input and extract id, command
+        String[] idString = splitIdString(clientInput);
+        String reqId = idString[0];
+        String command = idString[1];
+
+        // 2. split the command
         String[] commandArr = command.split(" ");
+
+        // 3. init response
         String response = "";
+
         switch (commandArr[0].toLowerCase()) {
             case "put":
  
@@ -32,7 +49,14 @@ public class Command {
                 response = command;
                 break;
         }
-        return response;
+
+        // add reqId to response front
+        return reqId + " " +response;
+
+        /**
+         * uncomment this to test for unrequested response
+         */
+        // return "123" + " " +response;
     }
     
     private String put(Map<Integer, Integer> keyVal, int key, int val) {

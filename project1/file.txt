@@ -1,3 +1,2 @@
-Put
 Put 1 123
 Get 1

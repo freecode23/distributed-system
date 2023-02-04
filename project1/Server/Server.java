@@ -8,4 +8,6 @@ public interface Server {
     public void validateClientInput(String clientInput) throws IllegalArgumentException;
 
     public String getDate();
+
+    public String[] splitIdString(String idstring);
 }

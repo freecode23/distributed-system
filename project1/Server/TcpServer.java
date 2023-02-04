@@ -57,7 +57,7 @@ public class TcpServer extends ServerDefault {
                     Scanner scannerSocketInput = new Scanner(socket.getInputStream());
                     String clientInput = scannerSocketInput.nextLine();
 
-                    // 2. log>>>
+                    // 2. print client input
                     String currentTimeStamp = getDate();
                     System.out.println(
                         String.format("\n[%s] clientInput>>>=%s", 
@@ -65,7 +65,10 @@ public class TcpServer extends ServerDefault {
                         clientInput
                         ));
 
-
+                    // 3. extract command from input
+                    // TODO: 
+                    
+                    
                     // Uncomment this to test timeout
                     // try {
 
@@ -79,12 +82,18 @@ public class TcpServer extends ServerDefault {
                     try {
                         validateClientInput(clientInput);
                     } catch (IllegalArgumentException e) {
-                        System.out.println(e.getMessage());
+                        String currentTimestamp = getDate();
+
+                        // print
+                        System.out.println(String.format(
+                                "[%s] Received malformed request of id=",
+                                currentTimestamp));
                         continue;
                     }
                     
 
                     // 4. do put, get, delete based on the first command
+                    // TODO: add id to response in go()
                     String response = commandObj.go(clientInput, keyVal);
                     
                     // 5. Send back to client

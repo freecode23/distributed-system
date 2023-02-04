@@ -48,37 +48,43 @@ public class TcpClient extends ClientDefault {
                     for(String command: commands) {
                         
                         try {
-                            // - init socket
+                            // 1. init socket
                             // TODO: change host name
                             Socket socket = new Socket("localhost", port);
 
-                            // - OUT: create output obj to send message to server
+                            // 2. OUT: create output obj to send message to server
                             PrintWriter printWriter = new PrintWriter(socket.getOutputStream(), true);
 
-                            // - validate command
+                            // 3. validate command
                             try {
                                 validateCommand(command);
 
                             } catch (IllegalArgumentException e) {
-                                printWriter.println("Received unsolicited response=" + e.getMessage());
+                                String currentTimestamp = getDate();
+
+                                // save to log file
+                                System.out.println(String.format(
+                                    "[%s] Request #%d is invalid",
+                                    currentTimestamp, requestNum));
                                 continue;
                             }
                             
-                            // - IN: init input object to get input from server
+                            // 4. IN: init input object to get input from server
                             Scanner inputScanner = new Scanner(socket.getInputStream());
                             
-                            // - send message to server
-                            printWriter.println(command);
+                            // 5. send message to server
+                            // - append request id to the end of command
+                            String reqId = generateUniqueID();
+                            printWriter.println(reqId + " " + command);
                             String response = "";
 
-                            // - get response
+                            // 6. get response
                             socket.setSoTimeout(3000);
 
-                            // - if response empty after 2 seconds
+                            // case A: timeout after 2 seconds
                             if (!inputScanner.hasNextLine()) {
 
-                                // print timeout
-                                System.out.println("timeout>>>>>>>>");
+                                // unsresponsive server
                                 String currentTimestamp = getDate();
                                 System.out.println(String.format(
                                     "[%s] Timeout occurred for request= %d",
@@ -90,12 +96,24 @@ public class TcpClient extends ClientDefault {
                             }
                             response = inputScanner.nextLine();
 
-                  
-                            
-                            // - print response to terminal
+                            // case B: responseId doesn't match
+                            String[] idRes = splitIdString(response);
+
+                            if (! reqId.equals(idRes[0])){
+
+                                // unsresponsive server
+                                String currentTimestamp = getDate();
+                                System.out.println(String.format(
+                                        "[%s] Received unrequested response of id #[%s]",
+                                        currentTimestamp, idRes[0]));
+                                // don't print this request
+                                continue;
+                            }
+
+                            // 7. print response to terminal
                             String currentTimestamp = getDate();
                             System.out.println(String.format(
-                                "[%s] response= %s", currentTimestamp, response
+                                "[%s] response received for reqId=[%s]: %s", currentTimestamp, reqId, idRes[1]
                                 ));
 
                             socket.close();

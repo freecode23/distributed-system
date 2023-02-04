@@ -4,12 +4,26 @@ import java.text.SimpleDateFormat;
 import java.util.Scanner;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.UUID;
 public class ClientDefault implements Client {
 
     @Override
     public void startClient() {
         // TODO Auto-generated method stub
         
+    }
+
+    
+    @Override
+    public String generateUniqueID() {
+        return UUID.randomUUID().toString();
+    }
+
+    @Override
+    public String[] splitIdString(String response){
+        String[] parts = response.split(" ",2);
+
+        return parts;
     }
 
     private boolean isWordNumeric(String word) {
@@ -20,6 +34,7 @@ public class ClientDefault implements Client {
         }
         return true;
     }
+    
     @Override
     public void validateCommand(String command) throws IllegalArgumentException {
         if (command == null || command.isEmpty()) {
