@@ -1,5 +1,6 @@
 import java.util.HashMap;
 import java.util.Map;
+import com.google.gson.Gson;
 
 /**
  * This class implements to put, get, and delete method
@@ -7,15 +8,15 @@ import java.util.Map;
  * It will use the helper function go() and depending on the command * string it will execute one of the 3 commands
  */
 public class Command {
+    
 
-    public String[] splitIdString(String response) {
-        String[] parts = response.split(" ", 2);
-        // System.out.print("server split string id**= " + parts[0] + "\n");
-        // System.out.println("command**= " + parts[1]);
+    public String[] splitIdString(String idString) {
+        String[] parts = idString.split(" ", 2);
         return parts;
     }
 
     public String go(String clientInput, Map<Integer, Integer> keyVal) {
+
 
         // 1. split client input and extract id, command
         String[] idString = splitIdString(clientInput);
@@ -25,33 +26,39 @@ public class Command {
         // 2. split the command
         String[] commandArr = command.split(" ");
 
-        // 3. init response
-        String response = "";
+        // 3. init response object
+        Map<String, Object> responseObj = new HashMap<>();
 
         switch (commandArr[0].toLowerCase()) {
             case "put":
  
-                response = this.put(keyVal, 
+                responseObj = this.put(keyVal, 
                 Integer.parseInt(commandArr[1]), 
                 Integer.parseInt(commandArr[2]));
                 break;
 
             case "get":
-                response = this.get(keyVal, Integer.parseInt(commandArr[1]));
+                responseObj = this.get(keyVal, Integer.parseInt(commandArr[1]));
                 break;
             
             case "delete":
-
-                response = this.delete(keyVal, Integer.parseInt(commandArr[1]));
+                
+                responseObj = this.delete(keyVal, Integer.parseInt(commandArr[1]));
                 break;
             
             default:
-                response = command;
+                String errorMsg="Invalid command only put, get, delete are allowed";
+                responseObj.put("msg", errorMsg);
+                
                 break;
         }
 
-        // add reqId to response front
-        return reqId + " " +response;
+        responseObj.put("reqId", reqId);
+        
+        // convert
+        Gson gson = new Gson();
+        String responseString = gson.toJson(responseObj);
+        return responseString;
 
         /**
          * uncomment this to test for unrequested response
@@ -59,37 +66,72 @@ public class Command {
         // return "123" + " " +response;
     }
     
-    private String put(Map<Integer, Integer> keyVal, int key, int val) {
+    private Map<String, Object> put(Map<Integer, Integer> keyVal, int key, int val) {
+        
         System.out.print("before put>>>>>");
         System.out.println(keyVal);
+
+        // 1. add to hashmap stored by ServerObj
         keyVal.put(key, val);
         System.out.print("after put>>>>>");
         System.out.println(keyVal);
-        return "OK";
+
+        // 2. init return obj to send back to clinet
+        Map<String, Object> retObj = new HashMap<>();
+        retObj.put("msg", "OK");
+
+        return retObj;
     }
 
-    private String get(Map<Integer, Integer> keyVal, int key) {
+    private Map<String, Object> get(Map<Integer, Integer> keyVal, int key) {
         System.out.print("before get>>>>>");
         System.out.println(keyVal);
-
+        
+        // 1. init return obj
+        Map<String, Object> retObj = new HashMap<>();
         if (!keyVal.containsKey(key)) {
-            return "NOT FOUND";
+
+            // - add message
+            retObj.put("msg", "KEY NOT FOUND");
+
         } else {
+
+            // - get value
             int val = keyVal.get(key);
+            
+            // - add msg and value to return object
+            retObj.put("msg", "OK");
+            retObj.put("val", val);
+            
             System.out.print("after gett>>>>>");
             System.out.println(keyVal);
-            return "OK";
         }
+        return retObj;
     }
 
-    private String delete(Map<Integer, Integer> keyVal, int key) {
+    private Map<String, Object> delete(Map<Integer, Integer> keyVal, int key) {
+
         System.out.print("before del>>>>>");
         System.out.println(keyVal);
-        keyVal.remove(key);
+        
+        Map<String, Object> retObj = new HashMap<>();
 
-        System.out.print("after del>>>>>");
-        System.out.println(keyVal);
-        return "OK";
+        if (!keyVal.containsKey(key)) {
+            // add error mesg
+            retObj.put("msg", "KEY NOT FOUND");
+
+        } else {
+            
+            // - remove
+            keyVal.remove(key);
+            System.out.print("after del>>>>>");
+            System.out.println(keyVal);
+
+            // add error msg
+            retObj.put("msg", "OK");
+            
+        }
+        return retObj;
     }
 
 }

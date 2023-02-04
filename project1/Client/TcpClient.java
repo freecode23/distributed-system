@@ -1,3 +1,5 @@
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.io.PrintWriter;
@@ -6,6 +8,8 @@ import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.HashMap;
+import java.util.Map;
 
 public class TcpClient extends ClientDefault {
     private String host;
@@ -36,6 +40,7 @@ public class TcpClient extends ClientDefault {
         for (int i = 0; i < this.threadN; i++) {
             final int requestNum = i;
             int port = this.port;
+            String host = this.host;
 
             // 1. a single thread that runs all command
             this.executor.execute(new Runnable() {
@@ -48,11 +53,10 @@ public class TcpClient extends ClientDefault {
                     for(String command: commands) {
                         
                         try {
-                            // 1. init socket
-                            // TODO: change host name
-                            Socket socket = new Socket("localhost", port);
+                            // 1. TCP: init socket
+                            Socket socket = new Socket(host, port);
 
-                            // 2. OUT: create output obj to send message to server
+                            // 2. TCP out: create output obj to send message to server
                             PrintWriter printWriter = new PrintWriter(socket.getOutputStream(), true);
 
                             // 3. validate command
@@ -69,43 +73,47 @@ public class TcpClient extends ClientDefault {
                                 continue;
                             }
                             
-                            // 4. IN: init input object to get input from server
+                            // 4. TCP in: init input object to get input from server
                             Scanner inputScanner = new Scanner(socket.getInputStream());
                             
-                            // 5. send message to server
+                            // 5. TCP send message to server
                             // - append request id to the end of command
                             String reqId = generateUniqueID();
                             printWriter.println(reqId + " " + command);
-                            String response = "";
-
-                            // 6. get response
+                            
+                            // 6. TCP get response
                             socket.setSoTimeout(3000);
-
+                            
                             // case A: timeout after 2 seconds
                             if (!inputScanner.hasNextLine()) {
-
+                                
                                 // unsresponsive server
                                 String currentTimestamp = getDate();
                                 System.out.println(String.format(
                                     "[%s] Timeout occurred for request= %d",
                                     currentTimestamp, requestNum
                                     ));
-
-                                // skip this line
-                                continue;
-                            }
-                            response = inputScanner.nextLine();
+                                    
+                                    // skip this line
+                                    continue;
+                                }
+                            String resString = inputScanner.nextLine();
+                            
+                            // - Convert the response string into hashmap
+                            Gson gson = new Gson();
+                            Map<String, Object> resObj = gson.fromJson(resString,
+                                    new TypeToken<Map<String, Object>>() {
+                                    }.getType());
 
                             // case B: responseId doesn't match
-                            String[] idRes = splitIdString(response);
+                            if (! reqId.equals(resObj.get("reqId"))){
 
-                            if (! reqId.equals(idRes[0])){
-
-                                // unsresponsive server
+                                // unrequested id
                                 String currentTimestamp = getDate();
                                 System.out.println(String.format(
                                         "[%s] Received unrequested response of id #[%s]",
-                                        currentTimestamp, idRes[0]));
+                                        currentTimestamp, resObj.get("reqId")));
+                                        
                                 // don't print this request
                                 continue;
                             }
@@ -113,9 +121,10 @@ public class TcpClient extends ClientDefault {
                             // 7. print response to terminal
                             String currentTimestamp = getDate();
                             System.out.println(String.format(
-                                "[%s] response received for reqId=[%s]: %s", currentTimestamp, reqId, idRes[1]
+                                "[%s] response received for reqId=[%s]: %s", currentTimestamp, reqId, resString
                                 ));
 
+                            // 8. end of client request
                             socket.close();
 
                         } catch (IOException e) {
