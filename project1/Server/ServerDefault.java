@@ -27,15 +27,16 @@ public class ServerDefault implements Server{
     }
 
     @Override
-    public void validateClientInput(String clientInput) throws IllegalArgumentException {
-
+    public boolean validateClientInput(String clientInput) throws IllegalArgumentException {
+        String currentTimestamp = getDate();
         String[] idReq = splitIdString(clientInput);
         String reqId = idReq[0];
         String command = idReq[1];
 
         if (command == null || command.isEmpty()) {
             // the string is either null or empty
-            throw new IllegalArgumentException("invalid empty command");
+            System.out.println(String.format("[%s]invalid empty command", currentTimestamp));
+            return false;
         }   
 
         int putArgNum = 3; // command, key, val
@@ -46,43 +47,53 @@ public class ServerDefault implements Server{
 
         // 1. check by command
         if ("put".equals(commandArr[0].toLowerCase())) {
-
-            // - validate argument number (including id)
+            // - validate argument number
             if (commandArr.length != putArgNum) {
-                throw new IllegalArgumentException("invalid number of arguments");
+                System.out.println(String.format(
+                        "[%s]invalid number of arguments", currentTimestamp));
+                return false;
             }
 
             // - validate numeric
             if (!isWordNumeric(commandArr[1]) || !isWordNumeric(commandArr[2])) {
-                throw new IllegalArgumentException("invalid key given, not numeric");
+                System.out.println(String.format("[%s]invalid key given, not numeric", currentTimestamp));
+                return false;
             }
 
         } else if ("get".equals(commandArr[0].toLowerCase())) {
             // - validate argument number
             if (commandArr.length != getArgNum) {
-                throw new IllegalArgumentException("invalid number of arguments");
+                System.out.println(String.format("[%s]invalid number of arguments", currentTimestamp));
+                return false;
             }
 
             // - validate numeric
             if (!isWordNumeric(commandArr[1])) {
-                throw new IllegalArgumentException("invalid key given, not numeric");
+                System.out.println(String.format("[%s]invalid key given, not numeric", currentTimestamp));
+                return false;
             }
 
         } else if ("delete".equals(commandArr[0].toLowerCase())) {
             // - validate argument number
             if (commandArr.length != delArgNum) {
-                throw new IllegalArgumentException("invalid number of arguments");
+                System.out.println(String.format("[%s]invalid number of arguments", currentTimestamp));
+                return false;
             }
 
             // - validate numeric
             if (!isWordNumeric(commandArr[1])) {
-                throw new IllegalArgumentException("invalid key given, not numeric");
+                System.out.println(String.format("[%s]invalid key given, not numeric", currentTimestamp));
+                return false;
             }
 
         } else {
-            throw new IllegalArgumentException(
-                    "Illegal command. Command should be put, delete, or get with integer arguments");
+            System.out.println(
+                    String.format("[%s]Illegal command. Command should be put, delete, or get with integer arguments",
+                            currentTimestamp));
+            return false;
         }
+
+        return true;
 
     }
 

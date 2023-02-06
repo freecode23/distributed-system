@@ -1,20 +1,21 @@
+import java.util.Map;
+
 public interface Client {
     /**
      * Start thread of client instance
      */
     public void startClient();
 
-    public void validateCommand(String command);
+    public boolean validateCommand(String command);
 
     public String getDate();
 
     public String generateUniqueID();
 
+    public void printResponse(String reqId, String resString);
 
-    /**
-     * extract id from the start of the command
-     * @param command
-     * @return an array of [id, response string]
-     */
-    public String[] splitIdString(String command);
+    public boolean validateResponseId(String reqId, String resId);
+
+    public Map<String, String> convertJsonToMap(String jsoString);
+
 }

@@ -9,33 +9,34 @@ import java.util.Scanner;
 import java.util.HashMap;
 import java.util.Map;
 
-public class TcpServer extends ServerDefault {
+public class UdpServer extends ServerDefault {
 
     private int port;
-    private ServerSocket serverSocket;
+    private DatagramSocket serverSocket;
     private Command commandObj = new Command();
     private Map<Integer, Integer> keyVal = new HashMap<>();
 
     /**
      * 1. Constructor
-     * that initialise server socket which creates TCP connection
+     * that initialise datagram socket which creates Udp connection
+     * 
      * @param port the port number
      */
-    public TcpServer(int port) {
+    public UdpServer(int port) {
 
         // - init port
         this.port = port;
 
         // - create socket using this port
         try {
-            this.serverSocket = new ServerSocket(port);
+            this.serverSocket = new DatagramSocket(port);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     public void startThread() {
-        System.out.println("Tcp server started and listening to port " + this.port);
+        System.out.println("Udp server started and listening to port " + this.port);
         ServerThread newServerThread = new ServerThread();
         newServerThread.start();
     }
@@ -50,50 +51,55 @@ public class TcpServer extends ServerDefault {
                 try {
                     // System.out.println("Thread name: " + Thread.currentThread().getName());
 
-                    // 0. Wait for a client to connect
-                    Socket socket = serverSocket.accept();
+                    // 0. Udp In
+                    byte[] receiveData = new byte[1024];
+                    DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
+                    serverSocket.receive(receivePacket);
 
                     // 1. Read data from the client
-                    Scanner inputScanner = new Scanner(socket.getInputStream());
+                    String clientInput = new String(receivePacket.getData(), 0, receivePacket.getLength());
 
                     // - if there is no input skip this client
-                    if (!inputScanner.hasNextLine()) {
+                    if (receivePacket.getLength() == 0) {
                         continue;
                     }
-
-                    String clientInput = inputScanner.nextLine();
 
                     // 2. print client input
                     String currentTimeStamp = getDate();
                     System.out.println(
-                        String.format("\n[%s] clientInput>>>=%s", 
-                        currentTimeStamp, 
-                        clientInput
-                        ));
-                    
+                            String.format("\n[%s] clientInput>>>=%s",
+                                    currentTimeStamp,
+                                    clientInput));
+
                     // Uncomment this to test timeout
                     // try {
 
-                    //     Thread.sleep(6000);
+                    // Thread.sleep(6000);
                     // } catch (InterruptedException e) {
-                    //     PrintWriter printWriter = new PrintWriter(socket.getOutputStream(), true);
-                    //     printWriter.println("sleep interrupted");
+                    // PrintWriter printWriter = new PrintWriter(socket.getOutputStream(), true);
+                    // printWriter.println("sleep interrupted");
                     // }
 
                     // 3. validate client input
-                    if (!validateClientInput(clientInput)){
+                    if (!validateClientInput(clientInput)) {
                         continue;
                     }
-                   
+
                     // 4. do put, get, delete based on the first command
                     String response = commandObj.go(clientInput, keyVal);
-                    
-                    // 5. Send back to client
-                    // - create printwriter object
-                    PrintWriter printWriter = new PrintWriter(socket.getOutputStream(), true);
-          
-                    // - Send back response to client using printWriter
-                    printWriter.println(response);
+
+                    // 5. Send response back to client
+                    // - get client ip address and port
+                    InetAddress IPAddress = receivePacket.getAddress();
+                    int port = receivePacket.getPort();
+
+                    // - create packet
+                    byte[] sendData = new byte[1024];
+                    sendData = response.getBytes();
+                    DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, port);
+
+                    // - Send back response to client
+                    serverSocket.send(sendPacket);
 
                     // socket.close();
                 } catch (IOException e) {

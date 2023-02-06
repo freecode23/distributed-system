@@ -1,9 +1,12 @@
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.text.SimpleDateFormat;
 import java.util.Scanner;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Map;
 import java.util.UUID;
 public class ClientDefault implements Client {
 
@@ -19,13 +22,6 @@ public class ClientDefault implements Client {
         return UUID.randomUUID().toString();
     }
 
-    @Override
-    public String[] splitIdString(String response){
-        String[] parts = response.split(" ",2);
-
-        return parts;
-    }
-
     private boolean isWordNumeric(String word) {
         for (char c : word.toCharArray()) {
             if (!Character.isDigit(c)) {
@@ -34,56 +30,83 @@ public class ClientDefault implements Client {
         }
         return true;
     }
+
+    @Override
+    public boolean validateResponseId(String reqId, String resId) {
+        if (!reqId.equals(resId)) {
+
+            // unrequested id
+            String currentTimestamp = getDate();
+            System.out.println(String.format(
+                    "[%s] Received unrequested response of id #[%s]",
+                    currentTimestamp, resId));
+
+            return false;
+        }
+        return true;
+    }
     
     @Override
-    public void validateCommand(String command) throws IllegalArgumentException {
+    public boolean validateCommand(String command) {
+        String currentTimestamp = getDate();
         if (command == null || command.isEmpty()) {
-            // the string is either null or empty
-            throw new IllegalArgumentException("invalid empty command");
+        // the string is either null or empty
+           System.out.println(String.format("[%s]invalid empty command", currentTimestamp));
+           return false;
         }
 
         String[] commandArr = command.split(" ");
-
         
+
         // 1. check by command
         if ("put".equals(commandArr[0].toLowerCase())){
 
             // - validate argument number
             if (commandArr.length != 3) {
-                throw new IllegalArgumentException("invalid number of arguments");
+                System.out.println(String.format(
+                                            "[%s]invalid number of arguments", currentTimestamp));
+                return false;
             }
 
             // - validate numeric
             if (!isWordNumeric(commandArr[1]) || !isWordNumeric(commandArr[2])) {
-                throw new IllegalArgumentException("invalid key given, not numeric");
+                System.out.println(String.format("[%s]invalid key given, not numeric", currentTimestamp));
+                return false;
             }
             
 
         } else if ("get".equals(commandArr[0].toLowerCase())) {
             // - validate argument number
             if (commandArr.length != 2) {
-                throw new IllegalArgumentException("invalid number of arguments");
+                System.out.println(String.format("[%s]invalid number of arguments", currentTimestamp));
+                return false;
             }
 
             // - validate numeric
             if (!isWordNumeric(commandArr[1])) {
-                throw new IllegalArgumentException("invalid key given, not numeric");
+                System.out.println(String.format("[%s]invalid key given, not numeric", currentTimestamp));
+                return false;
             }
 
         } else if ("delete".equals(commandArr[0].toLowerCase())) {
             // - validate argument number
             if (commandArr.length != 2) {
-                throw new IllegalArgumentException("invalid number of arguments");
+                System.out.println(String.format("[%s]invalid number of arguments", currentTimestamp));
+                return false;
             }
 
             // - validate numeric
             if (!isWordNumeric(commandArr[1])) {
-                throw new IllegalArgumentException("invalid key given, not numeric");
+                System.out.println(String.format("[%s]invalid key given, not numeric", currentTimestamp));
+                return false;
             }
 
         } else {
-            throw new IllegalArgumentException("Illegal command. Command should be put, delete, or get with integer arguments");
+            System.out.println(String.format("[%s]Illegal command. Command should be put, delete, or get with integer arguments", currentTimestamp));
+            return false;
         }
+
+        return true;
         
     }
 
@@ -116,6 +139,24 @@ public class ClientDefault implements Client {
         return currentTimestamp;
     }
 
+    @Override
+    public void printResponse(String reqId, String resString) {
+        String currentTimestamp = getDate();
+        String reqIdLast3 = reqId.substring(reqId.length() - 3);
+        System.out.println(String.format(
+        "[%s] response received for reqId XXXX%s: %s", currentTimestamp,
+        reqIdLast3, resString
+        ));
+    }
+
+    @Override
+    public Map<String, String> convertJsonToMap(String jsonString) {
+        Gson gson = new Gson();
+        Map<String, String> resObj = gson.fromJson(jsonString,
+        new TypeToken<Map<String, String>>() {
+        }.getType());
+        return resObj;
+    }
 }
     
 

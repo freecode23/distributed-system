@@ -1,6 +1,9 @@
 import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.io.PrintWriter;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -9,7 +12,7 @@ import java.util.concurrent.Executors;
 import java.util.HashMap;
 import java.util.Map;
 
-public class TcpClient extends ClientDefault {
+public class UdpClient extends ClientDefault {
     private String host;
     private int port;
     private int threadN;
@@ -17,13 +20,14 @@ public class TcpClient extends ClientDefault {
 
     /**
      * Constructor
+     * 
      * @param host host ip
      * @param port the same port as server
      */
-    public TcpClient(String host, int port, int threadN) {
+    public UdpClient(String host, int port, int threadN) {
         this.host = host;
         this.port = port;
-        
+
         this.threadN = threadN;
 
         // init executor object that creates n threads
@@ -32,7 +36,7 @@ public class TcpClient extends ClientDefault {
 
     @Override
     public void startClient() {
-        System.out.println("Start Tcp client");
+        System.out.println("Start Udp client");
 
         // 0. Run n thread
         for (int i = 0; i < this.threadN; i++) {
@@ -46,53 +50,65 @@ public class TcpClient extends ClientDefault {
 
                     // - read from textfile
                     ArrayList<String> commands = parseTextFile();
-            
+
                     // - for each command:
-                    for(String command: commands) {
-                        
+                    for (String command : commands) {
+
                         try {
-                            // 1. TCP: init socket
-                            Socket socket = new Socket(host, port);
+                            // 1. UDP: init socket, ip addres, and data to send
+                            DatagramSocket clientSocket = new DatagramSocket();
+                            InetAddress IPAddress = InetAddress.getByName(host);
+                            
 
                             // 2. validate command from textfile
                             if (!validateCommand(command)) {
-                                    continue;
+                                continue;
                             }
-                            
-                            // 3. TCP out: create output obj to send message to server
-                            PrintWriter printWriter = new PrintWriter(socket.getOutputStream(), true);
-                            
-                            // - create request id then send
+
+                            // 3. UDP: out
+                            // create request id and concat with command
                             String reqId = generateUniqueID();
-                            printWriter.println(reqId + " " + command);
+                            String reqIdCommand = reqId + " " + command;
+
+                            // - create bytes array to store the data to send
+                            byte[] sendData = new byte[1024];
+                            sendData = reqIdCommand.getBytes();
+
+                            // - create packet from data, ip, and port
+                            DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, port);
                             
+                            // - send
+                            clientSocket.send(sendPacket);
+
+                            // 4. UDP in
+                            // - init data and packet to get input from server
+                            byte[] responseData = new byte[1024];
+                            DatagramPacket responsePacket = new DatagramPacket(responseData, responseData.length);
                             
-                            // 4. TCP in: init input object to get input from server
-                            Scanner inputScanner = new Scanner(socket.getInputStream());
+                            // - receive
+                            clientSocket.receive(responsePacket);
 
                             // 5. TCP set timeout
-                            socket.setSoTimeout(3000);
+                            clientSocket.setSoTimeout(3000);
 
                             // case A: timeout after 2 seconds
-                            if (!inputScanner.hasNextLine()) {
-                                
+                            if (responsePacket.getLength() == 0) {
+
                                 // unsresponsive server
                                 String currentTimestamp = getDate();
                                 System.out.println(String.format(
-                                    "[%s] Timeout occurred for request= %s",
-                                    currentTimestamp, reqId
-                                    ));
-                                    
-                                    // skip this response
-                                    continue;
-                                }
-                            // 6. not timeout, get response and convert to hash map
-                            String resString = inputScanner.nextLine();
+                                        "[%s] Timeout occurred for request= %s",
+                                        currentTimestamp, reqId));
 
+                                // skip this response
+                                continue;
+                            }
+                            // 6. not timeout, get response and convert to hash map
+                            String resString = new String(responsePacket.getData(), 0, responsePacket.getLength());
                             Map<String, String> resObj = convertJsonToMap(resString);
-   
+
                             // case B: responseId doesn't match
-                            if (! validateResponseId(reqId, resObj.get("reqId"))) {
+                            if (!validateResponseId(reqId, resObj.get("reqId"))) {
                                 // skip this response
                                 continue;
                             }
@@ -101,7 +117,7 @@ public class TcpClient extends ClientDefault {
                             printResponse(reqId, resString);
 
                             // 8. end of client request
-                            socket.close();
+                            clientSocket.close();
 
                         } catch (IOException e) {
                             e.printStackTrace();
@@ -112,5 +128,5 @@ public class TcpClient extends ClientDefault {
             executor.shutdown();
         }
     }
-    
+
 }

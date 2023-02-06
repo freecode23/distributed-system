@@ -54,17 +54,17 @@ public class Command {
         }
 
         responseObj.put("reqId", reqId);
+
+        /**
+         * uncomment this to test for unrequested response
+         */
+        // responseObj.put("reqId", "123");
         
         // convert
         Gson gson = new Gson();
         String responseString = gson.toJson(responseObj);
         return responseString;
-
-        /**
-         * uncomment this to test for unrequested response
-         */
-        // return "123" + " " +response;
-    }
+        }
     
     private Map<String, Object> put(Map<Integer, Integer> keyVal, int key, int val) {
         

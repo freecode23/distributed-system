@@ -5,7 +5,7 @@ public interface Server {
      */
     public void startThread();
 
-    public void validateClientInput(String clientInput) throws IllegalArgumentException;
+    public boolean validateClientInput(String clientInput);
 
     public String getDate();
 
