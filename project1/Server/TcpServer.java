@@ -51,10 +51,10 @@ public class TcpServer extends ServerDefault {
                     // System.out.println("Thread name: " + Thread.currentThread().getName());
 
                     // 0. Wait for a client to connect
-                    Socket socket = serverSocket.accept();
+                    Socket clientSocket = serverSocket.accept();
 
                     // 1. Read data from the client
-                    Scanner inputScanner = new Scanner(socket.getInputStream());
+                    Scanner inputScanner = new Scanner(clientSocket.getInputStream());
 
                     // - if there is no input skip this client
                     if (!inputScanner.hasNextLine()) {
@@ -64,12 +64,12 @@ public class TcpServer extends ServerDefault {
                     String clientInput = inputScanner.nextLine();
 
                     // 2. print client input
-                    String currentTimeStamp = getDate();
-                    System.out.println(
-                        String.format("\n[%s] clientInput>>>=%s", 
-                        currentTimeStamp, 
-                        clientInput
-                        ));
+                    // get client ip and port
+                    InetAddress clientAddress = clientSocket.getInetAddress();
+                    String clientIpAddress = clientAddress.getHostAddress();
+                    int clientPort = clientSocket.getPort();
+                    printClientInput(clientInput, clientIpAddress, clientPort);
+                    
                     
                     // Uncomment this to test timeout
                     // try {
@@ -90,7 +90,7 @@ public class TcpServer extends ServerDefault {
                     
                     // 5. Send back to client
                     // - create printwriter object
-                    PrintWriter printWriter = new PrintWriter(socket.getOutputStream(), true);
+                    PrintWriter printWriter = new PrintWriter(clientSocket.getOutputStream(), true);
           
                     // - Send back response to client using printWriter
                     printWriter.println(response);

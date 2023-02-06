@@ -18,4 +18,12 @@ public interface Server {
      */
     public String getDate();
 
+    /**
+     * print client input along with the ip address, and the port its sending from
+     * @param clientInput
+     * @param clientIpAddress
+     * @param clientPort
+     */
+    void printClientInput(String clientInput, String clientIpAddress, int clientPort);
+
 }

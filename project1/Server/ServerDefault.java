@@ -96,6 +96,17 @@ public class ServerDefault implements Server{
     }
 
     @Override
+    public void printClientInput(String clientInput, String clientIpAddress, int clientPort) {
+        String currentTimeStamp = getDate();
+        System.out.println(
+        String.format("\n[%s] clientAddress=%s:%d clientInput>>>=%s",
+        currentTimeStamp,
+        clientIpAddress,
+        clientPort,
+        clientInput));
+    }
+
+    @Override
     public String getDate() {
         SimpleDateFormat formatter = new SimpleDateFormat("HH:mm:ss.SSS");
         long timestamp = System.currentTimeMillis();

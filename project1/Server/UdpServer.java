@@ -65,11 +65,10 @@ public class UdpServer extends ServerDefault {
                     }
 
                     // 2. print client input
-                    String currentTimeStamp = getDate();
-                    System.out.println(
-                            String.format("\n[%s] clientInput>>>=%s",
-                                    currentTimeStamp,
-                                    clientInput));
+                    InetAddress clientAddress = receivePacket.getAddress();
+                    String clientIpAddress = clientAddress.getHostAddress();
+                    int clientPort = receivePacket.getPort();
+                    printClientInput(clientInput, clientIpAddress, clientPort);
 
                     // Uncomment this to test timeout
                     // try {
