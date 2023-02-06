@@ -97,7 +97,7 @@ public class Command {
         } else {
 
             // - get value
-            int val = keyVal.get(key);
+            String val = String.valueOf(keyVal.get(key));
             
             // - add msg and value to return object
             retObj.put("msg", "OK");

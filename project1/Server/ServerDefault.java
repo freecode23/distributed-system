@@ -9,8 +9,7 @@ public class ServerDefault implements Server{
         
     }
 
-    @Override
-    public String[] splitIdString(String response) {
+    private String[] splitIdString(String response) {
         String[] parts = response.split(" ",2);
         // System.out.print("server split string id**= "+ parts[0] +"\n");
         // System.out.println("command**= "+ parts[1]);
@@ -30,7 +29,6 @@ public class ServerDefault implements Server{
     public boolean validateClientInput(String clientInput) throws IllegalArgumentException {
         String currentTimestamp = getDate();
         String[] idReq = splitIdString(clientInput);
-        String reqId = idReq[0];
         String command = idReq[1];
 
         if (command == null || command.isEmpty()) {
