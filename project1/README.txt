@@ -2,28 +2,26 @@ To make the connection start the server first before the client
 Step 1. Compile the server and client code:
 inside the server directory do:
 javac -cp ../lib/gson-2.10.1.jar *.java
+repeat inisde the client directory. Make sure you have the jar file inside the lib directory
 
-repeat for the client
-
-
-Step 2. Run the server using tcp:
-java -cp .:../lib/gson-2.10.1.jar ServerDriver 3200 0
-where 3200 is the port number and 0 stands for tcp
+Step 2. Run the server using TCP:
+java -cp .:../lib/gson-2.10.1.jar ServerDriver <port number> <0>
+where 3200 is the port number and 0 for tcp or 1 for udp
 
 example: 
-java ServerSingleThread 3200
+java -cp .:../lib/gson-2.10.1.jar ServerDriver 3200 0
 
-Step 4. Run the client:
-java ClientSingleThread <ip address> <port number>
+Step 3. Run the client using TCP:
+java -cp .:../lib/gson-2.10.1.jar ClientDriver <ip address> <port number > <0>
 
 example:
-java ClientSingleThread 10.5.50.217 3200
+java -cp .:../lib/gson-2.10.1.jar ClientDriver 127.0.0.1 3200 0
 
-Note on mac you can get the ip address by running:
-ifconfig en0 | grep inet
-it will return :
-inet 10.5.50.217 netmask 0xffffff00 broadcast 10.5.50.255
-use `10.5.50.217` 
+Step 4. Run the client using UDP:
+To run both client and server using UDP just change the last argument to 1 or anything that is not 0.
 
-Step 5. Enter some text in client's terminal to get a response
-of the reversed text from the server.
+example:
+java -cp .:../lib/gson-2.10.1.jar ServerDriver 3200 1
+java -cp .:../lib/gson-2.10.1.jar ClientDriver 127.0.0.1 3200 1
+
+

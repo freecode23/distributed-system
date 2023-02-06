@@ -114,7 +114,7 @@ public class ClientDefault implements Client {
         ArrayList<String> arrL = new ArrayList<String>();
 
         try {
-            File file = new File("../file.txt");
+            File file = new File("../lib/file.txt");
             Scanner scan = new Scanner(file);
 
             while (scan.hasNextLine()) {
