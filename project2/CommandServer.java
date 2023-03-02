@@ -20,6 +20,8 @@ public class CommandServer {
         @Override
         public Result put(int key, int val) throws TException {
             // 1. add to hashmap stored by ServerObj
+            System.out.print("\nbefore put>>>>>");
+            System.out.println(keyVal);
             keyVal.put(key, val);
 
             System.out.print("after put>>>>>");
@@ -34,7 +36,7 @@ public class CommandServer {
 
         @Override
         public Result get(int key) throws TException {
-            System.out.print("before get>>>>>");
+            System.out.print("\nbefore get>>>>>");
             System.out.println(keyVal);
 
             // 1. init return obj
@@ -62,7 +64,7 @@ public class CommandServer {
         @Override
         public Result delete(int key) throws TException {
  
-            System.out.print("before del>>>>>");
+            System.out.print("\nbefore del>>>>>");
             System.out.println(keyVal);
 
             Result result = new Result();
