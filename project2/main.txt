@@ -13,38 +13,34 @@ import java.net.SocketAddress;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
+
 public class CommandServer {
 
     public static class CommandHandler implements Command.Iface {
-
-        //  1. init keyvalue store
-        private Map<Integer, Integer> keyVal = new HashMap<>();
-
-        // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-        // private TTransport transport;
+        private TTransport transport;
 
         // public CommandHandler(TTransport transport) {
         //     this.transport = transport;
         // }
 
-        private void printLog(int key, int val, String command) {
-            // System.out.println("Received put request with key=" + key + " and value=" + val);
+        //  1. init keyvalue store
+        private Map<Integer, Integer> keyVal = new HashMap<>();
 
-            // // Get client IP address and port number
-            // SocketAddress clientAddr = ((TSocket) transport).getSocket().getRemoteSocketAddress();
-            // String clientIp = ((InetSocketAddress) clientAddr).getAddress().getHostAddress();
-            // int clientPort = ((InetSocketAddress) clientAddr).getPort();
-            // System.out.println(
-            //         String.format("Received %s request from client %s:%d for key=%d, value=%d", command, clientIp,
-            //                 clientPort, key, val));
+        private void printLog(int key, int val, String command) {
+            // Get client IP address and port number
+            InetSocketAddress clientAddr = (InetSocketAddress) ((TSocket) transport).getSocket().getRemoteSocketAddress();
+            String clientIp = clientAddr.getAddress().getHostAddress();
+            int clientPort = clientAddr.getPort();
+            System.out.println(
+                    String.format("Received %s request from client %s:%d for key=%d, value=%d", command, clientIp,
+                            clientPort, key, val));
         }
-        // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
         //  2. ovveride the command we wrote in command thrift file
         @Override
         public Result put(int key, int val) throws TException {
+            // printLog(key, val,  "put");
 
-            printLog(key, val, "put");
             // 1. add to hashmap stored by ServerObj
             System.out.print("\nbefore put>>>>>");
             System.out.println(keyVal);
@@ -118,23 +114,28 @@ public class CommandServer {
 
     public static void main(String[] args) {
         try {
-
             // 1. init socket
             TServerTransport serverTransport = new TServerSocket(9090);
 
-            // 2A create procesor
+            // 2.
+            // opt 1.
             Command.Processor processor = new Command.Processor<>(new CommandHandler());
             
-            // 3. serve
-            TServer server = new TSimpleServer(new TServer.Args(serverTransport).processor(processor));
+            // opt 2:
+            // // - Create a new TSocket object to connect to the server
+            // TSocket socket = new TSocket("localhost", 9090);
+            // // - Open the socket
+            // socket.open();
+            // // -  Create a new CommandHandler object and pass the socket to it
+            // CommandHandler commandHandler = new CommandHandler(socket);
+            // Command.Processor processor = new Command.Processor<>(commandHandler);
 
+            // 3. create server
+            TServer server = new TSimpleServer(new TServer.Args(serverTransport).processor(processor));
             System.out.println("Starting the server...");
             server.serve();
 
-            
         } catch (TTransportException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
             e.printStackTrace();
         }
     }
