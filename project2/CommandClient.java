@@ -6,6 +6,7 @@ import org.apache.thrift.transport.TTransportException;
 import java.io.IOException;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.net.SocketTimeoutException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -15,12 +16,11 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 public class CommandClient {
 
-    private static boolean validateCommand(String command) {
+    private static void validateCommand(String command) throws IllegalArgumentException {
         String currentTimestamp = getDate();
         if (command == null || command.isEmpty()) {
             // the string is either null or empty
-            System.out.println(String.format("[%s]invalid empty command", currentTimestamp));
-            return false;
+            throw new IllegalArgumentException("invalid empty command");
         }
 
         String[] commandArr = command.split(" ");
@@ -30,52 +30,39 @@ public class CommandClient {
 
             // - validate argument number
             if (commandArr.length != 3) {
-                System.out.println(String.format(
-                        "[%s]invalid number of arguments", currentTimestamp));
-                return false;
+                throw new IllegalArgumentException("invalid number of arguments");
             }
 
             // - validate numeric
             if (!isWordNumeric(commandArr[1]) || !isWordNumeric(commandArr[2])) {
-                System.out.println(String.format("[%s]invalid key given, not numeric", currentTimestamp));
-                return false;
+                throw new IllegalArgumentException("invalid key given, not numeric");
             }
 
         } else if ("get".equals(commandArr[0].toLowerCase())) {
             // - validate argument number
             if (commandArr.length != 2) {
-                System.out.println(String.format("[%s]invalid number of arguments", currentTimestamp));
-                return false;
+                throw new IllegalArgumentException("invalid number of arguments");
             }
 
             // - validate numeric
             if (!isWordNumeric(commandArr[1])) {
-                System.out.println(String.format("[%s]invalid key given, not numeric", currentTimestamp));
-                return false;
+                throw new IllegalArgumentException("invalid key given, not numeric");
             }
 
         } else if ("delete".equals(commandArr[0].toLowerCase())) {
             // - validate argument number
             if (commandArr.length != 2) {
-                System.out.println(String.format("[%s]invalid number of arguments", currentTimestamp));
-                return false;
+                throw new IllegalArgumentException("invalid number of arguments");
             }
 
             // - validate numeric
             if (!isWordNumeric(commandArr[1])) {
-                System.out.println(String.format("[%s]invalid key given, not numeric", currentTimestamp));
-                return false;
+                throw new IllegalArgumentException("invalid key given, not numeric");
             }
 
         } else {
-            System.out.println(
-                    String.format("[%s]Illegal command. Command should be put, delete, or get with integer arguments",
-                            currentTimestamp));
-            return false;
+            throw new IllegalArgumentException("Illegal command. Command should be put, delete, or get with integer arguments");
         }
-
-        return true;
-
     }
 
     private static ArrayList<String> parseTextFile(String filename) {
@@ -123,11 +110,26 @@ public class CommandClient {
 
         String currentTimestamp = getDate();
         String reqId4= reqId.substring(Math.max(reqId.length() - 4, 0)); // get last 5char only
-        // System.out.println()
-        if (!(res.reqId).equals(reqId)) {
+
+        // 1. invalid command
+        if ("invalid".equals(command)) {
+            System.out.println(
+                String.format("[%s] reqId=..%s %s", currentTimestamp,
+                reqId4, res.msg));
+        
+        // 2. timout
+        } else if ("timeout".equals(command)) {
+            System.out.println(String.format("[%s] reqId=%s Server Timeout", currentTimestamp, 
+            reqId4));
+
+        // 3. unrequested response
+        } else if (!(res.reqId).equals(reqId)) {
+
             System.out.println(
                 String.format("[%s] reqId=..%s Received unsolicited response of reqId=%s", currentTimestamp,
                 reqId4, res.reqId));
+                
+        // 3. sucessful
         } else {
             System.out.println(
                 String.format("[%s] reqId=..%s %s val=%d",
@@ -136,17 +138,19 @@ public class CommandClient {
         }
     }
     
-    private static Result executeCommand(String command, Command.Client client) {
+    private static void executeCommand(String command, Command.Client client) {
 
-        Result res = null;
+        Result res = new Result();
         String reqId = generateUniqueID();
-        
         try {
-            if (!validateCommand(command)) {
-                res.msg = "Invalid command only put, get, delete are allowed";
-                res.value = -1;
-                res.reqId = reqId; 
-            } 
+
+            try {
+                validateCommand(command);
+            } catch (IllegalArgumentException ex) {
+                res.msg = ex.getMessage();
+                printLog(res, reqId, "invalid");
+                return;
+            }
 
             // 2. split the command
             String[] commandArr = command.split(" ");
@@ -157,12 +161,12 @@ public class CommandClient {
                 case "put":
                     int val = Integer.parseInt(commandArr[2]);
                     res = client.put(key, val, reqId);
-                    printLog(res, reqId,"put");
+                    printLog(res, reqId, "put");
                     break;
 
                 case "get":
                     res = client.get(key, reqId);
-                    printLog(res, reqId,"get");
+                    printLog(res, reqId, "get");
                     break;
 
                 case "delete":
@@ -172,18 +176,24 @@ public class CommandClient {
                     break;
 
                 default:
-                    String currentTimestamp = getDate();
-                    System.out.println(String.format("[%s] reqId=%s Invalid Command", currentTimestamp, reqId));
+                    // do nothing, already taken care of in invalid command
                     break;
-                }
-                
-            } catch (TException ex) {
-                ex.printStackTrace();
             }
+                
+        } catch (TException ex) {
 
-            
-        return res;
+            if (ex.getCause() instanceof SocketTimeoutException) {
+                // handle socket timeout exception
+                printLog(res, reqId, "timeout");;
+               
+            } else {
+                // handle other TTransportException
+                System.out.println(ex.getMessage());
+            }
+        }
+
     }
+
 
     public static void main(String[] args) {
         if (args.length != 1) {
@@ -192,10 +202,11 @@ public class CommandClient {
             return;
         }
         int serverport = Integer.parseInt(args[0]);
+        int timeout = 5000; //5000 ms timeout
         // 1. prepopulate
         try {
             // 1.1 init client
-            TTransport transport = new TSocket("localhost", serverport);
+            TTransport transport = new TSocket("localhost", serverport, timeout);
             transport.open();
             TBinaryProtocol protocol = new TBinaryProtocol(transport);
             Command.Client client = new Command.Client(protocol);
@@ -206,11 +217,14 @@ public class CommandClient {
 
             // 1.3 prepopulate key store
             for(String preCommand: preCommands) {
-                Result res = executeCommand(preCommand, client);
+                executeCommand(preCommand, client);
             }
             transport.close();
         } catch (TTransportException ex) {
-            ex.printStackTrace();
+            
+            // handle other TTransportException
+            System.out.println(ex.getMessage());
+
         } 
 
         // 2. run actual command
@@ -219,26 +233,25 @@ public class CommandClient {
         String actFilename = "./lib/file.txt";
         ArrayList<String> actCommands = parseTextFile(actFilename);
 
-        // // Use executor
+        // Use executor
         for (String actCommand : actCommands) {
             executor.execute(new Runnable(){
                 public void run(){
                     try {
 
-                        // 2.1 init client
-                        TTransport transportM = new TSocket("localhost", serverport);
+                        // 2.1 init client and timout
+                        TTransport transportM = new TSocket("localhost", serverport, timeout);
                         transportM.open();
                         TBinaryProtocol protocolM = new TBinaryProtocol(transportM);
                         Command.Client clientM = new Command.Client(protocolM);
 
-
                         // 2.2 execute command
-                        Result result = executeCommand(actCommand, clientM);
-
+                        executeCommand(actCommand, clientM);
                         transportM.close();
                  
                     } catch (TTransportException ex) {
-                        ex.printStackTrace();
+                         // handle other transport errors
+                         System.out.println(ex.getMessage());
                     } 
                 }
             });
