@@ -38,7 +38,7 @@ public class CommandServer {
             // put request
             if (val != -1) {
                 System.out.println(
-                        String.format("[%s] Received %s request from client for key=%d, value=%d, msg=%s", currentTimestamp,
+                        String.format("[%s] Received %s request from client for key=%d, val=%d, msg=%s", currentTimestamp,
                         op, key, val,
                         msg));
 
@@ -112,7 +112,7 @@ public class CommandServer {
             // 3. print and return result
             // System.out.print("after put>>>>>");
             // System.out.println(keyVal);
-            printLog(key, val, "put", "operation successful");
+            printLog(key, val, "put", "op successful");
             return result;
         }
 
@@ -142,7 +142,7 @@ public class CommandServer {
             //  3. print and return result
             // System.out.print("after gett>>>>>");
             // System.out.println(keyVal);
-            printLog(key, -1, command, "operation successful");
+            printLog(key, -1, command, "op successful");
             return result;
         }
 
@@ -154,7 +154,7 @@ public class CommandServer {
             try {
                 validateKey(key, command);
             } catch (IllegalArgumentException e) {
-                printLog(key, -1, "delete", "operation successful");
+                printLog(key, -1, "delete", e.getMessage());
                 Result result = new Result();
                 result.msg = "ERROR";
                 result.value = 0;
@@ -172,7 +172,7 @@ public class CommandServer {
             //  3. print and return
             // System.out.print("after del>>>>>");
             // System.out.println(keyVal);
-            printLog(key, -1, command, "operation successful");
+            printLog(key, -1, command, "op sucessful");
             return result;
         }
 
@@ -180,9 +180,15 @@ public class CommandServer {
 
     public static void main(String[] args) {
         try {
+            if (args.length != 1) {
+                System.out.println(
+                        "please enter the argument of the port number");
+                return;
+            }
 
             // 1. init socket
-            TServerTransport serverTransport = new TServerSocket(9090);
+            int port = Integer.parseInt(args[0]);
+            TServerTransport serverTransport = new TServerSocket(port);
 
             // 2A create procesor
             Command.Processor processor = new Command.Processor<>(new CommandHandler());

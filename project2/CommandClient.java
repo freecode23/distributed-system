@@ -158,11 +158,16 @@ public class CommandClient {
     }
 
     public static void main(String[] args) {
-
+        if (args.length != 1) {
+            System.out.println(
+                    "please enter the argument of the port number");
+            return;
+        }
+        int serverport = Integer.parseInt(args[0]);
         // 1. prepopulate
         try {
             // 1.1 init client
-            TTransport transport = new TSocket("localhost", 9090);
+            TTransport transport = new TSocket("localhost", serverport);
             transport.open();
             TBinaryProtocol protocol = new TBinaryProtocol(transport);
             Command.Client client = new Command.Client(protocol);
@@ -193,7 +198,7 @@ public class CommandClient {
                     try {
 
                         // 2.1 init client
-                        TTransport transportM = new TSocket("localhost", 9090);
+                        TTransport transportM = new TSocket("localhost", serverport);
                         transportM.open();
                         TBinaryProtocol protocolM = new TBinaryProtocol(transportM);
                         Command.Client clientM = new Command.Client(protocolM);

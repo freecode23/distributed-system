@@ -9,6 +9,6 @@ thrift --gen java -out ./ Command.thrift
 javac -cp .:./lib/libthrift.jar:./lib/slf4j.jar -d bin/ *.java
 
 
-3. run and look in bin and lib folder
-java -cp ./bin:./lib/libthrift.jar:./lib/slf4j.jar CommandServer
-java -cp ./bin:./lib/libthrift.jar:./lib/slf4j.jar CommandClient
+3. run and look in bin and lib folder. note 9090 is the chosen port number
+java -cp ./bin:./lib/libthrift.jar:./lib/slf4j.jar CommandServer 9090
+java -cp ./bin:./lib/libthrift.jar:./lib/slf4j.jar CommandClient 9090
