@@ -14,8 +14,8 @@ import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.text.SimpleDateFormat;
 import java.net.Socket;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 public class CommandServer {
 
@@ -23,7 +23,7 @@ public class CommandServer {
     public static class CommandHandler implements Command.Iface {
 
         //  1. init keyvalue store
-        private Map<Integer, Integer> keyVal = new HashMap<>();
+        private Map<Integer, Integer> keyVal = new ConcurrentHashMap<>();
 
         // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
         // private TTransport transport;
@@ -32,9 +32,24 @@ public class CommandServer {
         //     this.transport = transport;
         // }
 
-        private void printLog(int key, int val, String command) {
-            // System.out.println("Received put request with key=" + key + " and value=" + val);
+        private void printLog(int key, int val, String op, String msg) {
+            String currentTimestamp = getDate();
 
+            // put request
+            if (val != -1) {
+                System.out.println(
+                        String.format("[%s] Received %s request from client for key=%d, value=%d, msg=%s", currentTimestamp,
+                        op, key, val,
+                        msg));
+
+            // delete and get req
+            } else {
+                System.out.println(
+                        String.format("[%s] Received %s request from client for key=%d, msg=%s",
+                                currentTimestamp,
+                                op, key,
+                                msg));
+            }
             // // Get client IP address and port number
             // SocketAddress clientAddr = ((TSocket) transport).getSocket().getRemoteSocketAddress();
             // String clientIp = ((InetSocketAddress) clientAddr).getAddress().getHostAddress();
@@ -53,44 +68,51 @@ public class CommandServer {
             return currentTimestamp;
         }
 
-        private boolean validateKey(int key) throws IllegalArgumentException {
-            String currentTimestamp = getDate();
+        private boolean validateKey(int key) throws IllegalArgumentException {     
             if (key < 0) {
-                throw new IllegalArgumentException(
-                        String.format("[%s] Illegal:key cannot be negative", currentTimestamp));
+                throw new IllegalArgumentException("Illegal: key cannot be negative");
             } else if (!keyVal.containsKey(key) ) {
-                throw new IllegalArgumentException(
-                        String.format("[%s] Illegal: key does not exist", currentTimestamp));
+                throw new IllegalArgumentException("Illegal: key does not exist");
             }
+            return true;
+        }
+
+        private boolean validateValue(int value) throws IllegalArgumentException {
+            if (value < 0) {
+                throw new IllegalArgumentException("Illegal: value cannot be negative");
+            } 
             return true;
         }
 
         //  2. override the command we wrote in command thrift file
         @Override
         public Result put(int key, int val) throws TException {
+
             try {
                 validateKey(key);
+                validateValue(val);
             } catch (IllegalArgumentException e) {
-                System.out.println(String.format("%s", e.getMessage()));
+                printLog(key, val, "put", e.getMessage());
                 Result result = new Result();
                 result.msg = "ERROR";
                 result.value = val;
                 return result;
             }
             
-            printLog(key, val, "put");
             // 1. add to hashmap stored by ServerObj
             System.out.print("\nbefore put>>>>>");
             System.out.println(keyVal);
             keyVal.put(key, val);
-
+            
             System.out.print("after put>>>>>");
             System.out.println(keyVal);
-
+            
             // 2. init return resultStruct and return to client
             Result result = new Result();
             result.msg = "OK";
             result.value = val;
+
+            printLog(key, val, "put", "operation successful");
             return result;
         }
 
@@ -100,7 +122,7 @@ public class CommandServer {
             try {
                 validateKey(key);
             } catch (IllegalArgumentException e) {
-                System.out.println(String.format("%s", e.getMessage()));
+                printLog(key, -1, "get", e.getMessage());
                 Result result = new Result();
                 result.msg = "ERROR";
                 result.value = 0;
@@ -128,6 +150,7 @@ public class CommandServer {
                 System.out.print("after gett>>>>>");
                 System.out.println(keyVal);
             }
+            printLog(key, -1, "get", "operation successful");
             return result;
         }
 
@@ -136,7 +159,7 @@ public class CommandServer {
             try {
                 validateKey(key);
             } catch (IllegalArgumentException e) {
-                System.out.println(String.format("%s", e.getMessage()));
+                printLog(key, -1, "delete", "operation successful");
                 Result result = new Result();
                 result.msg = "ERROR";
                 result.value = 0;
@@ -162,10 +185,10 @@ public class CommandServer {
                 result.msg = "OK";
 
             }
+            printLog(key, -1, "delete", "operation successful");
             return result;
         }
 
-    
     }
 
     public static void main(String[] args) {
