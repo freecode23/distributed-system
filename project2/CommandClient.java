@@ -118,42 +118,70 @@ public class CommandClient {
     private static String generateUniqueID() {
         return UUID.randomUUID().toString();
     }
+
+    private static void printLog(Result res, String reqId, String command) {
+
+        String currentTimestamp = getDate();
+        String reqId4= reqId.substring(Math.max(reqId.length() - 4, 0)); // get last 5char only
+        // System.out.println()
+        if (!(res.reqId).equals(reqId)) {
+            System.out.println(
+                String.format("[%s] reqId=..%s Received unsolicited response of reqId=%s", currentTimestamp,
+                reqId4, res.reqId));
+        } else {
+            System.out.println(
+                String.format("[%s] reqId=..%s %s val=%d",
+                currentTimestamp, reqId4, command, res.value));
+
+        }
+    }
     
     private static Result executeCommand(String command, Command.Client client) {
 
         Result res = null;
+        String reqId = generateUniqueID();
+        
         try {
-            if (! validateCommand(command)) {
+            if (!validateCommand(command)) {
                 res.msg = "Invalid command only put, get, delete are allowed";
                 res.value = -1;
+                res.reqId = reqId; 
             } 
 
             // 2. split the command
             String[] commandArr = command.split(" ");
             int key = Integer.parseInt(commandArr[1]);
-            
+
             // 3. execute
             switch (commandArr[0].toLowerCase()) {
                 case "put":
                     int val = Integer.parseInt(commandArr[2]);
-                    res = client.put(key, val);
+                    res = client.put(key, val, reqId);
+                    printLog(res, reqId,"put");
                     break;
 
                 case "get":
-                    res = client.get(key);
+                    res = client.get(key, reqId);
+                    printLog(res, reqId,"get");
                     break;
 
                 case "delete":
-                    res = client.delete(key);
+                    res = client.delete(key, reqId);
+                    printLog(res, reqId,"delete");;
+
                     break;
 
                 default:
+                    String currentTimestamp = getDate();
+                    System.out.println(String.format("[%s] reqId=%s Invalid Command", currentTimestamp, reqId));
                     break;
                 }
                 
             } catch (TException ex) {
                 ex.printStackTrace();
             }
+
+            
         return res;
     }
 
@@ -203,10 +231,10 @@ public class CommandClient {
                         TBinaryProtocol protocolM = new TBinaryProtocol(transportM);
                         Command.Client clientM = new Command.Client(protocolM);
 
-                        System.out.println("Command: " + actCommand);
 
                         // 2.2 execute command
                         Result result = executeCommand(actCommand, clientM);
+
                         transportM.close();
                  
                     } catch (TTransportException ex) {

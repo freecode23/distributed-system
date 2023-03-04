@@ -9,21 +9,21 @@ public class Command {
 
   public interface Iface {
 
-    public Result put(int key, int value) throws org.apache.thrift.TException;
+    public Result put(int key, int value, java.lang.String reqId) throws org.apache.thrift.TException;
 
-    public Result get(int key) throws org.apache.thrift.TException;
+    public Result get(int key, java.lang.String reqId) throws org.apache.thrift.TException;
 
-    public Result delete(int key) throws org.apache.thrift.TException;
+    public Result delete(int key, java.lang.String reqId) throws org.apache.thrift.TException;
 
   }
 
   public interface AsyncIface {
 
-    public void put(int key, int value, org.apache.thrift.async.AsyncMethodCallback<Result> resultHandler) throws org.apache.thrift.TException;
+    public void put(int key, int value, java.lang.String reqId, org.apache.thrift.async.AsyncMethodCallback<Result> resultHandler) throws org.apache.thrift.TException;
 
-    public void get(int key, org.apache.thrift.async.AsyncMethodCallback<Result> resultHandler) throws org.apache.thrift.TException;
+    public void get(int key, java.lang.String reqId, org.apache.thrift.async.AsyncMethodCallback<Result> resultHandler) throws org.apache.thrift.TException;
 
-    public void delete(int key, org.apache.thrift.async.AsyncMethodCallback<Result> resultHandler) throws org.apache.thrift.TException;
+    public void delete(int key, java.lang.String reqId, org.apache.thrift.async.AsyncMethodCallback<Result> resultHandler) throws org.apache.thrift.TException;
 
   }
 
@@ -50,17 +50,18 @@ public class Command {
     }
 
     @Override
-    public Result put(int key, int value) throws org.apache.thrift.TException
+    public Result put(int key, int value, java.lang.String reqId) throws org.apache.thrift.TException
     {
-      send_put(key, value);
+      send_put(key, value, reqId);
       return recv_put();
     }
 
-    public void send_put(int key, int value) throws org.apache.thrift.TException
+    public void send_put(int key, int value, java.lang.String reqId) throws org.apache.thrift.TException
     {
       put_args args = new put_args();
       args.setKey(key);
       args.setValue(value);
+      args.setReqId(reqId);
       sendBase("put", args);
     }
 
@@ -75,16 +76,17 @@ public class Command {
     }
 
     @Override
-    public Result get(int key) throws org.apache.thrift.TException
+    public Result get(int key, java.lang.String reqId) throws org.apache.thrift.TException
     {
-      send_get(key);
+      send_get(key, reqId);
       return recv_get();
     }
 
-    public void send_get(int key) throws org.apache.thrift.TException
+    public void send_get(int key, java.lang.String reqId) throws org.apache.thrift.TException
     {
       get_args args = new get_args();
       args.setKey(key);
+      args.setReqId(reqId);
       sendBase("get", args);
     }
 
@@ -99,16 +101,17 @@ public class Command {
     }
 
     @Override
-    public Result delete(int key) throws org.apache.thrift.TException
+    public Result delete(int key, java.lang.String reqId) throws org.apache.thrift.TException
     {
-      send_delete(key);
+      send_delete(key, reqId);
       return recv_delete();
     }
 
-    public void send_delete(int key) throws org.apache.thrift.TException
+    public void send_delete(int key, java.lang.String reqId) throws org.apache.thrift.TException
     {
       delete_args args = new delete_args();
       args.setKey(key);
+      args.setReqId(reqId);
       sendBase("delete", args);
     }
 
@@ -142,9 +145,9 @@ public class Command {
     }
 
     @Override
-    public void put(int key, int value, org.apache.thrift.async.AsyncMethodCallback<Result> resultHandler) throws org.apache.thrift.TException {
+    public void put(int key, int value, java.lang.String reqId, org.apache.thrift.async.AsyncMethodCallback<Result> resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      put_call method_call = new put_call(key, value, resultHandler, this, ___protocolFactory, ___transport);
+      put_call method_call = new put_call(key, value, reqId, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
@@ -152,10 +155,12 @@ public class Command {
     public static class put_call extends org.apache.thrift.async.TAsyncMethodCall<Result> {
       private int key;
       private int value;
-      public put_call(int key, int value, org.apache.thrift.async.AsyncMethodCallback<Result> resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      private java.lang.String reqId;
+      public put_call(int key, int value, java.lang.String reqId, org.apache.thrift.async.AsyncMethodCallback<Result> resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
         this.key = key;
         this.value = value;
+        this.reqId = reqId;
       }
 
       @Override
@@ -164,6 +169,7 @@ public class Command {
         put_args args = new put_args();
         args.setKey(key);
         args.setValue(value);
+        args.setReqId(reqId);
         args.write(prot);
         prot.writeMessageEnd();
       }
@@ -180,18 +186,20 @@ public class Command {
     }
 
     @Override
-    public void get(int key, org.apache.thrift.async.AsyncMethodCallback<Result> resultHandler) throws org.apache.thrift.TException {
+    public void get(int key, java.lang.String reqId, org.apache.thrift.async.AsyncMethodCallback<Result> resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      get_call method_call = new get_call(key, resultHandler, this, ___protocolFactory, ___transport);
+      get_call method_call = new get_call(key, reqId, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
 
     public static class get_call extends org.apache.thrift.async.TAsyncMethodCall<Result> {
       private int key;
-      public get_call(int key, org.apache.thrift.async.AsyncMethodCallback<Result> resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      private java.lang.String reqId;
+      public get_call(int key, java.lang.String reqId, org.apache.thrift.async.AsyncMethodCallback<Result> resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
         this.key = key;
+        this.reqId = reqId;
       }
 
       @Override
@@ -199,6 +207,7 @@ public class Command {
         prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("get", org.apache.thrift.protocol.TMessageType.CALL, 0));
         get_args args = new get_args();
         args.setKey(key);
+        args.setReqId(reqId);
         args.write(prot);
         prot.writeMessageEnd();
       }
@@ -215,18 +224,20 @@ public class Command {
     }
 
     @Override
-    public void delete(int key, org.apache.thrift.async.AsyncMethodCallback<Result> resultHandler) throws org.apache.thrift.TException {
+    public void delete(int key, java.lang.String reqId, org.apache.thrift.async.AsyncMethodCallback<Result> resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      delete_call method_call = new delete_call(key, resultHandler, this, ___protocolFactory, ___transport);
+      delete_call method_call = new delete_call(key, reqId, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
 
     public static class delete_call extends org.apache.thrift.async.TAsyncMethodCall<Result> {
       private int key;
-      public delete_call(int key, org.apache.thrift.async.AsyncMethodCallback<Result> resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      private java.lang.String reqId;
+      public delete_call(int key, java.lang.String reqId, org.apache.thrift.async.AsyncMethodCallback<Result> resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
         this.key = key;
+        this.reqId = reqId;
       }
 
       @Override
@@ -234,6 +245,7 @@ public class Command {
         prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("delete", org.apache.thrift.protocol.TMessageType.CALL, 0));
         delete_args args = new delete_args();
         args.setKey(key);
+        args.setReqId(reqId);
         args.write(prot);
         prot.writeMessageEnd();
       }
@@ -291,7 +303,7 @@ public class Command {
       @Override
       public put_result getResult(I iface, put_args args) throws org.apache.thrift.TException {
         put_result result = new put_result();
-        result.success = iface.put(args.key, args.value);
+        result.success = iface.put(args.key, args.value, args.reqId);
         return result;
       }
     }
@@ -319,7 +331,7 @@ public class Command {
       @Override
       public get_result getResult(I iface, get_args args) throws org.apache.thrift.TException {
         get_result result = new get_result();
-        result.success = iface.get(args.key);
+        result.success = iface.get(args.key, args.reqId);
         return result;
       }
     }
@@ -347,7 +359,7 @@ public class Command {
       @Override
       public delete_result getResult(I iface, delete_args args) throws org.apache.thrift.TException {
         delete_result result = new delete_result();
-        result.success = iface.delete(args.key);
+        result.success = iface.delete(args.key, args.reqId);
         return result;
       }
     }
@@ -434,7 +446,7 @@ public class Command {
 
       @Override
       public void start(I iface, put_args args, org.apache.thrift.async.AsyncMethodCallback<Result> resultHandler) throws org.apache.thrift.TException {
-        iface.put(args.key, args.value,resultHandler);
+        iface.put(args.key, args.value, args.reqId,resultHandler);
       }
     }
 
@@ -501,7 +513,7 @@ public class Command {
 
       @Override
       public void start(I iface, get_args args, org.apache.thrift.async.AsyncMethodCallback<Result> resultHandler) throws org.apache.thrift.TException {
-        iface.get(args.key,resultHandler);
+        iface.get(args.key, args.reqId,resultHandler);
       }
     }
 
@@ -568,7 +580,7 @@ public class Command {
 
       @Override
       public void start(I iface, delete_args args, org.apache.thrift.async.AsyncMethodCallback<Result> resultHandler) throws org.apache.thrift.TException {
-        iface.delete(args.key,resultHandler);
+        iface.delete(args.key, args.reqId,resultHandler);
       }
     }
 
@@ -580,17 +592,20 @@ public class Command {
 
     private static final org.apache.thrift.protocol.TField KEY_FIELD_DESC = new org.apache.thrift.protocol.TField("key", org.apache.thrift.protocol.TType.I32, (short)1);
     private static final org.apache.thrift.protocol.TField VALUE_FIELD_DESC = new org.apache.thrift.protocol.TField("value", org.apache.thrift.protocol.TType.I32, (short)2);
+    private static final org.apache.thrift.protocol.TField REQ_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("reqId", org.apache.thrift.protocol.TType.STRING, (short)3);
 
     private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new put_argsStandardSchemeFactory();
     private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new put_argsTupleSchemeFactory();
 
     public int key; // required
     public int value; // required
+    public @org.apache.thrift.annotation.Nullable java.lang.String reqId; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
       KEY((short)1, "key"),
-      VALUE((short)2, "value");
+      VALUE((short)2, "value"),
+      REQ_ID((short)3, "reqId");
 
       private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
 
@@ -610,6 +625,8 @@ public class Command {
             return KEY;
           case 2: // VALUE
             return VALUE;
+          case 3: // REQ_ID
+            return REQ_ID;
           default:
             return null;
         }
@@ -663,6 +680,8 @@ public class Command {
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
       tmpMap.put(_Fields.VALUE, new org.apache.thrift.meta_data.FieldMetaData("value", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
+      tmpMap.put(_Fields.REQ_ID, new org.apache.thrift.meta_data.FieldMetaData("reqId", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
       metaDataMap = java.util.Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(put_args.class, metaDataMap);
     }
@@ -672,13 +691,15 @@ public class Command {
 
     public put_args(
       int key,
-      int value)
+      int value,
+      java.lang.String reqId)
     {
       this();
       this.key = key;
       setKeyIsSet(true);
       this.value = value;
       setValueIsSet(true);
+      this.reqId = reqId;
     }
 
     /**
@@ -688,6 +709,9 @@ public class Command {
       __isset_bitfield = other.__isset_bitfield;
       this.key = other.key;
       this.value = other.value;
+      if (other.isSetReqId()) {
+        this.reqId = other.reqId;
+      }
     }
 
     @Override
@@ -701,6 +725,7 @@ public class Command {
       this.key = 0;
       setValueIsSet(false);
       this.value = 0;
+      this.reqId = null;
     }
 
     public int getKey() {
@@ -749,6 +774,31 @@ public class Command {
       __isset_bitfield = org.apache.thrift.EncodingUtils.setBit(__isset_bitfield, __VALUE_ISSET_ID, value);
     }
 
+    @org.apache.thrift.annotation.Nullable
+    public java.lang.String getReqId() {
+      return this.reqId;
+    }
+
+    public put_args setReqId(@org.apache.thrift.annotation.Nullable java.lang.String reqId) {
+      this.reqId = reqId;
+      return this;
+    }
+
+    public void unsetReqId() {
+      this.reqId = null;
+    }
+
+    /** Returns true if field reqId is set (has been assigned a value) and false otherwise */
+    public boolean isSetReqId() {
+      return this.reqId != null;
+    }
+
+    public void setReqIdIsSet(boolean value) {
+      if (!value) {
+        this.reqId = null;
+      }
+    }
+
     @Override
     public void setFieldValue(_Fields field, @org.apache.thrift.annotation.Nullable java.lang.Object value) {
       switch (field) {
@@ -768,6 +818,14 @@ public class Command {
         }
         break;
 
+      case REQ_ID:
+        if (value == null) {
+          unsetReqId();
+        } else {
+          setReqId((java.lang.String)value);
+        }
+        break;
+
       }
     }
 
@@ -780,6 +838,9 @@ public class Command {
 
       case VALUE:
         return getValue();
+
+      case REQ_ID:
+        return getReqId();
 
       }
       throw new java.lang.IllegalStateException();
@@ -797,6 +858,8 @@ public class Command {
         return isSetKey();
       case VALUE:
         return isSetValue();
+      case REQ_ID:
+        return isSetReqId();
       }
       throw new java.lang.IllegalStateException();
     }
@@ -832,6 +895,15 @@ public class Command {
           return false;
       }
 
+      boolean this_present_reqId = true && this.isSetReqId();
+      boolean that_present_reqId = true && that.isSetReqId();
+      if (this_present_reqId || that_present_reqId) {
+        if (!(this_present_reqId && that_present_reqId))
+          return false;
+        if (!this.reqId.equals(that.reqId))
+          return false;
+      }
+
       return true;
     }
 
@@ -842,6 +914,10 @@ public class Command {
       hashCode = hashCode * 8191 + key;
 
       hashCode = hashCode * 8191 + value;
+
+      hashCode = hashCode * 8191 + ((isSetReqId()) ? 131071 : 524287);
+      if (isSetReqId())
+        hashCode = hashCode * 8191 + reqId.hashCode();
 
       return hashCode;
     }
@@ -870,6 +946,16 @@ public class Command {
       }
       if (isSetValue()) {
         lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.value, other.value);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = java.lang.Boolean.compare(isSetReqId(), other.isSetReqId());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetReqId()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.reqId, other.reqId);
         if (lastComparison != 0) {
           return lastComparison;
         }
@@ -904,6 +990,14 @@ public class Command {
       if (!first) sb.append(", ");
       sb.append("value:");
       sb.append(this.value);
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("reqId:");
+      if (this.reqId == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.reqId);
+      }
       first = false;
       sb.append(")");
       return sb.toString();
@@ -968,6 +1062,14 @@ public class Command {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
+            case 3: // REQ_ID
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+                struct.reqId = iprot.readString();
+                struct.setReqIdIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
             default:
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
           }
@@ -990,6 +1092,11 @@ public class Command {
         oprot.writeFieldBegin(VALUE_FIELD_DESC);
         oprot.writeI32(struct.value);
         oprot.writeFieldEnd();
+        if (struct.reqId != null) {
+          oprot.writeFieldBegin(REQ_ID_FIELD_DESC);
+          oprot.writeString(struct.reqId);
+          oprot.writeFieldEnd();
+        }
         oprot.writeFieldStop();
         oprot.writeStructEnd();
       }
@@ -1015,19 +1122,25 @@ public class Command {
         if (struct.isSetValue()) {
           optionals.set(1);
         }
-        oprot.writeBitSet(optionals, 2);
+        if (struct.isSetReqId()) {
+          optionals.set(2);
+        }
+        oprot.writeBitSet(optionals, 3);
         if (struct.isSetKey()) {
           oprot.writeI32(struct.key);
         }
         if (struct.isSetValue()) {
           oprot.writeI32(struct.value);
         }
+        if (struct.isSetReqId()) {
+          oprot.writeString(struct.reqId);
+        }
       }
 
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, put_args struct) throws org.apache.thrift.TException {
         org.apache.thrift.protocol.TTupleProtocol iprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
-        java.util.BitSet incoming = iprot.readBitSet(2);
+        java.util.BitSet incoming = iprot.readBitSet(3);
         if (incoming.get(0)) {
           struct.key = iprot.readI32();
           struct.setKeyIsSet(true);
@@ -1035,6 +1148,10 @@ public class Command {
         if (incoming.get(1)) {
           struct.value = iprot.readI32();
           struct.setValueIsSet(true);
+        }
+        if (incoming.get(2)) {
+          struct.reqId = iprot.readString();
+          struct.setReqIdIsSet(true);
         }
       }
     }
@@ -1432,15 +1549,18 @@ public class Command {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("get_args");
 
     private static final org.apache.thrift.protocol.TField KEY_FIELD_DESC = new org.apache.thrift.protocol.TField("key", org.apache.thrift.protocol.TType.I32, (short)1);
+    private static final org.apache.thrift.protocol.TField REQ_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("reqId", org.apache.thrift.protocol.TType.STRING, (short)2);
 
     private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new get_argsStandardSchemeFactory();
     private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new get_argsTupleSchemeFactory();
 
     public int key; // required
+    public @org.apache.thrift.annotation.Nullable java.lang.String reqId; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-      KEY((short)1, "key");
+      KEY((short)1, "key"),
+      REQ_ID((short)2, "reqId");
 
       private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
 
@@ -1458,6 +1578,8 @@ public class Command {
         switch(fieldId) {
           case 1: // KEY
             return KEY;
+          case 2: // REQ_ID
+            return REQ_ID;
           default:
             return null;
         }
@@ -1508,6 +1630,8 @@ public class Command {
       java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new java.util.EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
       tmpMap.put(_Fields.KEY, new org.apache.thrift.meta_data.FieldMetaData("key", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
+      tmpMap.put(_Fields.REQ_ID, new org.apache.thrift.meta_data.FieldMetaData("reqId", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
       metaDataMap = java.util.Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(get_args.class, metaDataMap);
     }
@@ -1516,11 +1640,13 @@ public class Command {
     }
 
     public get_args(
-      int key)
+      int key,
+      java.lang.String reqId)
     {
       this();
       this.key = key;
       setKeyIsSet(true);
+      this.reqId = reqId;
     }
 
     /**
@@ -1529,6 +1655,9 @@ public class Command {
     public get_args(get_args other) {
       __isset_bitfield = other.__isset_bitfield;
       this.key = other.key;
+      if (other.isSetReqId()) {
+        this.reqId = other.reqId;
+      }
     }
 
     @Override
@@ -1540,6 +1669,7 @@ public class Command {
     public void clear() {
       setKeyIsSet(false);
       this.key = 0;
+      this.reqId = null;
     }
 
     public int getKey() {
@@ -1565,6 +1695,31 @@ public class Command {
       __isset_bitfield = org.apache.thrift.EncodingUtils.setBit(__isset_bitfield, __KEY_ISSET_ID, value);
     }
 
+    @org.apache.thrift.annotation.Nullable
+    public java.lang.String getReqId() {
+      return this.reqId;
+    }
+
+    public get_args setReqId(@org.apache.thrift.annotation.Nullable java.lang.String reqId) {
+      this.reqId = reqId;
+      return this;
+    }
+
+    public void unsetReqId() {
+      this.reqId = null;
+    }
+
+    /** Returns true if field reqId is set (has been assigned a value) and false otherwise */
+    public boolean isSetReqId() {
+      return this.reqId != null;
+    }
+
+    public void setReqIdIsSet(boolean value) {
+      if (!value) {
+        this.reqId = null;
+      }
+    }
+
     @Override
     public void setFieldValue(_Fields field, @org.apache.thrift.annotation.Nullable java.lang.Object value) {
       switch (field) {
@@ -1573,6 +1728,14 @@ public class Command {
           unsetKey();
         } else {
           setKey((java.lang.Integer)value);
+        }
+        break;
+
+      case REQ_ID:
+        if (value == null) {
+          unsetReqId();
+        } else {
+          setReqId((java.lang.String)value);
         }
         break;
 
@@ -1585,6 +1748,9 @@ public class Command {
       switch (field) {
       case KEY:
         return getKey();
+
+      case REQ_ID:
+        return getReqId();
 
       }
       throw new java.lang.IllegalStateException();
@@ -1600,6 +1766,8 @@ public class Command {
       switch (field) {
       case KEY:
         return isSetKey();
+      case REQ_ID:
+        return isSetReqId();
       }
       throw new java.lang.IllegalStateException();
     }
@@ -1626,6 +1794,15 @@ public class Command {
           return false;
       }
 
+      boolean this_present_reqId = true && this.isSetReqId();
+      boolean that_present_reqId = true && that.isSetReqId();
+      if (this_present_reqId || that_present_reqId) {
+        if (!(this_present_reqId && that_present_reqId))
+          return false;
+        if (!this.reqId.equals(that.reqId))
+          return false;
+      }
+
       return true;
     }
 
@@ -1634,6 +1811,10 @@ public class Command {
       int hashCode = 1;
 
       hashCode = hashCode * 8191 + key;
+
+      hashCode = hashCode * 8191 + ((isSetReqId()) ? 131071 : 524287);
+      if (isSetReqId())
+        hashCode = hashCode * 8191 + reqId.hashCode();
 
       return hashCode;
     }
@@ -1652,6 +1833,16 @@ public class Command {
       }
       if (isSetKey()) {
         lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.key, other.key);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = java.lang.Boolean.compare(isSetReqId(), other.isSetReqId());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetReqId()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.reqId, other.reqId);
         if (lastComparison != 0) {
           return lastComparison;
         }
@@ -1682,6 +1873,14 @@ public class Command {
 
       sb.append("key:");
       sb.append(this.key);
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("reqId:");
+      if (this.reqId == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.reqId);
+      }
       first = false;
       sb.append(")");
       return sb.toString();
@@ -1738,6 +1937,14 @@ public class Command {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
+            case 2: // REQ_ID
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+                struct.reqId = iprot.readString();
+                struct.setReqIdIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
             default:
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
           }
@@ -1757,6 +1964,11 @@ public class Command {
         oprot.writeFieldBegin(KEY_FIELD_DESC);
         oprot.writeI32(struct.key);
         oprot.writeFieldEnd();
+        if (struct.reqId != null) {
+          oprot.writeFieldBegin(REQ_ID_FIELD_DESC);
+          oprot.writeString(struct.reqId);
+          oprot.writeFieldEnd();
+        }
         oprot.writeFieldStop();
         oprot.writeStructEnd();
       }
@@ -1779,19 +1991,29 @@ public class Command {
         if (struct.isSetKey()) {
           optionals.set(0);
         }
-        oprot.writeBitSet(optionals, 1);
+        if (struct.isSetReqId()) {
+          optionals.set(1);
+        }
+        oprot.writeBitSet(optionals, 2);
         if (struct.isSetKey()) {
           oprot.writeI32(struct.key);
+        }
+        if (struct.isSetReqId()) {
+          oprot.writeString(struct.reqId);
         }
       }
 
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, get_args struct) throws org.apache.thrift.TException {
         org.apache.thrift.protocol.TTupleProtocol iprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
-        java.util.BitSet incoming = iprot.readBitSet(1);
+        java.util.BitSet incoming = iprot.readBitSet(2);
         if (incoming.get(0)) {
           struct.key = iprot.readI32();
           struct.setKeyIsSet(true);
+        }
+        if (incoming.get(1)) {
+          struct.reqId = iprot.readString();
+          struct.setReqIdIsSet(true);
         }
       }
     }
@@ -2189,15 +2411,18 @@ public class Command {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("delete_args");
 
     private static final org.apache.thrift.protocol.TField KEY_FIELD_DESC = new org.apache.thrift.protocol.TField("key", org.apache.thrift.protocol.TType.I32, (short)1);
+    private static final org.apache.thrift.protocol.TField REQ_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("reqId", org.apache.thrift.protocol.TType.STRING, (short)2);
 
     private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new delete_argsStandardSchemeFactory();
     private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new delete_argsTupleSchemeFactory();
 
     public int key; // required
+    public @org.apache.thrift.annotation.Nullable java.lang.String reqId; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-      KEY((short)1, "key");
+      KEY((short)1, "key"),
+      REQ_ID((short)2, "reqId");
 
       private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
 
@@ -2215,6 +2440,8 @@ public class Command {
         switch(fieldId) {
           case 1: // KEY
             return KEY;
+          case 2: // REQ_ID
+            return REQ_ID;
           default:
             return null;
         }
@@ -2265,6 +2492,8 @@ public class Command {
       java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new java.util.EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
       tmpMap.put(_Fields.KEY, new org.apache.thrift.meta_data.FieldMetaData("key", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
+      tmpMap.put(_Fields.REQ_ID, new org.apache.thrift.meta_data.FieldMetaData("reqId", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
       metaDataMap = java.util.Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(delete_args.class, metaDataMap);
     }
@@ -2273,11 +2502,13 @@ public class Command {
     }
 
     public delete_args(
-      int key)
+      int key,
+      java.lang.String reqId)
     {
       this();
       this.key = key;
       setKeyIsSet(true);
+      this.reqId = reqId;
     }
 
     /**
@@ -2286,6 +2517,9 @@ public class Command {
     public delete_args(delete_args other) {
       __isset_bitfield = other.__isset_bitfield;
       this.key = other.key;
+      if (other.isSetReqId()) {
+        this.reqId = other.reqId;
+      }
     }
 
     @Override
@@ -2297,6 +2531,7 @@ public class Command {
     public void clear() {
       setKeyIsSet(false);
       this.key = 0;
+      this.reqId = null;
     }
 
     public int getKey() {
@@ -2322,6 +2557,31 @@ public class Command {
       __isset_bitfield = org.apache.thrift.EncodingUtils.setBit(__isset_bitfield, __KEY_ISSET_ID, value);
     }
 
+    @org.apache.thrift.annotation.Nullable
+    public java.lang.String getReqId() {
+      return this.reqId;
+    }
+
+    public delete_args setReqId(@org.apache.thrift.annotation.Nullable java.lang.String reqId) {
+      this.reqId = reqId;
+      return this;
+    }
+
+    public void unsetReqId() {
+      this.reqId = null;
+    }
+
+    /** Returns true if field reqId is set (has been assigned a value) and false otherwise */
+    public boolean isSetReqId() {
+      return this.reqId != null;
+    }
+
+    public void setReqIdIsSet(boolean value) {
+      if (!value) {
+        this.reqId = null;
+      }
+    }
+
     @Override
     public void setFieldValue(_Fields field, @org.apache.thrift.annotation.Nullable java.lang.Object value) {
       switch (field) {
@@ -2330,6 +2590,14 @@ public class Command {
           unsetKey();
         } else {
           setKey((java.lang.Integer)value);
+        }
+        break;
+
+      case REQ_ID:
+        if (value == null) {
+          unsetReqId();
+        } else {
+          setReqId((java.lang.String)value);
         }
         break;
 
@@ -2342,6 +2610,9 @@ public class Command {
       switch (field) {
       case KEY:
         return getKey();
+
+      case REQ_ID:
+        return getReqId();
 
       }
       throw new java.lang.IllegalStateException();
@@ -2357,6 +2628,8 @@ public class Command {
       switch (field) {
       case KEY:
         return isSetKey();
+      case REQ_ID:
+        return isSetReqId();
       }
       throw new java.lang.IllegalStateException();
     }
@@ -2383,6 +2656,15 @@ public class Command {
           return false;
       }
 
+      boolean this_present_reqId = true && this.isSetReqId();
+      boolean that_present_reqId = true && that.isSetReqId();
+      if (this_present_reqId || that_present_reqId) {
+        if (!(this_present_reqId && that_present_reqId))
+          return false;
+        if (!this.reqId.equals(that.reqId))
+          return false;
+      }
+
       return true;
     }
 
@@ -2391,6 +2673,10 @@ public class Command {
       int hashCode = 1;
 
       hashCode = hashCode * 8191 + key;
+
+      hashCode = hashCode * 8191 + ((isSetReqId()) ? 131071 : 524287);
+      if (isSetReqId())
+        hashCode = hashCode * 8191 + reqId.hashCode();
 
       return hashCode;
     }
@@ -2409,6 +2695,16 @@ public class Command {
       }
       if (isSetKey()) {
         lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.key, other.key);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = java.lang.Boolean.compare(isSetReqId(), other.isSetReqId());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetReqId()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.reqId, other.reqId);
         if (lastComparison != 0) {
           return lastComparison;
         }
@@ -2439,6 +2735,14 @@ public class Command {
 
       sb.append("key:");
       sb.append(this.key);
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("reqId:");
+      if (this.reqId == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.reqId);
+      }
       first = false;
       sb.append(")");
       return sb.toString();
@@ -2495,6 +2799,14 @@ public class Command {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
+            case 2: // REQ_ID
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+                struct.reqId = iprot.readString();
+                struct.setReqIdIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
             default:
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
           }
@@ -2514,6 +2826,11 @@ public class Command {
         oprot.writeFieldBegin(KEY_FIELD_DESC);
         oprot.writeI32(struct.key);
         oprot.writeFieldEnd();
+        if (struct.reqId != null) {
+          oprot.writeFieldBegin(REQ_ID_FIELD_DESC);
+          oprot.writeString(struct.reqId);
+          oprot.writeFieldEnd();
+        }
         oprot.writeFieldStop();
         oprot.writeStructEnd();
       }
@@ -2536,19 +2853,29 @@ public class Command {
         if (struct.isSetKey()) {
           optionals.set(0);
         }
-        oprot.writeBitSet(optionals, 1);
+        if (struct.isSetReqId()) {
+          optionals.set(1);
+        }
+        oprot.writeBitSet(optionals, 2);
         if (struct.isSetKey()) {
           oprot.writeI32(struct.key);
+        }
+        if (struct.isSetReqId()) {
+          oprot.writeString(struct.reqId);
         }
       }
 
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, delete_args struct) throws org.apache.thrift.TException {
         org.apache.thrift.protocol.TTupleProtocol iprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
-        java.util.BitSet incoming = iprot.readBitSet(1);
+        java.util.BitSet incoming = iprot.readBitSet(2);
         if (incoming.get(0)) {
           struct.key = iprot.readI32();
           struct.setKeyIsSet(true);
+        }
+        if (incoming.get(1)) {
+          struct.reqId = iprot.readString();
+          struct.setReqIdIsSet(true);
         }
       }
     }

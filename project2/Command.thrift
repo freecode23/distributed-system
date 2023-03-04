@@ -5,7 +5,7 @@ struct Result {
 }
 
 service Command {
-  Result put(1: i32 key, 2: i32 value),
-  Result get(1: i32 key),
-  Result delete(1: i32 key)
+  Result put(1: i32 key, 2: i32 value, 3: string reqId),
+  Result get(1: i32 key, 2: string reqId),
+  Result delete(1: i32 key, 2: string reqId)
 }

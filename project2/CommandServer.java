@@ -32,22 +32,25 @@ public class CommandServer {
         //     this.transport = transport;
         // }
 
-        private void printLog(int key, int val, String op, String msg) {
+        private void printLog(int key, int val, String reqId, String op, String msg) {
+            
+
             String currentTimestamp = getDate();
+            String reqId4= reqId.substring(Math.max(reqId.length() - 4, 0)); // get last 5char only
 
             // put request
             if (val != -1) {
                 System.out.println(
-                        String.format("[%s] Received %s request from client for key=%d, val=%d, msg=%s", currentTimestamp,
-                        op, key, val,
+                        String.format("[%s] Received %s reqId=...%s from client for key=%d, val=%d, msg=%s", currentTimestamp,
+                        op, reqId4, key, val,
                         msg));
 
             // delete and get req
             } else {
                 System.out.println(
-                        String.format("[%s] Received %s request from client for key=%d, msg=%s",
+                        String.format("[%s] Received %s reqId=...%s from client for key=%d, msg=%s",
                                 currentTimestamp,
-                                op, key,
+                                op, reqId4, key,
                                 msg));
             }
             // // Get client IP address and port number
@@ -84,17 +87,26 @@ public class CommandServer {
             return true;
         }
 
+        private boolean validateString(String str) throws IllegalArgumentException {
+            if ("".equals(str) || str == null) {
+                throw new IllegalArgumentException("string argument cannot be empty");
+            }
+            return true;
+
+        }
         //  2. override the command we wrote in command thrift file
         @Override
-        public Result put(int key, int val) throws TException {
+        public Result put(int key, int val, String reqId) throws TException {
             String command = "put";
             try {
                 validateKey(key, command);
                 validateValue(val);
+                validateString(reqId);
             } catch (IllegalArgumentException e) {
-                printLog(key, val, command, e.getMessage());
+                printLog(key, val, reqId, command, e.getMessage());
                 Result result = new Result();
                 result.msg = "ERROR";
+                result.reqId = reqId;
                 result.value = val;
                 return result;
             }
@@ -107,25 +119,30 @@ public class CommandServer {
             keyVal.put(key, val);
             Result result = new Result();
             result.msg = "OK";
+            result.reqId = reqId;
             result.value = val;
 
             // 3. print and return result
             // System.out.print("after put>>>>>");
             // System.out.println(keyVal);
-            printLog(key, val, "put", "op successful");
+            printLog(key, val, reqId, "put", "op successful");
             return result;
         }
 
+
         @Override
-        public Result get(int key) throws TException {
+        public Result get(int key, String reqId) throws TException {
             String command = "get";
+            Result result = new Result();
+            result.reqId = reqId;
 
             //  1. validate
             try {
                 validateKey(key, command);
+                validateString(reqId);
             } catch (IllegalArgumentException e) {
-                printLog(key, -1, command, e.getMessage());
-                Result result = new Result();
+                printLog(key, -1, reqId, command, e.getMessage());
+                
                 result.msg = "ERROR";
                 result.value = 0;
                 return result;
@@ -134,7 +151,6 @@ public class CommandServer {
             // System.out.println(keyVal);
 
             // 2. execute and record result
-            Result result = new Result();
             int val = keyVal.get(key);
             result.msg = "OK";
             result.value = val;
@@ -142,20 +158,22 @@ public class CommandServer {
             //  3. print and return result
             // System.out.print("after gett>>>>>");
             // System.out.println(keyVal);
-            printLog(key, -1, command, "op successful");
+            printLog(key, -1, reqId, command, "op successful");
             return result;
         }
 
         @Override
-        public Result delete(int key) throws TException {
+        public Result delete(int key, String reqId) throws TException {
             String command = "delete";
+            Result result = new Result();
+            result.reqId = reqId;
 
             // 1. validate
             try {
                 validateKey(key, command);
+                validateString(reqId);
             } catch (IllegalArgumentException e) {
-                printLog(key, -1, "delete", e.getMessage());
-                Result result = new Result();
+                printLog(key, -1, reqId, "delete", e.getMessage());
                 result.msg = "ERROR";
                 result.value = 0;
                 return result;
@@ -164,15 +182,16 @@ public class CommandServer {
             // System.out.println(keyVal);
 
             // 2. execute and record result
-            Result result = new Result();
             // - remove
+            int val = keyVal.get(key);
             keyVal.remove(key);
             result.msg = "OK";
+            result.value = val;
             
             //  3. print and return
             // System.out.print("after del>>>>>");
             // System.out.println(keyVal);
-            printLog(key, -1, command, "op sucessful");
+            printLog(key, -1, reqId, command, "op sucessful");
             return result;
         }
 
