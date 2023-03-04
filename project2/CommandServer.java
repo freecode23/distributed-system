@@ -100,8 +100,8 @@ public class CommandServer {
             }
             
             // 1. add to hashmap stored by ServerObj
-            System.out.print("\nbefore put>>>>>");
-            System.out.println(keyVal);
+            // System.out.print("\nbefore put>>>>>");
+            // System.out.println(keyVal);
             
             // 2. execute and record result
             keyVal.put(key, val);
@@ -110,8 +110,8 @@ public class CommandServer {
             result.value = val;
 
             // 3. print and return result
-            System.out.print("after put>>>>>");
-            System.out.println(keyVal);
+            // System.out.print("after put>>>>>");
+            // System.out.println(keyVal);
             printLog(key, val, "put", "operation successful");
             return result;
         }
@@ -130,8 +130,8 @@ public class CommandServer {
                 result.value = 0;
                 return result;
             }
-            System.out.print("\nbefore get>>>>>");
-            System.out.println(keyVal);
+            // System.out.print("\nbefore get>>>>>");
+            // System.out.println(keyVal);
 
             // 2. execute and record result
             Result result = new Result();
@@ -140,8 +140,8 @@ public class CommandServer {
             result.value = val;
 
             //  3. print and return result
-            System.out.print("after gett>>>>>");
-            System.out.println(keyVal);
+            // System.out.print("after gett>>>>>");
+            // System.out.println(keyVal);
             printLog(key, -1, command, "operation successful");
             return result;
         }
@@ -160,8 +160,8 @@ public class CommandServer {
                 result.value = 0;
                 return result;
             }
-            System.out.print("\nbefore del>>>>>");
-            System.out.println(keyVal);
+            // System.out.print("\nbefore del>>>>>");
+            // System.out.println(keyVal);
 
             // 2. execute and record result
             Result result = new Result();
@@ -170,8 +170,8 @@ public class CommandServer {
             result.msg = "OK";
             
             //  3. print and return
-            System.out.print("after del>>>>>");
-            System.out.println(keyVal);
+            // System.out.print("after del>>>>>");
+            // System.out.println(keyVal);
             printLog(key, -1, command, "operation successful");
             return result;
         }

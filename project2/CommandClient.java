@@ -3,7 +3,7 @@ import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.transport.TSocket;
 import org.apache.thrift.transport.TTransport;
 import org.apache.thrift.transport.TTransportException;
-
+import java.io.IOException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.text.SimpleDateFormat;
@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Scanner;
 import java.util.UUID;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 public class CommandClient {
 
     private static boolean validateCommand(String command) {
@@ -156,26 +158,60 @@ public class CommandClient {
     }
 
     public static void main(String[] args) {
+
+        // 1. prepopulate
         try {
+            // 1.1 init client
             TTransport transport = new TSocket("localhost", 9090);
             transport.open();
             TBinaryProtocol protocol = new TBinaryProtocol(transport);
             Command.Client client = new Command.Client(protocol);
 
-            // 1. prepopulate the keyValue
-            // - read from textfile
-            String prepop_filename = "./lib/prepop.txt";
-            ArrayList<String> commands = parseTextFile(prepop_filename);
+            // 1.2 read commands from textfile
+            String preFilename = "./lib/prepop.txt";
+            ArrayList<String> preCommands = parseTextFile(preFilename);
 
-            for(String command: commands) {
-                Result res = executeCommand(command, client);
+            // 1.3 prepopulate key store
+            for(String preCommand: preCommands) {
+                Result res = executeCommand(preCommand, client);
             }
-
-            // 2. 
-
             transport.close();
         } catch (TTransportException ex) {
             ex.printStackTrace();
         } 
+
+        // 2. run actual command
+        // init executor object that creates 10 threads
+        ExecutorService executor = Executors.newFixedThreadPool(10);
+        String actFilename = "./lib/file.txt";
+        ArrayList<String> actCommands = parseTextFile(actFilename);
+
+        // // Use executor
+        for (String actCommand : actCommands) {
+            executor.execute(new Runnable(){
+                public void run(){
+                    try {
+
+                        // 2.1 init client
+                        TTransport transportM = new TSocket("localhost", 9090);
+                        transportM.open();
+                        TBinaryProtocol protocolM = new TBinaryProtocol(transportM);
+                        Command.Client clientM = new Command.Client(protocolM);
+
+                        System.out.println("Command: " + actCommand);
+
+                        // 2.2 execute command
+                        Result result = executeCommand(actCommand, clientM);
+                        transportM.close();
+                 
+                    } catch (TTransportException ex) {
+                        ex.printStackTrace();
+                    } 
+                }
+            });
+        }
+
+        executor.shutdown();
     }
+    
 }
