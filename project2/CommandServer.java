@@ -68,10 +68,10 @@ public class CommandServer {
             return currentTimestamp;
         }
 
-        private boolean validateKey(int key) throws IllegalArgumentException {     
+        private boolean validateKey(int key, String command) throws IllegalArgumentException {     
             if (key < 0) {
                 throw new IllegalArgumentException("Illegal: key cannot be negative");
-            } else if (!keyVal.containsKey(key) ) {
+            } else if (!"put".equals(command) && !keyVal.containsKey(key)) {
                 throw new IllegalArgumentException("Illegal: key does not exist");
             }
             return true;
@@ -87,12 +87,12 @@ public class CommandServer {
         //  2. override the command we wrote in command thrift file
         @Override
         public Result put(int key, int val) throws TException {
-
+            String command = "put";
             try {
-                validateKey(key);
+                validateKey(key, command);
                 validateValue(val);
             } catch (IllegalArgumentException e) {
-                printLog(key, val, "put", e.getMessage());
+                printLog(key, val, command, e.getMessage());
                 Result result = new Result();
                 result.msg = "ERROR";
                 result.value = val;
@@ -102,27 +102,29 @@ public class CommandServer {
             // 1. add to hashmap stored by ServerObj
             System.out.print("\nbefore put>>>>>");
             System.out.println(keyVal);
+            
+            // 2. execute and record result
             keyVal.put(key, val);
-            
-            System.out.print("after put>>>>>");
-            System.out.println(keyVal);
-            
-            // 2. init return resultStruct and return to client
             Result result = new Result();
             result.msg = "OK";
             result.value = val;
 
+            // 3. print and return result
+            System.out.print("after put>>>>>");
+            System.out.println(keyVal);
             printLog(key, val, "put", "operation successful");
             return result;
         }
 
         @Override
         public Result get(int key) throws TException {
+            String command = "get";
 
+            //  1. validate
             try {
-                validateKey(key);
+                validateKey(key, command);
             } catch (IllegalArgumentException e) {
-                printLog(key, -1, "get", e.getMessage());
+                printLog(key, -1, command, e.getMessage());
                 Result result = new Result();
                 result.msg = "ERROR";
                 result.value = 0;
@@ -131,33 +133,26 @@ public class CommandServer {
             System.out.print("\nbefore get>>>>>");
             System.out.println(keyVal);
 
-            // 1. init return obj
+            // 2. execute and record result
             Result result = new Result();
-            if (!keyVal.containsKey(key)) {
+            int val = keyVal.get(key);
+            result.msg = "OK";
+            result.value = val;
 
-                // - add message
-                result.msg = "KEY NOT FOUND";
-
-            } else {
-
-                // - get value
-                int val = keyVal.get(key);
-
-                // - add msg and value to return object
-                result.msg = "OK";
-                result.value = val;
-
-                System.out.print("after gett>>>>>");
-                System.out.println(keyVal);
-            }
-            printLog(key, -1, "get", "operation successful");
+            //  3. print and return result
+            System.out.print("after gett>>>>>");
+            System.out.println(keyVal);
+            printLog(key, -1, command, "operation successful");
             return result;
         }
 
         @Override
         public Result delete(int key) throws TException {
+            String command = "delete";
+
+            // 1. validate
             try {
-                validateKey(key);
+                validateKey(key, command);
             } catch (IllegalArgumentException e) {
                 printLog(key, -1, "delete", "operation successful");
                 Result result = new Result();
@@ -168,24 +163,16 @@ public class CommandServer {
             System.out.print("\nbefore del>>>>>");
             System.out.println(keyVal);
 
+            // 2. execute and record result
             Result result = new Result();
-
-            if (!keyVal.containsKey(key)) {
-                // add error mesg
-                result.msg = "KEY NOT FOUND";
-
-            } else {
-
-                // - remove
-                keyVal.remove(key);
-                System.out.print("after del>>>>>");
-                System.out.println(keyVal);
-
-                // add error msg
-                result.msg = "OK";
-
-            }
-            printLog(key, -1, "delete", "operation successful");
+            // - remove
+            keyVal.remove(key);
+            result.msg = "OK";
+            
+            //  3. print and return
+            System.out.print("after del>>>>>");
+            System.out.println(keyVal);
+            printLog(key, -1, command, "operation successful");
             return result;
         }
 
