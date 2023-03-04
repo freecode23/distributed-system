@@ -1,6 +1,8 @@
 import org.apache.thrift.TException;
 import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.server.TServer;
+import org.apache.thrift.server.TThreadPoolServer;
+import org.apache.thrift.server.TThreadPoolServer.Args;
 import org.apache.thrift.server.TSimpleServer;
 import org.apache.thrift.transport.TServerTransport;
 import org.apache.thrift.transport.TServerSocket;
@@ -10,10 +12,13 @@ import org.apache.thrift.transport.TTransportException;
 
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
+import java.text.SimpleDateFormat;
 import java.net.Socket;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 public class CommandServer {
+
 
     public static class CommandHandler implements Command.Iface {
 
@@ -40,10 +45,39 @@ public class CommandServer {
         }
         // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-        //  2. ovveride the command we wrote in command thrift file
+
+        public String getDate() {
+            SimpleDateFormat formatter = new SimpleDateFormat("HH:mm:ss.SSS");
+            long timestamp = System.currentTimeMillis();
+            String currentTimestamp = formatter.format(new Date(timestamp));
+            return currentTimestamp;
+        }
+
+        private boolean validateKey(int key) throws IllegalArgumentException {
+            String currentTimestamp = getDate();
+            if (key < 0) {
+                throw new IllegalArgumentException(
+                        String.format("[%s] Illegal:key cannot be negative", currentTimestamp));
+            } else if (!keyVal.containsKey(key) ) {
+                throw new IllegalArgumentException(
+                        String.format("[%s] Illegal: key does not exist", currentTimestamp));
+            }
+            return true;
+        }
+
+        //  2. override the command we wrote in command thrift file
         @Override
         public Result put(int key, int val) throws TException {
-
+            try {
+                validateKey(key);
+            } catch (IllegalArgumentException e) {
+                System.out.println(String.format("%s", e.getMessage()));
+                Result result = new Result();
+                result.msg = "ERROR";
+                result.value = val;
+                return result;
+            }
+            
             printLog(key, val, "put");
             // 1. add to hashmap stored by ServerObj
             System.out.print("\nbefore put>>>>>");
@@ -62,6 +96,16 @@ public class CommandServer {
 
         @Override
         public Result get(int key) throws TException {
+
+            try {
+                validateKey(key);
+            } catch (IllegalArgumentException e) {
+                System.out.println(String.format("%s", e.getMessage()));
+                Result result = new Result();
+                result.msg = "ERROR";
+                result.value = 0;
+                return result;
+            }
             System.out.print("\nbefore get>>>>>");
             System.out.println(keyVal);
 
@@ -89,7 +133,15 @@ public class CommandServer {
 
         @Override
         public Result delete(int key) throws TException {
- 
+            try {
+                validateKey(key);
+            } catch (IllegalArgumentException e) {
+                System.out.println(String.format("%s", e.getMessage()));
+                Result result = new Result();
+                result.msg = "ERROR";
+                result.value = 0;
+                return result;
+            }
             System.out.print("\nbefore del>>>>>");
             System.out.println(keyVal);
 
@@ -125,8 +177,12 @@ public class CommandServer {
             // 2A create procesor
             Command.Processor processor = new Command.Processor<>(new CommandHandler());
             
-            // 3. serve
-            TServer server = new TSimpleServer(new TServer.Args(serverTransport).processor(processor));
+            // 3. set server args
+            TThreadPoolServer.Args serverArgs = new TThreadPoolServer.Args(serverTransport);
+            serverArgs.processor(processor);
+
+            // 4. create server
+            TThreadPoolServer server = new TThreadPoolServer(serverArgs);
 
             System.out.println("Starting the server...");
             server.serve();

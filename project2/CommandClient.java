@@ -12,7 +12,7 @@ public class CommandClient {
             TBinaryProtocol protocol = new TBinaryProtocol(transport);
             Command.Client client = new Command.Client(protocol);
 
-            int key = 1;
+            int key = -1;
             int val = 1;
 
             Result res= client.put(key, val);
