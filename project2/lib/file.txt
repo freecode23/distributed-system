@@ -1,5 +1,16 @@
+put 6 6
+put 7 7
+put 8 8
+put 9 9
+put 10 10
+get 1
+get 2
+get 3
+get 4
+get 5
+
 delete 1
 delete 2
 delete 3
 delete 4
-Get 4
+delete 5

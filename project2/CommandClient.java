@@ -114,25 +114,25 @@ public class CommandClient {
         // 1. invalid command
         if ("invalid".equals(command)) {
             System.out.println(
-                String.format("[%s] reqId=..%s %s", currentTimestamp,
+                String.format("[%s] ERROR: reqId=..%s %s", currentTimestamp,
                 reqId4, res.msg));
         
         // 2. timout
         } else if ("timeout".equals(command)) {
-            System.out.println(String.format("[%s] reqId=%s Server Timeout", currentTimestamp, 
+            System.out.println(String.format("[%s] ERROR: reqId=%s Server Timeout", currentTimestamp, 
             reqId4));
 
         // 3. unrequested response
         } else if (!(res.reqId).equals(reqId)) {
 
             System.out.println(
-                String.format("[%s] reqId=..%s Received unsolicited response of reqId=%s", currentTimestamp,
+                String.format("[%s] ERROR: reqId=..%s Received unsolicited response of reqId=%s", currentTimestamp,
                 reqId4, res.reqId));
                 
         // 3. sucessful
         } else {
             System.out.println(
-                String.format("[%s] reqId=..%s %s val=%d",
+                String.format("[%s] SUCCESS: reqId=..%s %s val=%d",
                 currentTimestamp, reqId4, command, res.value));
 
         }
