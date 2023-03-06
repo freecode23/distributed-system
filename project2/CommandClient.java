@@ -196,17 +196,24 @@ public class CommandClient {
 
 
     public static void main(String[] args) {
-        if (args.length != 1) {
+        if (args.length != 2) {
             System.out.println(
-                    "please enter the argument of the port number");
+                    "please enter the argument of the host ip address followed by port number. e.g 127.0.0.1 5050");
             return;
         }
-        int serverport = Integer.parseInt(args[0]);
+        if (!isWordNumeric(args[1])) {
+            System.out.println(
+                    "Invalid argument, port number should be numeric");
+            return;
+        }
+        String serverhost = args[0];
+        int serverport = Integer.parseInt(args[1]);
         int timeout = 5000; //5000 ms timeout
         // 1. prepopulate
         try {
+            
             // 1.1 init client
-            TTransport transport = new TSocket("localhost", serverport, timeout);
+            TTransport transport = new TSocket(serverhost, serverport, timeout);
             transport.open();
             TBinaryProtocol protocol = new TBinaryProtocol(transport);
             Command.Client client = new Command.Client(protocol);
