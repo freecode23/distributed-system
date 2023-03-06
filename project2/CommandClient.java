@@ -247,7 +247,7 @@ public class CommandClient {
                     try {
 
                         // 2.1 init client and timout
-                        TTransport transportM = new TSocket("localhost", serverport, timeout);
+                        TTransport transportM = new TSocket(serverhost, serverport, timeout);
                         transportM.open();
                         TBinaryProtocol protocolM = new TBinaryProtocol(transportM);
                         Command.Client clientM = new Command.Client(protocolM);
