@@ -6,7 +6,9 @@ import org.apache.thrift.transport.TTransportException;
 import java.io.IOException;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.net.InetAddress;
 import java.net.SocketTimeoutException;
+import java.net.Socket;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -14,6 +16,7 @@ import java.util.Scanner;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
 public class CommandClient {
 
     private static void validateCommand(String command) throws IllegalArgumentException {
@@ -138,12 +141,14 @@ public class CommandClient {
         }
     }
     
-    private static void executeCommand(String command, Command.Client client) {
+    private static void executeCommand(String command, Command.Client client, Socket clientSocket) {
 
         Result res = new Result();
         String reqId = generateUniqueID();
-        try {
+        String clientIp = clientSocket.getLocalAddress().getHostAddress();
+        int clientPort = clientSocket.getLocalPort();
 
+        try {
             try {
                 validateCommand(command);
             } catch (IllegalArgumentException ex) {
@@ -160,17 +165,17 @@ public class CommandClient {
             switch (commandArr[0].toLowerCase()) {
                 case "put":
                     int val = Integer.parseInt(commandArr[2]);
-                    res = client.put(key, val, reqId);
+                    res = client.put(key, val, reqId, clientIp, clientPort);
                     printLog(res, reqId, "put");
                     break;
 
                 case "get":
-                    res = client.get(key, reqId);
+                    res = client.get(key, reqId, clientIp, clientPort);
                     printLog(res, reqId, "get");
                     break;
 
                 case "delete":
-                    res = client.delete(key, reqId);
+                    res = client.delete(key, reqId, clientIp, clientPort);
                     printLog(res, reqId,"delete");;
 
                     break;
@@ -212,11 +217,13 @@ public class CommandClient {
         // 1. prepopulate
         try {
             
-            // 1.1 init client
+            // 1.1 init client and socket
             TTransport transport = new TSocket(serverhost, serverport, timeout);
             transport.open();
             TBinaryProtocol protocol = new TBinaryProtocol(transport);
             Command.Client client = new Command.Client(protocol);
+            Socket clientSocket = ((TSocket) transport).getSocket();
+
 
             // 1.2 read commands from textfile
             String preFilename = "./lib/prepop.txt";
@@ -224,7 +231,7 @@ public class CommandClient {
 
             // 1.3 prepopulate key store
             for(String preCommand: preCommands) {
-                executeCommand(preCommand, client);
+                executeCommand(preCommand, client, clientSocket);
             }
             transport.close();
         } catch (TTransportException ex) {
@@ -251,9 +258,10 @@ public class CommandClient {
                         transportM.open();
                         TBinaryProtocol protocolM = new TBinaryProtocol(transportM);
                         Command.Client clientM = new Command.Client(protocolM);
-
+                        Socket clientSocket = ((TSocket) transportM).getSocket();
+                        
                         // 2.2 execute command
-                        executeCommand(actCommand, clientM);
+                        executeCommand(actCommand, clientM, clientSocket);
                         transportM.close();
                  
                     } catch (TTransportException ex) {
