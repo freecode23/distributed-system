@@ -230,8 +230,22 @@ public class CommandServer {
 
 
                 } else if (op.operationType == OperationType.DELETE) {
-                    // Perform the DELETE operation
-                    // Call your internal delete method here, e.g., delete(op.key)
+                    // 2. init result and command
+                    String command = "delete";
+
+                    // 3. Call your internal put method here, e.g., put(op.key, op.value)
+                    Result result = deleteHelper(op.getKey(), reqId);
+
+                    // 4. print result of put operation by this replica
+                    System.out.print("------");
+                    printLog(op.getKey(),
+                            -1,
+                            reqId,
+                            command,
+                            result.status,
+                            result.msg,
+                            op.getClientIp(),
+                            op.getClientPort());
                 }
 
                 // 5. Remove the prepared operation from the map
@@ -273,6 +287,7 @@ public class CommandServer {
         }
 
         private Result deleteHelper(int key, String reqId) {
+            
             Result result = new Result();
             result.reqId = reqId;
             String command = "delete";
@@ -356,13 +371,6 @@ public class CommandServer {
             Result result = new Result();
             result.reqId = reqId;
 
-            // try {
-            //     // sleep for 5 seconds
-            //     Thread.sleep(5000);
-            // } catch (InterruptedException e) {
-            //     e.printStackTrace();
-            // }
-
             //  1. validate
             try {
                 validateKey(key, command);
@@ -387,9 +395,6 @@ public class CommandServer {
             return result;
         }
 
-
-
-
         /**
          * 2.Print log on server side
          * 
@@ -407,24 +412,27 @@ public class CommandServer {
                 // put request
                 System.out.println(
                         String.format(
-                                "[%s] Replica#%d received %s reqId=...%s from client ip=%s port=%d for key=%d, val=%d, msg=%s",
+                                "[%s] Replica#%d received %s key=%d, val=%d, reqId=...%s from client ip=%s port=%d msg=%s",
                                 currentTimestamp,
                                 this.port,
-                                op, reqId4,
+                                op, key, val,
+                                reqId4,
                                 clientIp, clientPort,
-                                key, val,
                                 msg));
-
+                
                 // delete and get req
             } else {
                 System.out.println(
-                        String.format("[%s] Received %s reqId=...%s from client ip=%s port=%d for key=%d, msg=%s",
+                        String.format("[%s] Replica#%d received %s reqId=...%s from client ip=%s port=%d for key=%d, msg=%s",
                                 currentTimestamp,
+                                this.port,
                                 op, reqId4,
                                 clientIp, clientPort,
                                 key,
                                 msg));
             }
+            System.out.println(keyVal);
+            
         }
 
         private String getDate() {
@@ -458,7 +466,6 @@ public class CommandServer {
 
         }
     }
-
 
     public void start() {
         try {
