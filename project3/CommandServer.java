@@ -90,7 +90,7 @@ public class CommandServer {
          * Ensure that all replicas are ready and able to commit the operation.
          * it will call the RPC prepare on each replicas
          */
-        private boolean prepareReplicas(int key, int value, String reqId, String clientIp, int clientPort) {
+        private boolean prepareReplicas(int key, int value, String command, String reqId, String clientIp, int clientPort) {
 
             // 0. for each replica
             for (TTransport transport : replicaTransports) {
@@ -101,7 +101,7 @@ public class CommandServer {
                     Command.Client replica = new Command.Client(protocol);
 
                     // 2. make sure no other replica is modifying this
-                    PrepareResult prepResult = replica.prepare(key, value, reqId, clientIp, clientPort);
+                    PrepareResult prepResult = replica.prepare(key, value, command, reqId, clientIp, clientPort);
 
                     if (!"PREPARED".equals(prepResult.msg)) {
                         return false;
@@ -160,7 +160,7 @@ public class CommandServer {
          * @throws TException
          */
         @Override
-        public PrepareResult prepare(int key, int value, String reqId, String clientIp, int clientPort) throws TException {
+        public PrepareResult prepare(int key, int value, String command, String reqId, String clientIp, int clientPort) throws TException {
             PrepareResult prepResult = new PrepareResult();
             prepResult.reqId = reqId;
 
@@ -273,7 +273,7 @@ public class CommandServer {
             String command = "put";
 
             // 2. Perform operation
-            if (prepareReplicas(key, val, reqId, clientIp, clientPort)) {
+            if (prepareReplicas(key, val, command, reqId, clientIp, clientPort)) {
 
                 // -0 all replicas need to commit this request
                 commitReplicas(key, reqId);

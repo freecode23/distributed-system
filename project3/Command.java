@@ -15,7 +15,7 @@ public class Command {
 
     public Result delete(int key, java.lang.String reqId, java.lang.String ip, int port) throws org.apache.thrift.TException;
 
-    public PrepareResult prepare(int key, int value, java.lang.String reqId, java.lang.String clientIp, int clientPort) throws org.apache.thrift.TException;
+    public PrepareResult prepare(int key, int value, java.lang.String command, java.lang.String reqId, java.lang.String clientIp, int clientPort) throws org.apache.thrift.TException;
 
     public CommitResult commit(java.lang.String reqId) throws org.apache.thrift.TException;
 
@@ -29,7 +29,7 @@ public class Command {
 
     public void delete(int key, java.lang.String reqId, java.lang.String ip, int port, org.apache.thrift.async.AsyncMethodCallback<Result> resultHandler) throws org.apache.thrift.TException;
 
-    public void prepare(int key, int value, java.lang.String reqId, java.lang.String clientIp, int clientPort, org.apache.thrift.async.AsyncMethodCallback<PrepareResult> resultHandler) throws org.apache.thrift.TException;
+    public void prepare(int key, int value, java.lang.String command, java.lang.String reqId, java.lang.String clientIp, int clientPort, org.apache.thrift.async.AsyncMethodCallback<PrepareResult> resultHandler) throws org.apache.thrift.TException;
 
     public void commit(java.lang.String reqId, org.apache.thrift.async.AsyncMethodCallback<CommitResult> resultHandler) throws org.apache.thrift.TException;
 
@@ -140,17 +140,18 @@ public class Command {
     }
 
     @Override
-    public PrepareResult prepare(int key, int value, java.lang.String reqId, java.lang.String clientIp, int clientPort) throws org.apache.thrift.TException
+    public PrepareResult prepare(int key, int value, java.lang.String command, java.lang.String reqId, java.lang.String clientIp, int clientPort) throws org.apache.thrift.TException
     {
-      send_prepare(key, value, reqId, clientIp, clientPort);
+      send_prepare(key, value, command, reqId, clientIp, clientPort);
       return recv_prepare();
     }
 
-    public void send_prepare(int key, int value, java.lang.String reqId, java.lang.String clientIp, int clientPort) throws org.apache.thrift.TException
+    public void send_prepare(int key, int value, java.lang.String command, java.lang.String reqId, java.lang.String clientIp, int clientPort) throws org.apache.thrift.TException
     {
       prepare_args args = new prepare_args();
       args.setKey(key);
       args.setValue(value);
+      args.setCommand(command);
       args.setReqId(reqId);
       args.setClientIp(clientIp);
       args.setClientPort(clientPort);
@@ -346,9 +347,9 @@ public class Command {
     }
 
     @Override
-    public void prepare(int key, int value, java.lang.String reqId, java.lang.String clientIp, int clientPort, org.apache.thrift.async.AsyncMethodCallback<PrepareResult> resultHandler) throws org.apache.thrift.TException {
+    public void prepare(int key, int value, java.lang.String command, java.lang.String reqId, java.lang.String clientIp, int clientPort, org.apache.thrift.async.AsyncMethodCallback<PrepareResult> resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      prepare_call method_call = new prepare_call(key, value, reqId, clientIp, clientPort, resultHandler, this, ___protocolFactory, ___transport);
+      prepare_call method_call = new prepare_call(key, value, command, reqId, clientIp, clientPort, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
@@ -356,13 +357,15 @@ public class Command {
     public static class prepare_call extends org.apache.thrift.async.TAsyncMethodCall<PrepareResult> {
       private int key;
       private int value;
+      private java.lang.String command;
       private java.lang.String reqId;
       private java.lang.String clientIp;
       private int clientPort;
-      public prepare_call(int key, int value, java.lang.String reqId, java.lang.String clientIp, int clientPort, org.apache.thrift.async.AsyncMethodCallback<PrepareResult> resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      public prepare_call(int key, int value, java.lang.String command, java.lang.String reqId, java.lang.String clientIp, int clientPort, org.apache.thrift.async.AsyncMethodCallback<PrepareResult> resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
         this.key = key;
         this.value = value;
+        this.command = command;
         this.reqId = reqId;
         this.clientIp = clientIp;
         this.clientPort = clientPort;
@@ -374,6 +377,7 @@ public class Command {
         prepare_args args = new prepare_args();
         args.setKey(key);
         args.setValue(value);
+        args.setCommand(command);
         args.setReqId(reqId);
         args.setClientIp(clientIp);
         args.setClientPort(clientPort);
@@ -555,7 +559,7 @@ public class Command {
       @Override
       public prepare_result getResult(I iface, prepare_args args) throws org.apache.thrift.TException {
         prepare_result result = new prepare_result();
-        result.success = iface.prepare(args.key, args.value, args.reqId, args.clientIp, args.clientPort);
+        result.success = iface.prepare(args.key, args.value, args.command, args.reqId, args.clientIp, args.clientPort);
         return result;
       }
     }
@@ -873,7 +877,7 @@ public class Command {
 
       @Override
       public void start(I iface, prepare_args args, org.apache.thrift.async.AsyncMethodCallback<PrepareResult> resultHandler) throws org.apache.thrift.TException {
-        iface.prepare(args.key, args.value, args.reqId, args.clientIp, args.clientPort,resultHandler);
+        iface.prepare(args.key, args.value, args.command, args.reqId, args.clientIp, args.clientPort,resultHandler);
       }
     }
 
@@ -4237,15 +4241,17 @@ public class Command {
 
     private static final org.apache.thrift.protocol.TField KEY_FIELD_DESC = new org.apache.thrift.protocol.TField("key", org.apache.thrift.protocol.TType.I32, (short)1);
     private static final org.apache.thrift.protocol.TField VALUE_FIELD_DESC = new org.apache.thrift.protocol.TField("value", org.apache.thrift.protocol.TType.I32, (short)2);
-    private static final org.apache.thrift.protocol.TField REQ_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("reqId", org.apache.thrift.protocol.TType.STRING, (short)3);
-    private static final org.apache.thrift.protocol.TField CLIENT_IP_FIELD_DESC = new org.apache.thrift.protocol.TField("clientIp", org.apache.thrift.protocol.TType.STRING, (short)4);
-    private static final org.apache.thrift.protocol.TField CLIENT_PORT_FIELD_DESC = new org.apache.thrift.protocol.TField("clientPort", org.apache.thrift.protocol.TType.I32, (short)5);
+    private static final org.apache.thrift.protocol.TField COMMAND_FIELD_DESC = new org.apache.thrift.protocol.TField("command", org.apache.thrift.protocol.TType.STRING, (short)3);
+    private static final org.apache.thrift.protocol.TField REQ_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("reqId", org.apache.thrift.protocol.TType.STRING, (short)4);
+    private static final org.apache.thrift.protocol.TField CLIENT_IP_FIELD_DESC = new org.apache.thrift.protocol.TField("clientIp", org.apache.thrift.protocol.TType.STRING, (short)5);
+    private static final org.apache.thrift.protocol.TField CLIENT_PORT_FIELD_DESC = new org.apache.thrift.protocol.TField("clientPort", org.apache.thrift.protocol.TType.I32, (short)6);
 
     private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new prepare_argsStandardSchemeFactory();
     private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new prepare_argsTupleSchemeFactory();
 
     public int key; // required
     public int value; // required
+    public @org.apache.thrift.annotation.Nullable java.lang.String command; // required
     public @org.apache.thrift.annotation.Nullable java.lang.String reqId; // required
     public @org.apache.thrift.annotation.Nullable java.lang.String clientIp; // required
     public int clientPort; // required
@@ -4254,9 +4260,10 @@ public class Command {
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
       KEY((short)1, "key"),
       VALUE((short)2, "value"),
-      REQ_ID((short)3, "reqId"),
-      CLIENT_IP((short)4, "clientIp"),
-      CLIENT_PORT((short)5, "clientPort");
+      COMMAND((short)3, "command"),
+      REQ_ID((short)4, "reqId"),
+      CLIENT_IP((short)5, "clientIp"),
+      CLIENT_PORT((short)6, "clientPort");
 
       private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
 
@@ -4276,11 +4283,13 @@ public class Command {
             return KEY;
           case 2: // VALUE
             return VALUE;
-          case 3: // REQ_ID
+          case 3: // COMMAND
+            return COMMAND;
+          case 4: // REQ_ID
             return REQ_ID;
-          case 4: // CLIENT_IP
+          case 5: // CLIENT_IP
             return CLIENT_IP;
-          case 5: // CLIENT_PORT
+          case 6: // CLIENT_PORT
             return CLIENT_PORT;
           default:
             return null;
@@ -4336,6 +4345,8 @@ public class Command {
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
       tmpMap.put(_Fields.VALUE, new org.apache.thrift.meta_data.FieldMetaData("value", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
+      tmpMap.put(_Fields.COMMAND, new org.apache.thrift.meta_data.FieldMetaData("command", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
       tmpMap.put(_Fields.REQ_ID, new org.apache.thrift.meta_data.FieldMetaData("reqId", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
       tmpMap.put(_Fields.CLIENT_IP, new org.apache.thrift.meta_data.FieldMetaData("clientIp", org.apache.thrift.TFieldRequirementType.DEFAULT, 
@@ -4352,6 +4363,7 @@ public class Command {
     public prepare_args(
       int key,
       int value,
+      java.lang.String command,
       java.lang.String reqId,
       java.lang.String clientIp,
       int clientPort)
@@ -4361,6 +4373,7 @@ public class Command {
       setKeyIsSet(true);
       this.value = value;
       setValueIsSet(true);
+      this.command = command;
       this.reqId = reqId;
       this.clientIp = clientIp;
       this.clientPort = clientPort;
@@ -4374,6 +4387,9 @@ public class Command {
       __isset_bitfield = other.__isset_bitfield;
       this.key = other.key;
       this.value = other.value;
+      if (other.isSetCommand()) {
+        this.command = other.command;
+      }
       if (other.isSetReqId()) {
         this.reqId = other.reqId;
       }
@@ -4394,6 +4410,7 @@ public class Command {
       this.key = 0;
       setValueIsSet(false);
       this.value = 0;
+      this.command = null;
       this.reqId = null;
       this.clientIp = null;
       setClientPortIsSet(false);
@@ -4444,6 +4461,31 @@ public class Command {
 
     public void setValueIsSet(boolean value) {
       __isset_bitfield = org.apache.thrift.EncodingUtils.setBit(__isset_bitfield, __VALUE_ISSET_ID, value);
+    }
+
+    @org.apache.thrift.annotation.Nullable
+    public java.lang.String getCommand() {
+      return this.command;
+    }
+
+    public prepare_args setCommand(@org.apache.thrift.annotation.Nullable java.lang.String command) {
+      this.command = command;
+      return this;
+    }
+
+    public void unsetCommand() {
+      this.command = null;
+    }
+
+    /** Returns true if field command is set (has been assigned a value) and false otherwise */
+    public boolean isSetCommand() {
+      return this.command != null;
+    }
+
+    public void setCommandIsSet(boolean value) {
+      if (!value) {
+        this.command = null;
+      }
     }
 
     @org.apache.thrift.annotation.Nullable
@@ -4538,6 +4580,14 @@ public class Command {
         }
         break;
 
+      case COMMAND:
+        if (value == null) {
+          unsetCommand();
+        } else {
+          setCommand((java.lang.String)value);
+        }
+        break;
+
       case REQ_ID:
         if (value == null) {
           unsetReqId();
@@ -4575,6 +4625,9 @@ public class Command {
       case VALUE:
         return getValue();
 
+      case COMMAND:
+        return getCommand();
+
       case REQ_ID:
         return getReqId();
 
@@ -4600,6 +4653,8 @@ public class Command {
         return isSetKey();
       case VALUE:
         return isSetValue();
+      case COMMAND:
+        return isSetCommand();
       case REQ_ID:
         return isSetReqId();
       case CLIENT_IP:
@@ -4641,6 +4696,15 @@ public class Command {
           return false;
       }
 
+      boolean this_present_command = true && this.isSetCommand();
+      boolean that_present_command = true && that.isSetCommand();
+      if (this_present_command || that_present_command) {
+        if (!(this_present_command && that_present_command))
+          return false;
+        if (!this.command.equals(that.command))
+          return false;
+      }
+
       boolean this_present_reqId = true && this.isSetReqId();
       boolean that_present_reqId = true && that.isSetReqId();
       if (this_present_reqId || that_present_reqId) {
@@ -4679,6 +4743,10 @@ public class Command {
 
       hashCode = hashCode * 8191 + value;
 
+      hashCode = hashCode * 8191 + ((isSetCommand()) ? 131071 : 524287);
+      if (isSetCommand())
+        hashCode = hashCode * 8191 + command.hashCode();
+
       hashCode = hashCode * 8191 + ((isSetReqId()) ? 131071 : 524287);
       if (isSetReqId())
         hashCode = hashCode * 8191 + reqId.hashCode();
@@ -4716,6 +4784,16 @@ public class Command {
       }
       if (isSetValue()) {
         lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.value, other.value);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = java.lang.Boolean.compare(isSetCommand(), other.isSetCommand());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetCommand()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.command, other.command);
         if (lastComparison != 0) {
           return lastComparison;
         }
@@ -4780,6 +4858,14 @@ public class Command {
       if (!first) sb.append(", ");
       sb.append("value:");
       sb.append(this.value);
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("command:");
+      if (this.command == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.command);
+      }
       first = false;
       if (!first) sb.append(", ");
       sb.append("reqId:");
@@ -4864,7 +4950,15 @@ public class Command {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
-            case 3: // REQ_ID
+            case 3: // COMMAND
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+                struct.command = iprot.readString();
+                struct.setCommandIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 4: // REQ_ID
               if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
                 struct.reqId = iprot.readString();
                 struct.setReqIdIsSet(true);
@@ -4872,7 +4966,7 @@ public class Command {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
-            case 4: // CLIENT_IP
+            case 5: // CLIENT_IP
               if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
                 struct.clientIp = iprot.readString();
                 struct.setClientIpIsSet(true);
@@ -4880,7 +4974,7 @@ public class Command {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
-            case 5: // CLIENT_PORT
+            case 6: // CLIENT_PORT
               if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
                 struct.clientPort = iprot.readI32();
                 struct.setClientPortIsSet(true);
@@ -4910,6 +5004,11 @@ public class Command {
         oprot.writeFieldBegin(VALUE_FIELD_DESC);
         oprot.writeI32(struct.value);
         oprot.writeFieldEnd();
+        if (struct.command != null) {
+          oprot.writeFieldBegin(COMMAND_FIELD_DESC);
+          oprot.writeString(struct.command);
+          oprot.writeFieldEnd();
+        }
         if (struct.reqId != null) {
           oprot.writeFieldBegin(REQ_ID_FIELD_DESC);
           oprot.writeString(struct.reqId);
@@ -4948,21 +5047,27 @@ public class Command {
         if (struct.isSetValue()) {
           optionals.set(1);
         }
-        if (struct.isSetReqId()) {
+        if (struct.isSetCommand()) {
           optionals.set(2);
         }
-        if (struct.isSetClientIp()) {
+        if (struct.isSetReqId()) {
           optionals.set(3);
         }
-        if (struct.isSetClientPort()) {
+        if (struct.isSetClientIp()) {
           optionals.set(4);
         }
-        oprot.writeBitSet(optionals, 5);
+        if (struct.isSetClientPort()) {
+          optionals.set(5);
+        }
+        oprot.writeBitSet(optionals, 6);
         if (struct.isSetKey()) {
           oprot.writeI32(struct.key);
         }
         if (struct.isSetValue()) {
           oprot.writeI32(struct.value);
+        }
+        if (struct.isSetCommand()) {
+          oprot.writeString(struct.command);
         }
         if (struct.isSetReqId()) {
           oprot.writeString(struct.reqId);
@@ -4978,7 +5083,7 @@ public class Command {
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, prepare_args struct) throws org.apache.thrift.TException {
         org.apache.thrift.protocol.TTupleProtocol iprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
-        java.util.BitSet incoming = iprot.readBitSet(5);
+        java.util.BitSet incoming = iprot.readBitSet(6);
         if (incoming.get(0)) {
           struct.key = iprot.readI32();
           struct.setKeyIsSet(true);
@@ -4988,14 +5093,18 @@ public class Command {
           struct.setValueIsSet(true);
         }
         if (incoming.get(2)) {
+          struct.command = iprot.readString();
+          struct.setCommandIsSet(true);
+        }
+        if (incoming.get(3)) {
           struct.reqId = iprot.readString();
           struct.setReqIdIsSet(true);
         }
-        if (incoming.get(3)) {
+        if (incoming.get(4)) {
           struct.clientIp = iprot.readString();
           struct.setClientIpIsSet(true);
         }
-        if (incoming.get(4)) {
+        if (incoming.get(5)) {
           struct.clientPort = iprot.readI32();
           struct.setClientPortIsSet(true);
         }
