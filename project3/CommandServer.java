@@ -90,7 +90,7 @@ public class CommandServer {
          * Ensure that all replicas are ready and able to commit the operation.
          * it will call the RPC prepare on each replicas
          */
-        private boolean prepareReplicas(int key, int value, String reqId) {
+        private boolean prepareReplicas(int key, int value, String reqId, String clientIp, int clientPort) {
 
             // 0. for each replica
             for (TTransport transport : replicaTransports) {
@@ -101,7 +101,7 @@ public class CommandServer {
                     Command.Client replica = new Command.Client(protocol);
 
                     // 2. make sure no other replica is modifying this
-                    PrepareResult prepResult = replica.prepare(key, value, reqId);
+                    PrepareResult prepResult = replica.prepare(key, value, reqId, clientIp, clientPort);
 
                     if (!"PREPARED".equals(prepResult.msg)) {
                         return false;
@@ -125,10 +125,10 @@ public class CommandServer {
                     transport.open();
 
                     TBinaryProtocol protocol = new TBinaryProtocol(transport);
-                    Command.Client client = new Command.Client(protocol);
+                    Command.Client replica = new Command.Client(protocol);
 
-                    // Send commit message to the replica
-                    CommitResult commitResult = client.commit(reqId);
+                    // 1. Send commit message to the replica
+                    CommitResult commitResult = replica.commit(reqId);
 
                     // Check if the replica sent an ACK
                     if (!"ACK".equals(commitResult.msg)) {
@@ -160,7 +160,7 @@ public class CommandServer {
          * @throws TException
          */
         @Override
-        public PrepareResult prepare(int key, int value, String reqId) throws TException {
+        public PrepareResult prepare(int key, int value, String reqId, String clientIp, int clientPort) throws TException {
             PrepareResult prepResult = new PrepareResult();
             prepResult.reqId = reqId;
 
@@ -173,7 +173,7 @@ public class CommandServer {
                         lockedKeys.add(key);
 
                         // init new operation
-                        PreparedOperation op = new PreparedOperation(OperationType.PUT, key, value);
+                        PreparedOperation op = new PreparedOperation(OperationType.PUT, key, value, clientIp, clientPort);
 
                         // add this to operations this server need to operate on
                         preparedOperations.put(reqId, op);
@@ -197,38 +197,57 @@ public class CommandServer {
         }
 
         public CommitResult commit(String reqId) throws TException {
-            CommitResult result = new CommitResult();
-            result.reqId = reqId;
+            CommitResult commitResult = new CommitResult();
+            commitResult.reqId = reqId;
 
+            // 1. retrieve the operation it needs to perform
             PreparedOperation op = preparedOperations.get(reqId);
             if (op != null) {
+
                 if (op.operationType == OperationType.PUT) {
-                    // Perform the PUT operation
-                    // Call your internal put method here, e.g., put(op.key, op.value)
+                    // 2. init result and command
+                    String command = "put";
+
+                    // 3. Call your internal put method here, e.g., put(op.key, op.value)
+                    Result result = putHelper(op.getKey(), op.getValue(), reqId);
+
+                    // 4. print result of put operation by this replica
+                    System.out.print("------");
+                    printLog(op.getKey(),
+                            op.getValue(),
+                            reqId,
+                            command,
+                            result.status,
+                            result.msg, 
+                            op.getClientIp(), 
+                            op.getClientPort());
+
+
                 } else if (op.operationType == OperationType.DELETE) {
                     // Perform the DELETE operation
                     // Call your internal delete method here, e.g., delete(op.key)
                 }
 
-                // Remove the prepared operation from the map
+                // 5. Remove the prepared operation from the map
                 preparedOperations.remove(reqId);
 
-                // Unlock the key
+                // 6. Unlock the key
                 // If you are using lockedKeys Set or keyLocks array, unlock the key here
-
-                result.msg = "ACK";
+                lockedKeys.remove(op.getKey());
+                commitResult.msg = "ACK";
             } else {
-                result.msg = "NACK";
+                commitResult.msg = "NACK";
             }
 
-            return result;
+            return commitResult;
         }
 
-        private Result putHelper(int key, int val, String reqId, String clientIp, int clientPort) {
+        private Result putHelper(int key, int val, String reqId) {
             Result result = new Result();
             result.reqId = reqId;
             result.value = val;
             String command = "put";
+
             // 1. Validate
             try {
                 validateKey(key, "put");
@@ -254,12 +273,13 @@ public class CommandServer {
             String command = "put";
 
             // 2. Perform operation
-            if (prepareReplicas(key, val, reqId)) {
+            if (prepareReplicas(key, val, reqId, clientIp, clientPort)) {
 
-                // -0 commit replicas
+                // -0 all replicas need to commit this request
+                commitReplicas(key, reqId);
 
                 // -1 perform local operation
-                result = putHelper(key, val, reqId, clientIp, clientPort);
+                result = putHelper(key, val, reqId);
 
 
             } else {

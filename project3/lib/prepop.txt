@@ -1,6 +1,1 @@
 Put 1 1
-Put 2 2
-Put 3 3
-Put 4 4
-Put 5 5
-Pu 6 6

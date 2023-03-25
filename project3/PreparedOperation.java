@@ -2,11 +2,15 @@ public class PreparedOperation {
     public OperationType operationType;
     private int key;
     private int value;
+    private String clientIp;
+    private int clientPort;
 
-    public PreparedOperation(OperationType operationType, int key, int value) {
+    public PreparedOperation(OperationType operationType, int key, int value, String clientIp, int clientPort) {
         this.operationType = operationType;
         this.key = key;
         this.value = value;
+        this.clientIp = clientIp;
+        this.clientPort = clientPort;
     }
 
     public OperationType getOperationType() {
@@ -19,5 +23,13 @@ public class PreparedOperation {
 
     public int getValue() {
         return value;
+    }
+
+    public String getClientIp() {
+        return clientIp;
+    }
+
+    public int getClientPort() {
+        return clientPort;
     }
 }
