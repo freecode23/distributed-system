@@ -173,7 +173,13 @@ public class CommandServer {
                         lockedKeys.add(key);
 
                         // init new operation
-                        PreparedOperation op = new PreparedOperation(OperationType.PUT, key, value, clientIp, clientPort);
+                        OperationType type;
+                        if ("put".equals(command)) {
+                            type = OperationType.PUT;
+                        } else {
+                            type = OperationType.DELETE;
+                        }
+                        PreparedOperation op = new PreparedOperation(type, key, value, clientIp, clientPort);
 
                         // add this to operations this server need to operate on
                         preparedOperations.put(reqId, op);
@@ -266,6 +272,30 @@ public class CommandServer {
 
         }
 
+        private Result deleteHelper(int key, String reqId) {
+            Result result = new Result();
+            result.reqId = reqId;
+            String command = "delete";
+
+            // 1. Validate
+            try {
+                validateKey(key, command);
+                validateString(reqId);
+                int val = keyVal.get(key);
+                keyVal.remove(key);
+                result.msg = "op successful";
+                result.status = "OK";
+                result.value = val;
+
+            } catch (IllegalArgumentException e) {
+                result.msg = e.getMessage();
+                result.status = "ERROR";
+                result.value = 0;
+            }
+            return result;
+
+        }
+
         @Override
         public Result put(int key, int val, String reqId, String clientIp, int clientPort) throws TException {
 
@@ -291,6 +321,32 @@ public class CommandServer {
 
             // print and return result to client
             printLog(key, val, reqId, command, result.status, result.msg, clientIp, clientPort);
+            return result;
+        }
+        
+        @Override
+        public Result delete(int key, String reqId, String clientIp, int clientPort) throws TException {
+            Result result = new Result();
+            String command = "delete";
+
+            // 2. Perform operation
+            if (prepareReplicas(key, -1, command, reqId, clientIp, clientPort)) {
+
+                // -0 all replicas need to commit this request
+                commitReplicas(key, reqId);
+
+                // -1 perform local operation
+                result = deleteHelper(key, reqId);
+
+            } else {
+                // -3 abortReplicas(key, val, reqId);
+                result.status = "ERROR";
+                result.msg = "Not acknowledged";
+                result.value = 0;
+            }
+
+            // print and return result to client
+            printLog(key, -1, reqId, command, result.status, result.msg, clientIp, clientPort);
             return result;
         }
 
@@ -331,40 +387,7 @@ public class CommandServer {
             return result;
         }
 
-        @Override
-        public Result delete(int key, String reqId, String clientIp, int clientPort) throws TException {
-            String command = "delete";
-            Result result = new Result();
-            result.reqId = reqId;
 
-            // 1. validate
-            try {
-                validateKey(key, command);
-                validateString(reqId);
-            } catch (IllegalArgumentException e) {
-                result.msg = e.getMessage();
-                result.value = 0;
-                result.status = "ERROR";
-                printLog(key, -1, reqId, command, result.status, result.msg, clientIp, clientPort);
-                return result;
-            }
-            // System.out.print("\nbefore del>>>>>");
-            // System.out.println(keyVal);
-
-            // 2. execute and record result
-            // - remove
-            int val = keyVal.get(key);
-            keyVal.remove(key);
-            result.status = "OK";
-            result.msg = "op successful";
-            result.value = val;
-            
-            //  3. print and return
-            // System.out.print("after del>>>>>");
-            // System.out.println(keyVal);
-            printLog(key, -1, reqId, command, result.status, result.msg, clientIp, clientPort);
-            return result;
-        }
 
 
         /**
