@@ -15,11 +15,9 @@ public class Command {
 
     public Result delete(int key, java.lang.String reqId, java.lang.String ip, int port) throws org.apache.thrift.TException;
 
-    public PrepareResult preparePut(int key, int value, java.lang.String reqId) throws org.apache.thrift.TException;
+    public PrepareResult prepare(int key, int value, java.lang.String reqId) throws org.apache.thrift.TException;
 
-    public PrepareResult prepareGet(int key, java.lang.String reqId) throws org.apache.thrift.TException;
-
-    public PrepareResult prepareDelete(int key, java.lang.String reqId) throws org.apache.thrift.TException;
+    public CommitResult commit(java.lang.String reqId) throws org.apache.thrift.TException;
 
   }
 
@@ -31,11 +29,9 @@ public class Command {
 
     public void delete(int key, java.lang.String reqId, java.lang.String ip, int port, org.apache.thrift.async.AsyncMethodCallback<Result> resultHandler) throws org.apache.thrift.TException;
 
-    public void preparePut(int key, int value, java.lang.String reqId, org.apache.thrift.async.AsyncMethodCallback<PrepareResult> resultHandler) throws org.apache.thrift.TException;
+    public void prepare(int key, int value, java.lang.String reqId, org.apache.thrift.async.AsyncMethodCallback<PrepareResult> resultHandler) throws org.apache.thrift.TException;
 
-    public void prepareGet(int key, java.lang.String reqId, org.apache.thrift.async.AsyncMethodCallback<PrepareResult> resultHandler) throws org.apache.thrift.TException;
-
-    public void prepareDelete(int key, java.lang.String reqId, org.apache.thrift.async.AsyncMethodCallback<PrepareResult> resultHandler) throws org.apache.thrift.TException;
+    public void commit(java.lang.String reqId, org.apache.thrift.async.AsyncMethodCallback<CommitResult> resultHandler) throws org.apache.thrift.TException;
 
   }
 
@@ -144,79 +140,53 @@ public class Command {
     }
 
     @Override
-    public PrepareResult preparePut(int key, int value, java.lang.String reqId) throws org.apache.thrift.TException
+    public PrepareResult prepare(int key, int value, java.lang.String reqId) throws org.apache.thrift.TException
     {
-      send_preparePut(key, value, reqId);
-      return recv_preparePut();
+      send_prepare(key, value, reqId);
+      return recv_prepare();
     }
 
-    public void send_preparePut(int key, int value, java.lang.String reqId) throws org.apache.thrift.TException
+    public void send_prepare(int key, int value, java.lang.String reqId) throws org.apache.thrift.TException
     {
-      preparePut_args args = new preparePut_args();
+      prepare_args args = new prepare_args();
       args.setKey(key);
       args.setValue(value);
       args.setReqId(reqId);
-      sendBase("preparePut", args);
+      sendBase("prepare", args);
     }
 
-    public PrepareResult recv_preparePut() throws org.apache.thrift.TException
+    public PrepareResult recv_prepare() throws org.apache.thrift.TException
     {
-      preparePut_result result = new preparePut_result();
-      receiveBase(result, "preparePut");
+      prepare_result result = new prepare_result();
+      receiveBase(result, "prepare");
       if (result.isSetSuccess()) {
         return result.success;
       }
-      throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "preparePut failed: unknown result");
+      throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "prepare failed: unknown result");
     }
 
     @Override
-    public PrepareResult prepareGet(int key, java.lang.String reqId) throws org.apache.thrift.TException
+    public CommitResult commit(java.lang.String reqId) throws org.apache.thrift.TException
     {
-      send_prepareGet(key, reqId);
-      return recv_prepareGet();
+      send_commit(reqId);
+      return recv_commit();
     }
 
-    public void send_prepareGet(int key, java.lang.String reqId) throws org.apache.thrift.TException
+    public void send_commit(java.lang.String reqId) throws org.apache.thrift.TException
     {
-      prepareGet_args args = new prepareGet_args();
-      args.setKey(key);
+      commit_args args = new commit_args();
       args.setReqId(reqId);
-      sendBase("prepareGet", args);
+      sendBase("commit", args);
     }
 
-    public PrepareResult recv_prepareGet() throws org.apache.thrift.TException
+    public CommitResult recv_commit() throws org.apache.thrift.TException
     {
-      prepareGet_result result = new prepareGet_result();
-      receiveBase(result, "prepareGet");
+      commit_result result = new commit_result();
+      receiveBase(result, "commit");
       if (result.isSetSuccess()) {
         return result.success;
       }
-      throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "prepareGet failed: unknown result");
-    }
-
-    @Override
-    public PrepareResult prepareDelete(int key, java.lang.String reqId) throws org.apache.thrift.TException
-    {
-      send_prepareDelete(key, reqId);
-      return recv_prepareDelete();
-    }
-
-    public void send_prepareDelete(int key, java.lang.String reqId) throws org.apache.thrift.TException
-    {
-      prepareDelete_args args = new prepareDelete_args();
-      args.setKey(key);
-      args.setReqId(reqId);
-      sendBase("prepareDelete", args);
-    }
-
-    public PrepareResult recv_prepareDelete() throws org.apache.thrift.TException
-    {
-      prepareDelete_result result = new prepareDelete_result();
-      receiveBase(result, "prepareDelete");
-      if (result.isSetSuccess()) {
-        return result.success;
-      }
-      throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "prepareDelete failed: unknown result");
+      throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "commit failed: unknown result");
     }
 
   }
@@ -374,18 +344,18 @@ public class Command {
     }
 
     @Override
-    public void preparePut(int key, int value, java.lang.String reqId, org.apache.thrift.async.AsyncMethodCallback<PrepareResult> resultHandler) throws org.apache.thrift.TException {
+    public void prepare(int key, int value, java.lang.String reqId, org.apache.thrift.async.AsyncMethodCallback<PrepareResult> resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      preparePut_call method_call = new preparePut_call(key, value, reqId, resultHandler, this, ___protocolFactory, ___transport);
+      prepare_call method_call = new prepare_call(key, value, reqId, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
 
-    public static class preparePut_call extends org.apache.thrift.async.TAsyncMethodCall<PrepareResult> {
+    public static class prepare_call extends org.apache.thrift.async.TAsyncMethodCall<PrepareResult> {
       private int key;
       private int value;
       private java.lang.String reqId;
-      public preparePut_call(int key, int value, java.lang.String reqId, org.apache.thrift.async.AsyncMethodCallback<PrepareResult> resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      public prepare_call(int key, int value, java.lang.String reqId, org.apache.thrift.async.AsyncMethodCallback<PrepareResult> resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
         this.key = key;
         this.value = value;
@@ -394,8 +364,8 @@ public class Command {
 
       @Override
       public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
-        prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("preparePut", org.apache.thrift.protocol.TMessageType.CALL, 0));
-        preparePut_args args = new preparePut_args();
+        prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("prepare", org.apache.thrift.protocol.TMessageType.CALL, 0));
+        prepare_args args = new prepare_args();
         args.setKey(key);
         args.setValue(value);
         args.setReqId(reqId);
@@ -410,83 +380,42 @@ public class Command {
         }
         org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
         org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
-        return (new Client(prot)).recv_preparePut();
+        return (new Client(prot)).recv_prepare();
       }
     }
 
     @Override
-    public void prepareGet(int key, java.lang.String reqId, org.apache.thrift.async.AsyncMethodCallback<PrepareResult> resultHandler) throws org.apache.thrift.TException {
+    public void commit(java.lang.String reqId, org.apache.thrift.async.AsyncMethodCallback<CommitResult> resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      prepareGet_call method_call = new prepareGet_call(key, reqId, resultHandler, this, ___protocolFactory, ___transport);
+      commit_call method_call = new commit_call(reqId, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
 
-    public static class prepareGet_call extends org.apache.thrift.async.TAsyncMethodCall<PrepareResult> {
-      private int key;
+    public static class commit_call extends org.apache.thrift.async.TAsyncMethodCall<CommitResult> {
       private java.lang.String reqId;
-      public prepareGet_call(int key, java.lang.String reqId, org.apache.thrift.async.AsyncMethodCallback<PrepareResult> resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      public commit_call(java.lang.String reqId, org.apache.thrift.async.AsyncMethodCallback<CommitResult> resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
-        this.key = key;
         this.reqId = reqId;
       }
 
       @Override
       public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
-        prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("prepareGet", org.apache.thrift.protocol.TMessageType.CALL, 0));
-        prepareGet_args args = new prepareGet_args();
-        args.setKey(key);
+        prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("commit", org.apache.thrift.protocol.TMessageType.CALL, 0));
+        commit_args args = new commit_args();
         args.setReqId(reqId);
         args.write(prot);
         prot.writeMessageEnd();
       }
 
       @Override
-      public PrepareResult getResult() throws org.apache.thrift.TException {
+      public CommitResult getResult() throws org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new java.lang.IllegalStateException("Method call not finished!");
         }
         org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
         org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
-        return (new Client(prot)).recv_prepareGet();
-      }
-    }
-
-    @Override
-    public void prepareDelete(int key, java.lang.String reqId, org.apache.thrift.async.AsyncMethodCallback<PrepareResult> resultHandler) throws org.apache.thrift.TException {
-      checkReady();
-      prepareDelete_call method_call = new prepareDelete_call(key, reqId, resultHandler, this, ___protocolFactory, ___transport);
-      this.___currentMethod = method_call;
-      ___manager.call(method_call);
-    }
-
-    public static class prepareDelete_call extends org.apache.thrift.async.TAsyncMethodCall<PrepareResult> {
-      private int key;
-      private java.lang.String reqId;
-      public prepareDelete_call(int key, java.lang.String reqId, org.apache.thrift.async.AsyncMethodCallback<PrepareResult> resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
-        super(client, protocolFactory, transport, resultHandler, false);
-        this.key = key;
-        this.reqId = reqId;
-      }
-
-      @Override
-      public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
-        prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("prepareDelete", org.apache.thrift.protocol.TMessageType.CALL, 0));
-        prepareDelete_args args = new prepareDelete_args();
-        args.setKey(key);
-        args.setReqId(reqId);
-        args.write(prot);
-        prot.writeMessageEnd();
-      }
-
-      @Override
-      public PrepareResult getResult() throws org.apache.thrift.TException {
-        if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
-          throw new java.lang.IllegalStateException("Method call not finished!");
-        }
-        org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
-        org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
-        return (new Client(prot)).recv_prepareDelete();
+        return (new Client(prot)).recv_commit();
       }
     }
 
@@ -506,9 +435,8 @@ public class Command {
       processMap.put("put", new put());
       processMap.put("get", new get());
       processMap.put("delete", new delete());
-      processMap.put("preparePut", new preparePut());
-      processMap.put("prepareGet", new prepareGet());
-      processMap.put("prepareDelete", new prepareDelete());
+      processMap.put("prepare", new prepare());
+      processMap.put("commit", new commit());
       return processMap;
     }
 
@@ -596,14 +524,14 @@ public class Command {
       }
     }
 
-    public static class preparePut<I extends Iface> extends org.apache.thrift.ProcessFunction<I, preparePut_args> {
-      public preparePut() {
-        super("preparePut");
+    public static class prepare<I extends Iface> extends org.apache.thrift.ProcessFunction<I, prepare_args> {
+      public prepare() {
+        super("prepare");
       }
 
       @Override
-      public preparePut_args getEmptyArgsInstance() {
-        return new preparePut_args();
+      public prepare_args getEmptyArgsInstance() {
+        return new prepare_args();
       }
 
       @Override
@@ -617,49 +545,21 @@ public class Command {
       }
 
       @Override
-      public preparePut_result getResult(I iface, preparePut_args args) throws org.apache.thrift.TException {
-        preparePut_result result = new preparePut_result();
-        result.success = iface.preparePut(args.key, args.value, args.reqId);
+      public prepare_result getResult(I iface, prepare_args args) throws org.apache.thrift.TException {
+        prepare_result result = new prepare_result();
+        result.success = iface.prepare(args.key, args.value, args.reqId);
         return result;
       }
     }
 
-    public static class prepareGet<I extends Iface> extends org.apache.thrift.ProcessFunction<I, prepareGet_args> {
-      public prepareGet() {
-        super("prepareGet");
+    public static class commit<I extends Iface> extends org.apache.thrift.ProcessFunction<I, commit_args> {
+      public commit() {
+        super("commit");
       }
 
       @Override
-      public prepareGet_args getEmptyArgsInstance() {
-        return new prepareGet_args();
-      }
-
-      @Override
-      protected boolean isOneway() {
-        return false;
-      }
-
-      @Override
-      protected boolean rethrowUnhandledExceptions() {
-        return false;
-      }
-
-      @Override
-      public prepareGet_result getResult(I iface, prepareGet_args args) throws org.apache.thrift.TException {
-        prepareGet_result result = new prepareGet_result();
-        result.success = iface.prepareGet(args.key, args.reqId);
-        return result;
-      }
-    }
-
-    public static class prepareDelete<I extends Iface> extends org.apache.thrift.ProcessFunction<I, prepareDelete_args> {
-      public prepareDelete() {
-        super("prepareDelete");
-      }
-
-      @Override
-      public prepareDelete_args getEmptyArgsInstance() {
-        return new prepareDelete_args();
+      public commit_args getEmptyArgsInstance() {
+        return new commit_args();
       }
 
       @Override
@@ -673,9 +573,9 @@ public class Command {
       }
 
       @Override
-      public prepareDelete_result getResult(I iface, prepareDelete_args args) throws org.apache.thrift.TException {
-        prepareDelete_result result = new prepareDelete_result();
-        result.success = iface.prepareDelete(args.key, args.reqId);
+      public commit_result getResult(I iface, commit_args args) throws org.apache.thrift.TException {
+        commit_result result = new commit_result();
+        result.success = iface.commit(args.reqId);
         return result;
       }
     }
@@ -696,9 +596,8 @@ public class Command {
       processMap.put("put", new put());
       processMap.put("get", new get());
       processMap.put("delete", new delete());
-      processMap.put("preparePut", new preparePut());
-      processMap.put("prepareGet", new prepareGet());
-      processMap.put("prepareDelete", new prepareDelete());
+      processMap.put("prepare", new prepare());
+      processMap.put("commit", new commit());
       return processMap;
     }
 
@@ -903,14 +802,14 @@ public class Command {
       }
     }
 
-    public static class preparePut<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, preparePut_args, PrepareResult> {
-      public preparePut() {
-        super("preparePut");
+    public static class prepare<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, prepare_args, PrepareResult> {
+      public prepare() {
+        super("prepare");
       }
 
       @Override
-      public preparePut_args getEmptyArgsInstance() {
-        return new preparePut_args();
+      public prepare_args getEmptyArgsInstance() {
+        return new prepare_args();
       }
 
       @Override
@@ -919,7 +818,7 @@ public class Command {
         return new org.apache.thrift.async.AsyncMethodCallback<PrepareResult>() { 
           @Override
           public void onComplete(PrepareResult o) {
-            preparePut_result result = new preparePut_result();
+            prepare_result result = new prepare_result();
             result.success = o;
             try {
               fcall.sendResponse(fb, result, org.apache.thrift.protocol.TMessageType.REPLY,seqid);
@@ -935,7 +834,7 @@ public class Command {
           public void onError(java.lang.Exception e) {
             byte msgType = org.apache.thrift.protocol.TMessageType.REPLY;
             org.apache.thrift.TSerializable msg;
-            preparePut_result result = new preparePut_result();
+            prepare_result result = new prepare_result();
             if (e instanceof org.apache.thrift.transport.TTransportException) {
               _LOGGER.error("TTransportException inside handler", e);
               fb.close();
@@ -965,28 +864,28 @@ public class Command {
       }
 
       @Override
-      public void start(I iface, preparePut_args args, org.apache.thrift.async.AsyncMethodCallback<PrepareResult> resultHandler) throws org.apache.thrift.TException {
-        iface.preparePut(args.key, args.value, args.reqId,resultHandler);
+      public void start(I iface, prepare_args args, org.apache.thrift.async.AsyncMethodCallback<PrepareResult> resultHandler) throws org.apache.thrift.TException {
+        iface.prepare(args.key, args.value, args.reqId,resultHandler);
       }
     }
 
-    public static class prepareGet<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, prepareGet_args, PrepareResult> {
-      public prepareGet() {
-        super("prepareGet");
+    public static class commit<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, commit_args, CommitResult> {
+      public commit() {
+        super("commit");
       }
 
       @Override
-      public prepareGet_args getEmptyArgsInstance() {
-        return new prepareGet_args();
+      public commit_args getEmptyArgsInstance() {
+        return new commit_args();
       }
 
       @Override
-      public org.apache.thrift.async.AsyncMethodCallback<PrepareResult> getResultHandler(final org.apache.thrift.server.AbstractNonblockingServer.AsyncFrameBuffer fb, final int seqid) {
+      public org.apache.thrift.async.AsyncMethodCallback<CommitResult> getResultHandler(final org.apache.thrift.server.AbstractNonblockingServer.AsyncFrameBuffer fb, final int seqid) {
         final org.apache.thrift.AsyncProcessFunction fcall = this;
-        return new org.apache.thrift.async.AsyncMethodCallback<PrepareResult>() { 
+        return new org.apache.thrift.async.AsyncMethodCallback<CommitResult>() { 
           @Override
-          public void onComplete(PrepareResult o) {
-            prepareGet_result result = new prepareGet_result();
+          public void onComplete(CommitResult o) {
+            commit_result result = new commit_result();
             result.success = o;
             try {
               fcall.sendResponse(fb, result, org.apache.thrift.protocol.TMessageType.REPLY,seqid);
@@ -1002,7 +901,7 @@ public class Command {
           public void onError(java.lang.Exception e) {
             byte msgType = org.apache.thrift.protocol.TMessageType.REPLY;
             org.apache.thrift.TSerializable msg;
-            prepareGet_result result = new prepareGet_result();
+            commit_result result = new commit_result();
             if (e instanceof org.apache.thrift.transport.TTransportException) {
               _LOGGER.error("TTransportException inside handler", e);
               fb.close();
@@ -1032,75 +931,8 @@ public class Command {
       }
 
       @Override
-      public void start(I iface, prepareGet_args args, org.apache.thrift.async.AsyncMethodCallback<PrepareResult> resultHandler) throws org.apache.thrift.TException {
-        iface.prepareGet(args.key, args.reqId,resultHandler);
-      }
-    }
-
-    public static class prepareDelete<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, prepareDelete_args, PrepareResult> {
-      public prepareDelete() {
-        super("prepareDelete");
-      }
-
-      @Override
-      public prepareDelete_args getEmptyArgsInstance() {
-        return new prepareDelete_args();
-      }
-
-      @Override
-      public org.apache.thrift.async.AsyncMethodCallback<PrepareResult> getResultHandler(final org.apache.thrift.server.AbstractNonblockingServer.AsyncFrameBuffer fb, final int seqid) {
-        final org.apache.thrift.AsyncProcessFunction fcall = this;
-        return new org.apache.thrift.async.AsyncMethodCallback<PrepareResult>() { 
-          @Override
-          public void onComplete(PrepareResult o) {
-            prepareDelete_result result = new prepareDelete_result();
-            result.success = o;
-            try {
-              fcall.sendResponse(fb, result, org.apache.thrift.protocol.TMessageType.REPLY,seqid);
-            } catch (org.apache.thrift.transport.TTransportException e) {
-              _LOGGER.error("TTransportException writing to internal frame buffer", e);
-              fb.close();
-            } catch (java.lang.Exception e) {
-              _LOGGER.error("Exception writing to internal frame buffer", e);
-              onError(e);
-            }
-          }
-          @Override
-          public void onError(java.lang.Exception e) {
-            byte msgType = org.apache.thrift.protocol.TMessageType.REPLY;
-            org.apache.thrift.TSerializable msg;
-            prepareDelete_result result = new prepareDelete_result();
-            if (e instanceof org.apache.thrift.transport.TTransportException) {
-              _LOGGER.error("TTransportException inside handler", e);
-              fb.close();
-              return;
-            } else if (e instanceof org.apache.thrift.TApplicationException) {
-              _LOGGER.error("TApplicationException inside handler", e);
-              msgType = org.apache.thrift.protocol.TMessageType.EXCEPTION;
-              msg = (org.apache.thrift.TApplicationException)e;
-            } else {
-              _LOGGER.error("Exception inside handler", e);
-              msgType = org.apache.thrift.protocol.TMessageType.EXCEPTION;
-              msg = new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.INTERNAL_ERROR, e.getMessage());
-            }
-            try {
-              fcall.sendResponse(fb,msg,msgType,seqid);
-            } catch (java.lang.Exception ex) {
-              _LOGGER.error("Exception writing to internal frame buffer", ex);
-              fb.close();
-            }
-          }
-        };
-      }
-
-      @Override
-      protected boolean isOneway() {
-        return false;
-      }
-
-      @Override
-      public void start(I iface, prepareDelete_args args, org.apache.thrift.async.AsyncMethodCallback<PrepareResult> resultHandler) throws org.apache.thrift.TException {
-        iface.prepareDelete(args.key, args.reqId,resultHandler);
+      public void start(I iface, commit_args args, org.apache.thrift.async.AsyncMethodCallback<CommitResult> resultHandler) throws org.apache.thrift.TException {
+        iface.commit(args.reqId,resultHandler);
       }
     }
 
@@ -4392,15 +4224,15 @@ public class Command {
   }
 
   @SuppressWarnings({"cast", "rawtypes", "serial", "unchecked", "unused"})
-  public static class preparePut_args implements org.apache.thrift.TBase<preparePut_args, preparePut_args._Fields>, java.io.Serializable, Cloneable, Comparable<preparePut_args>   {
-    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("preparePut_args");
+  public static class prepare_args implements org.apache.thrift.TBase<prepare_args, prepare_args._Fields>, java.io.Serializable, Cloneable, Comparable<prepare_args>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("prepare_args");
 
     private static final org.apache.thrift.protocol.TField KEY_FIELD_DESC = new org.apache.thrift.protocol.TField("key", org.apache.thrift.protocol.TType.I32, (short)1);
     private static final org.apache.thrift.protocol.TField VALUE_FIELD_DESC = new org.apache.thrift.protocol.TField("value", org.apache.thrift.protocol.TType.I32, (short)2);
     private static final org.apache.thrift.protocol.TField REQ_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("reqId", org.apache.thrift.protocol.TType.STRING, (short)3);
 
-    private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new preparePut_argsStandardSchemeFactory();
-    private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new preparePut_argsTupleSchemeFactory();
+    private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new prepare_argsStandardSchemeFactory();
+    private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new prepare_argsTupleSchemeFactory();
 
     public int key; // required
     public int value; // required
@@ -4488,13 +4320,13 @@ public class Command {
       tmpMap.put(_Fields.REQ_ID, new org.apache.thrift.meta_data.FieldMetaData("reqId", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
       metaDataMap = java.util.Collections.unmodifiableMap(tmpMap);
-      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(preparePut_args.class, metaDataMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(prepare_args.class, metaDataMap);
     }
 
-    public preparePut_args() {
+    public prepare_args() {
     }
 
-    public preparePut_args(
+    public prepare_args(
       int key,
       int value,
       java.lang.String reqId)
@@ -4510,7 +4342,7 @@ public class Command {
     /**
      * Performs a deep copy on <i>other</i>.
      */
-    public preparePut_args(preparePut_args other) {
+    public prepare_args(prepare_args other) {
       __isset_bitfield = other.__isset_bitfield;
       this.key = other.key;
       this.value = other.value;
@@ -4520,8 +4352,8 @@ public class Command {
     }
 
     @Override
-    public preparePut_args deepCopy() {
-      return new preparePut_args(this);
+    public prepare_args deepCopy() {
+      return new prepare_args(this);
     }
 
     @Override
@@ -4537,7 +4369,7 @@ public class Command {
       return this.key;
     }
 
-    public preparePut_args setKey(int key) {
+    public prepare_args setKey(int key) {
       this.key = key;
       setKeyIsSet(true);
       return this;
@@ -4560,7 +4392,7 @@ public class Command {
       return this.value;
     }
 
-    public preparePut_args setValue(int value) {
+    public prepare_args setValue(int value) {
       this.value = value;
       setValueIsSet(true);
       return this;
@@ -4584,7 +4416,7 @@ public class Command {
       return this.reqId;
     }
 
-    public preparePut_args setReqId(@org.apache.thrift.annotation.Nullable java.lang.String reqId) {
+    public prepare_args setReqId(@org.apache.thrift.annotation.Nullable java.lang.String reqId) {
       this.reqId = reqId;
       return this;
     }
@@ -4671,12 +4503,12 @@ public class Command {
 
     @Override
     public boolean equals(java.lang.Object that) {
-      if (that instanceof preparePut_args)
-        return this.equals((preparePut_args)that);
+      if (that instanceof prepare_args)
+        return this.equals((prepare_args)that);
       return false;
     }
 
-    public boolean equals(preparePut_args that) {
+    public boolean equals(prepare_args that) {
       if (that == null)
         return false;
       if (this == that)
@@ -4728,7 +4560,7 @@ public class Command {
     }
 
     @Override
-    public int compareTo(preparePut_args other) {
+    public int compareTo(prepare_args other) {
       if (!getClass().equals(other.getClass())) {
         return getClass().getName().compareTo(other.getClass().getName());
       }
@@ -4786,7 +4618,7 @@ public class Command {
 
     @Override
     public java.lang.String toString() {
-      java.lang.StringBuilder sb = new java.lang.StringBuilder("preparePut_args(");
+      java.lang.StringBuilder sb = new java.lang.StringBuilder("prepare_args(");
       boolean first = true;
 
       sb.append("key:");
@@ -4831,17 +4663,17 @@ public class Command {
       }
     }
 
-    private static class preparePut_argsStandardSchemeFactory implements org.apache.thrift.scheme.SchemeFactory {
+    private static class prepare_argsStandardSchemeFactory implements org.apache.thrift.scheme.SchemeFactory {
       @Override
-      public preparePut_argsStandardScheme getScheme() {
-        return new preparePut_argsStandardScheme();
+      public prepare_argsStandardScheme getScheme() {
+        return new prepare_argsStandardScheme();
       }
     }
 
-    private static class preparePut_argsStandardScheme extends org.apache.thrift.scheme.StandardScheme<preparePut_args> {
+    private static class prepare_argsStandardScheme extends org.apache.thrift.scheme.StandardScheme<prepare_args> {
 
       @Override
-      public void read(org.apache.thrift.protocol.TProtocol iprot, preparePut_args struct) throws org.apache.thrift.TException {
+      public void read(org.apache.thrift.protocol.TProtocol iprot, prepare_args struct) throws org.apache.thrift.TException {
         org.apache.thrift.protocol.TField schemeField;
         iprot.readStructBegin();
         while (true)
@@ -4887,7 +4719,7 @@ public class Command {
       }
 
       @Override
-      public void write(org.apache.thrift.protocol.TProtocol oprot, preparePut_args struct) throws org.apache.thrift.TException {
+      public void write(org.apache.thrift.protocol.TProtocol oprot, prepare_args struct) throws org.apache.thrift.TException {
         struct.validate();
 
         oprot.writeStructBegin(STRUCT_DESC);
@@ -4908,17 +4740,17 @@ public class Command {
 
     }
 
-    private static class preparePut_argsTupleSchemeFactory implements org.apache.thrift.scheme.SchemeFactory {
+    private static class prepare_argsTupleSchemeFactory implements org.apache.thrift.scheme.SchemeFactory {
       @Override
-      public preparePut_argsTupleScheme getScheme() {
-        return new preparePut_argsTupleScheme();
+      public prepare_argsTupleScheme getScheme() {
+        return new prepare_argsTupleScheme();
       }
     }
 
-    private static class preparePut_argsTupleScheme extends org.apache.thrift.scheme.TupleScheme<preparePut_args> {
+    private static class prepare_argsTupleScheme extends org.apache.thrift.scheme.TupleScheme<prepare_args> {
 
       @Override
-      public void write(org.apache.thrift.protocol.TProtocol prot, preparePut_args struct) throws org.apache.thrift.TException {
+      public void write(org.apache.thrift.protocol.TProtocol prot, prepare_args struct) throws org.apache.thrift.TException {
         org.apache.thrift.protocol.TTupleProtocol oprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
         java.util.BitSet optionals = new java.util.BitSet();
         if (struct.isSetKey()) {
@@ -4943,7 +4775,7 @@ public class Command {
       }
 
       @Override
-      public void read(org.apache.thrift.protocol.TProtocol prot, preparePut_args struct) throws org.apache.thrift.TException {
+      public void read(org.apache.thrift.protocol.TProtocol prot, prepare_args struct) throws org.apache.thrift.TException {
         org.apache.thrift.protocol.TTupleProtocol iprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
         java.util.BitSet incoming = iprot.readBitSet(3);
         if (incoming.get(0)) {
@@ -4967,13 +4799,13 @@ public class Command {
   }
 
   @SuppressWarnings({"cast", "rawtypes", "serial", "unchecked", "unused"})
-  public static class preparePut_result implements org.apache.thrift.TBase<preparePut_result, preparePut_result._Fields>, java.io.Serializable, Cloneable, Comparable<preparePut_result>   {
-    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("preparePut_result");
+  public static class prepare_result implements org.apache.thrift.TBase<prepare_result, prepare_result._Fields>, java.io.Serializable, Cloneable, Comparable<prepare_result>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("prepare_result");
 
     private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.STRUCT, (short)0);
 
-    private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new preparePut_resultStandardSchemeFactory();
-    private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new preparePut_resultTupleSchemeFactory();
+    private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new prepare_resultStandardSchemeFactory();
+    private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new prepare_resultTupleSchemeFactory();
 
     public @org.apache.thrift.annotation.Nullable PrepareResult success; // required
 
@@ -5046,13 +4878,13 @@ public class Command {
       tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, PrepareResult.class)));
       metaDataMap = java.util.Collections.unmodifiableMap(tmpMap);
-      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(preparePut_result.class, metaDataMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(prepare_result.class, metaDataMap);
     }
 
-    public preparePut_result() {
+    public prepare_result() {
     }
 
-    public preparePut_result(
+    public prepare_result(
       PrepareResult success)
     {
       this();
@@ -5062,15 +4894,15 @@ public class Command {
     /**
      * Performs a deep copy on <i>other</i>.
      */
-    public preparePut_result(preparePut_result other) {
+    public prepare_result(prepare_result other) {
       if (other.isSetSuccess()) {
         this.success = new PrepareResult(other.success);
       }
     }
 
     @Override
-    public preparePut_result deepCopy() {
-      return new preparePut_result(this);
+    public prepare_result deepCopy() {
+      return new prepare_result(this);
     }
 
     @Override
@@ -5083,7 +4915,7 @@ public class Command {
       return this.success;
     }
 
-    public preparePut_result setSuccess(@org.apache.thrift.annotation.Nullable PrepareResult success) {
+    public prepare_result setSuccess(@org.apache.thrift.annotation.Nullable PrepareResult success) {
       this.success = success;
       return this;
     }
@@ -5144,12 +4976,12 @@ public class Command {
 
     @Override
     public boolean equals(java.lang.Object that) {
-      if (that instanceof preparePut_result)
-        return this.equals((preparePut_result)that);
+      if (that instanceof prepare_result)
+        return this.equals((prepare_result)that);
       return false;
     }
 
-    public boolean equals(preparePut_result that) {
+    public boolean equals(prepare_result that) {
       if (that == null)
         return false;
       if (this == that)
@@ -5179,7 +5011,7 @@ public class Command {
     }
 
     @Override
-    public int compareTo(preparePut_result other) {
+    public int compareTo(prepare_result other) {
       if (!getClass().equals(other.getClass())) {
         return getClass().getName().compareTo(other.getClass().getName());
       }
@@ -5216,7 +5048,7 @@ public class Command {
 
     @Override
     public java.lang.String toString() {
-      java.lang.StringBuilder sb = new java.lang.StringBuilder("preparePut_result(");
+      java.lang.StringBuilder sb = new java.lang.StringBuilder("prepare_result(");
       boolean first = true;
 
       sb.append("success:");
@@ -5254,17 +5086,17 @@ public class Command {
       }
     }
 
-    private static class preparePut_resultStandardSchemeFactory implements org.apache.thrift.scheme.SchemeFactory {
+    private static class prepare_resultStandardSchemeFactory implements org.apache.thrift.scheme.SchemeFactory {
       @Override
-      public preparePut_resultStandardScheme getScheme() {
-        return new preparePut_resultStandardScheme();
+      public prepare_resultStandardScheme getScheme() {
+        return new prepare_resultStandardScheme();
       }
     }
 
-    private static class preparePut_resultStandardScheme extends org.apache.thrift.scheme.StandardScheme<preparePut_result> {
+    private static class prepare_resultStandardScheme extends org.apache.thrift.scheme.StandardScheme<prepare_result> {
 
       @Override
-      public void read(org.apache.thrift.protocol.TProtocol iprot, preparePut_result struct) throws org.apache.thrift.TException {
+      public void read(org.apache.thrift.protocol.TProtocol iprot, prepare_result struct) throws org.apache.thrift.TException {
         org.apache.thrift.protocol.TField schemeField;
         iprot.readStructBegin();
         while (true)
@@ -5295,7 +5127,7 @@ public class Command {
       }
 
       @Override
-      public void write(org.apache.thrift.protocol.TProtocol oprot, preparePut_result struct) throws org.apache.thrift.TException {
+      public void write(org.apache.thrift.protocol.TProtocol oprot, prepare_result struct) throws org.apache.thrift.TException {
         struct.validate();
 
         oprot.writeStructBegin(STRUCT_DESC);
@@ -5310,17 +5142,17 @@ public class Command {
 
     }
 
-    private static class preparePut_resultTupleSchemeFactory implements org.apache.thrift.scheme.SchemeFactory {
+    private static class prepare_resultTupleSchemeFactory implements org.apache.thrift.scheme.SchemeFactory {
       @Override
-      public preparePut_resultTupleScheme getScheme() {
-        return new preparePut_resultTupleScheme();
+      public prepare_resultTupleScheme getScheme() {
+        return new prepare_resultTupleScheme();
       }
     }
 
-    private static class preparePut_resultTupleScheme extends org.apache.thrift.scheme.TupleScheme<preparePut_result> {
+    private static class prepare_resultTupleScheme extends org.apache.thrift.scheme.TupleScheme<prepare_result> {
 
       @Override
-      public void write(org.apache.thrift.protocol.TProtocol prot, preparePut_result struct) throws org.apache.thrift.TException {
+      public void write(org.apache.thrift.protocol.TProtocol prot, prepare_result struct) throws org.apache.thrift.TException {
         org.apache.thrift.protocol.TTupleProtocol oprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
         java.util.BitSet optionals = new java.util.BitSet();
         if (struct.isSetSuccess()) {
@@ -5333,7 +5165,7 @@ public class Command {
       }
 
       @Override
-      public void read(org.apache.thrift.protocol.TProtocol prot, preparePut_result struct) throws org.apache.thrift.TException {
+      public void read(org.apache.thrift.protocol.TProtocol prot, prepare_result struct) throws org.apache.thrift.TException {
         org.apache.thrift.protocol.TTupleProtocol iprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
         java.util.BitSet incoming = iprot.readBitSet(1);
         if (incoming.get(0)) {
@@ -5350,22 +5182,19 @@ public class Command {
   }
 
   @SuppressWarnings({"cast", "rawtypes", "serial", "unchecked", "unused"})
-  public static class prepareGet_args implements org.apache.thrift.TBase<prepareGet_args, prepareGet_args._Fields>, java.io.Serializable, Cloneable, Comparable<prepareGet_args>   {
-    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("prepareGet_args");
+  public static class commit_args implements org.apache.thrift.TBase<commit_args, commit_args._Fields>, java.io.Serializable, Cloneable, Comparable<commit_args>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("commit_args");
 
-    private static final org.apache.thrift.protocol.TField KEY_FIELD_DESC = new org.apache.thrift.protocol.TField("key", org.apache.thrift.protocol.TType.I32, (short)1);
-    private static final org.apache.thrift.protocol.TField REQ_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("reqId", org.apache.thrift.protocol.TType.STRING, (short)2);
+    private static final org.apache.thrift.protocol.TField REQ_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("reqId", org.apache.thrift.protocol.TType.STRING, (short)1);
 
-    private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new prepareGet_argsStandardSchemeFactory();
-    private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new prepareGet_argsTupleSchemeFactory();
+    private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new commit_argsStandardSchemeFactory();
+    private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new commit_argsTupleSchemeFactory();
 
-    public int key; // required
     public @org.apache.thrift.annotation.Nullable java.lang.String reqId; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-      KEY((short)1, "key"),
-      REQ_ID((short)2, "reqId");
+      REQ_ID((short)1, "reqId");
 
       private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
 
@@ -5381,9 +5210,7 @@ public class Command {
       @org.apache.thrift.annotation.Nullable
       public static _Fields findByThriftId(int fieldId) {
         switch(fieldId) {
-          case 1: // KEY
-            return KEY;
-          case 2: // REQ_ID
+          case 1: // REQ_ID
             return REQ_ID;
           default:
             return null;
@@ -5428,76 +5255,42 @@ public class Command {
     }
 
     // isset id assignments
-    private static final int __KEY_ISSET_ID = 0;
-    private byte __isset_bitfield = 0;
     public static final java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
     static {
       java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new java.util.EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
-      tmpMap.put(_Fields.KEY, new org.apache.thrift.meta_data.FieldMetaData("key", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
       tmpMap.put(_Fields.REQ_ID, new org.apache.thrift.meta_data.FieldMetaData("reqId", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
       metaDataMap = java.util.Collections.unmodifiableMap(tmpMap);
-      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(prepareGet_args.class, metaDataMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(commit_args.class, metaDataMap);
     }
 
-    public prepareGet_args() {
+    public commit_args() {
     }
 
-    public prepareGet_args(
-      int key,
+    public commit_args(
       java.lang.String reqId)
     {
       this();
-      this.key = key;
-      setKeyIsSet(true);
       this.reqId = reqId;
     }
 
     /**
      * Performs a deep copy on <i>other</i>.
      */
-    public prepareGet_args(prepareGet_args other) {
-      __isset_bitfield = other.__isset_bitfield;
-      this.key = other.key;
+    public commit_args(commit_args other) {
       if (other.isSetReqId()) {
         this.reqId = other.reqId;
       }
     }
 
     @Override
-    public prepareGet_args deepCopy() {
-      return new prepareGet_args(this);
+    public commit_args deepCopy() {
+      return new commit_args(this);
     }
 
     @Override
     public void clear() {
-      setKeyIsSet(false);
-      this.key = 0;
       this.reqId = null;
-    }
-
-    public int getKey() {
-      return this.key;
-    }
-
-    public prepareGet_args setKey(int key) {
-      this.key = key;
-      setKeyIsSet(true);
-      return this;
-    }
-
-    public void unsetKey() {
-      __isset_bitfield = org.apache.thrift.EncodingUtils.clearBit(__isset_bitfield, __KEY_ISSET_ID);
-    }
-
-    /** Returns true if field key is set (has been assigned a value) and false otherwise */
-    public boolean isSetKey() {
-      return org.apache.thrift.EncodingUtils.testBit(__isset_bitfield, __KEY_ISSET_ID);
-    }
-
-    public void setKeyIsSet(boolean value) {
-      __isset_bitfield = org.apache.thrift.EncodingUtils.setBit(__isset_bitfield, __KEY_ISSET_ID, value);
     }
 
     @org.apache.thrift.annotation.Nullable
@@ -5505,7 +5298,7 @@ public class Command {
       return this.reqId;
     }
 
-    public prepareGet_args setReqId(@org.apache.thrift.annotation.Nullable java.lang.String reqId) {
+    public commit_args setReqId(@org.apache.thrift.annotation.Nullable java.lang.String reqId) {
       this.reqId = reqId;
       return this;
     }
@@ -5528,14 +5321,6 @@ public class Command {
     @Override
     public void setFieldValue(_Fields field, @org.apache.thrift.annotation.Nullable java.lang.Object value) {
       switch (field) {
-      case KEY:
-        if (value == null) {
-          unsetKey();
-        } else {
-          setKey((java.lang.Integer)value);
-        }
-        break;
-
       case REQ_ID:
         if (value == null) {
           unsetReqId();
@@ -5551,9 +5336,6 @@ public class Command {
     @Override
     public java.lang.Object getFieldValue(_Fields field) {
       switch (field) {
-      case KEY:
-        return getKey();
-
       case REQ_ID:
         return getReqId();
 
@@ -5569,8 +5351,6 @@ public class Command {
       }
 
       switch (field) {
-      case KEY:
-        return isSetKey();
       case REQ_ID:
         return isSetReqId();
       }
@@ -5579,25 +5359,16 @@ public class Command {
 
     @Override
     public boolean equals(java.lang.Object that) {
-      if (that instanceof prepareGet_args)
-        return this.equals((prepareGet_args)that);
+      if (that instanceof commit_args)
+        return this.equals((commit_args)that);
       return false;
     }
 
-    public boolean equals(prepareGet_args that) {
+    public boolean equals(commit_args that) {
       if (that == null)
         return false;
       if (this == that)
         return true;
-
-      boolean this_present_key = true;
-      boolean that_present_key = true;
-      if (this_present_key || that_present_key) {
-        if (!(this_present_key && that_present_key))
-          return false;
-        if (this.key != that.key)
-          return false;
-      }
 
       boolean this_present_reqId = true && this.isSetReqId();
       boolean that_present_reqId = true && that.isSetReqId();
@@ -5615,8 +5386,6 @@ public class Command {
     public int hashCode() {
       int hashCode = 1;
 
-      hashCode = hashCode * 8191 + key;
-
       hashCode = hashCode * 8191 + ((isSetReqId()) ? 131071 : 524287);
       if (isSetReqId())
         hashCode = hashCode * 8191 + reqId.hashCode();
@@ -5625,23 +5394,13 @@ public class Command {
     }
 
     @Override
-    public int compareTo(prepareGet_args other) {
+    public int compareTo(commit_args other) {
       if (!getClass().equals(other.getClass())) {
         return getClass().getName().compareTo(other.getClass().getName());
       }
 
       int lastComparison = 0;
 
-      lastComparison = java.lang.Boolean.compare(isSetKey(), other.isSetKey());
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-      if (isSetKey()) {
-        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.key, other.key);
-        if (lastComparison != 0) {
-          return lastComparison;
-        }
-      }
       lastComparison = java.lang.Boolean.compare(isSetReqId(), other.isSetReqId());
       if (lastComparison != 0) {
         return lastComparison;
@@ -5673,13 +5432,9 @@ public class Command {
 
     @Override
     public java.lang.String toString() {
-      java.lang.StringBuilder sb = new java.lang.StringBuilder("prepareGet_args(");
+      java.lang.StringBuilder sb = new java.lang.StringBuilder("commit_args(");
       boolean first = true;
 
-      sb.append("key:");
-      sb.append(this.key);
-      first = false;
-      if (!first) sb.append(", ");
       sb.append("reqId:");
       if (this.reqId == null) {
         sb.append("null");
@@ -5706,25 +5461,23 @@ public class Command {
 
     private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, java.lang.ClassNotFoundException {
       try {
-        // it doesn't seem like you should have to do this, but java serialization is wacky, and doesn't call the default constructor.
-        __isset_bitfield = 0;
         read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
       } catch (org.apache.thrift.TException te) {
         throw new java.io.IOException(te);
       }
     }
 
-    private static class prepareGet_argsStandardSchemeFactory implements org.apache.thrift.scheme.SchemeFactory {
+    private static class commit_argsStandardSchemeFactory implements org.apache.thrift.scheme.SchemeFactory {
       @Override
-      public prepareGet_argsStandardScheme getScheme() {
-        return new prepareGet_argsStandardScheme();
+      public commit_argsStandardScheme getScheme() {
+        return new commit_argsStandardScheme();
       }
     }
 
-    private static class prepareGet_argsStandardScheme extends org.apache.thrift.scheme.StandardScheme<prepareGet_args> {
+    private static class commit_argsStandardScheme extends org.apache.thrift.scheme.StandardScheme<commit_args> {
 
       @Override
-      public void read(org.apache.thrift.protocol.TProtocol iprot, prepareGet_args struct) throws org.apache.thrift.TException {
+      public void read(org.apache.thrift.protocol.TProtocol iprot, commit_args struct) throws org.apache.thrift.TException {
         org.apache.thrift.protocol.TField schemeField;
         iprot.readStructBegin();
         while (true)
@@ -5734,15 +5487,7 @@ public class Command {
             break;
           }
           switch (schemeField.id) {
-            case 1: // KEY
-              if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
-                struct.key = iprot.readI32();
-                struct.setKeyIsSet(true);
-              } else { 
-                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-              }
-              break;
-            case 2: // REQ_ID
+            case 1: // REQ_ID
               if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
                 struct.reqId = iprot.readString();
                 struct.setReqIdIsSet(true);
@@ -5762,13 +5507,10 @@ public class Command {
       }
 
       @Override
-      public void write(org.apache.thrift.protocol.TProtocol oprot, prepareGet_args struct) throws org.apache.thrift.TException {
+      public void write(org.apache.thrift.protocol.TProtocol oprot, commit_args struct) throws org.apache.thrift.TException {
         struct.validate();
 
         oprot.writeStructBegin(STRUCT_DESC);
-        oprot.writeFieldBegin(KEY_FIELD_DESC);
-        oprot.writeI32(struct.key);
-        oprot.writeFieldEnd();
         if (struct.reqId != null) {
           oprot.writeFieldBegin(REQ_ID_FIELD_DESC);
           oprot.writeString(struct.reqId);
@@ -5780,43 +5522,33 @@ public class Command {
 
     }
 
-    private static class prepareGet_argsTupleSchemeFactory implements org.apache.thrift.scheme.SchemeFactory {
+    private static class commit_argsTupleSchemeFactory implements org.apache.thrift.scheme.SchemeFactory {
       @Override
-      public prepareGet_argsTupleScheme getScheme() {
-        return new prepareGet_argsTupleScheme();
+      public commit_argsTupleScheme getScheme() {
+        return new commit_argsTupleScheme();
       }
     }
 
-    private static class prepareGet_argsTupleScheme extends org.apache.thrift.scheme.TupleScheme<prepareGet_args> {
+    private static class commit_argsTupleScheme extends org.apache.thrift.scheme.TupleScheme<commit_args> {
 
       @Override
-      public void write(org.apache.thrift.protocol.TProtocol prot, prepareGet_args struct) throws org.apache.thrift.TException {
+      public void write(org.apache.thrift.protocol.TProtocol prot, commit_args struct) throws org.apache.thrift.TException {
         org.apache.thrift.protocol.TTupleProtocol oprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
         java.util.BitSet optionals = new java.util.BitSet();
-        if (struct.isSetKey()) {
+        if (struct.isSetReqId()) {
           optionals.set(0);
         }
-        if (struct.isSetReqId()) {
-          optionals.set(1);
-        }
-        oprot.writeBitSet(optionals, 2);
-        if (struct.isSetKey()) {
-          oprot.writeI32(struct.key);
-        }
+        oprot.writeBitSet(optionals, 1);
         if (struct.isSetReqId()) {
           oprot.writeString(struct.reqId);
         }
       }
 
       @Override
-      public void read(org.apache.thrift.protocol.TProtocol prot, prepareGet_args struct) throws org.apache.thrift.TException {
+      public void read(org.apache.thrift.protocol.TProtocol prot, commit_args struct) throws org.apache.thrift.TException {
         org.apache.thrift.protocol.TTupleProtocol iprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
-        java.util.BitSet incoming = iprot.readBitSet(2);
+        java.util.BitSet incoming = iprot.readBitSet(1);
         if (incoming.get(0)) {
-          struct.key = iprot.readI32();
-          struct.setKeyIsSet(true);
-        }
-        if (incoming.get(1)) {
           struct.reqId = iprot.readString();
           struct.setReqIdIsSet(true);
         }
@@ -5829,15 +5561,15 @@ public class Command {
   }
 
   @SuppressWarnings({"cast", "rawtypes", "serial", "unchecked", "unused"})
-  public static class prepareGet_result implements org.apache.thrift.TBase<prepareGet_result, prepareGet_result._Fields>, java.io.Serializable, Cloneable, Comparable<prepareGet_result>   {
-    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("prepareGet_result");
+  public static class commit_result implements org.apache.thrift.TBase<commit_result, commit_result._Fields>, java.io.Serializable, Cloneable, Comparable<commit_result>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("commit_result");
 
     private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.STRUCT, (short)0);
 
-    private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new prepareGet_resultStandardSchemeFactory();
-    private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new prepareGet_resultTupleSchemeFactory();
+    private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new commit_resultStandardSchemeFactory();
+    private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new commit_resultTupleSchemeFactory();
 
-    public @org.apache.thrift.annotation.Nullable PrepareResult success; // required
+    public @org.apache.thrift.annotation.Nullable CommitResult success; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -5906,16 +5638,16 @@ public class Command {
     static {
       java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new java.util.EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
       tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, PrepareResult.class)));
+          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, CommitResult.class)));
       metaDataMap = java.util.Collections.unmodifiableMap(tmpMap);
-      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(prepareGet_result.class, metaDataMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(commit_result.class, metaDataMap);
     }
 
-    public prepareGet_result() {
+    public commit_result() {
     }
 
-    public prepareGet_result(
-      PrepareResult success)
+    public commit_result(
+      CommitResult success)
     {
       this();
       this.success = success;
@@ -5924,15 +5656,15 @@ public class Command {
     /**
      * Performs a deep copy on <i>other</i>.
      */
-    public prepareGet_result(prepareGet_result other) {
+    public commit_result(commit_result other) {
       if (other.isSetSuccess()) {
-        this.success = new PrepareResult(other.success);
+        this.success = new CommitResult(other.success);
       }
     }
 
     @Override
-    public prepareGet_result deepCopy() {
-      return new prepareGet_result(this);
+    public commit_result deepCopy() {
+      return new commit_result(this);
     }
 
     @Override
@@ -5941,11 +5673,11 @@ public class Command {
     }
 
     @org.apache.thrift.annotation.Nullable
-    public PrepareResult getSuccess() {
+    public CommitResult getSuccess() {
       return this.success;
     }
 
-    public prepareGet_result setSuccess(@org.apache.thrift.annotation.Nullable PrepareResult success) {
+    public commit_result setSuccess(@org.apache.thrift.annotation.Nullable CommitResult success) {
       this.success = success;
       return this;
     }
@@ -5972,7 +5704,7 @@ public class Command {
         if (value == null) {
           unsetSuccess();
         } else {
-          setSuccess((PrepareResult)value);
+          setSuccess((CommitResult)value);
         }
         break;
 
@@ -6006,12 +5738,12 @@ public class Command {
 
     @Override
     public boolean equals(java.lang.Object that) {
-      if (that instanceof prepareGet_result)
-        return this.equals((prepareGet_result)that);
+      if (that instanceof commit_result)
+        return this.equals((commit_result)that);
       return false;
     }
 
-    public boolean equals(prepareGet_result that) {
+    public boolean equals(commit_result that) {
       if (that == null)
         return false;
       if (this == that)
@@ -6041,7 +5773,7 @@ public class Command {
     }
 
     @Override
-    public int compareTo(prepareGet_result other) {
+    public int compareTo(commit_result other) {
       if (!getClass().equals(other.getClass())) {
         return getClass().getName().compareTo(other.getClass().getName());
       }
@@ -6078,7 +5810,7 @@ public class Command {
 
     @Override
     public java.lang.String toString() {
-      java.lang.StringBuilder sb = new java.lang.StringBuilder("prepareGet_result(");
+      java.lang.StringBuilder sb = new java.lang.StringBuilder("commit_result(");
       boolean first = true;
 
       sb.append("success:");
@@ -6116,17 +5848,17 @@ public class Command {
       }
     }
 
-    private static class prepareGet_resultStandardSchemeFactory implements org.apache.thrift.scheme.SchemeFactory {
+    private static class commit_resultStandardSchemeFactory implements org.apache.thrift.scheme.SchemeFactory {
       @Override
-      public prepareGet_resultStandardScheme getScheme() {
-        return new prepareGet_resultStandardScheme();
+      public commit_resultStandardScheme getScheme() {
+        return new commit_resultStandardScheme();
       }
     }
 
-    private static class prepareGet_resultStandardScheme extends org.apache.thrift.scheme.StandardScheme<prepareGet_result> {
+    private static class commit_resultStandardScheme extends org.apache.thrift.scheme.StandardScheme<commit_result> {
 
       @Override
-      public void read(org.apache.thrift.protocol.TProtocol iprot, prepareGet_result struct) throws org.apache.thrift.TException {
+      public void read(org.apache.thrift.protocol.TProtocol iprot, commit_result struct) throws org.apache.thrift.TException {
         org.apache.thrift.protocol.TField schemeField;
         iprot.readStructBegin();
         while (true)
@@ -6138,7 +5870,7 @@ public class Command {
           switch (schemeField.id) {
             case 0: // SUCCESS
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.success = new PrepareResult();
+                struct.success = new CommitResult();
                 struct.success.read(iprot);
                 struct.setSuccessIsSet(true);
               } else { 
@@ -6157,7 +5889,7 @@ public class Command {
       }
 
       @Override
-      public void write(org.apache.thrift.protocol.TProtocol oprot, prepareGet_result struct) throws org.apache.thrift.TException {
+      public void write(org.apache.thrift.protocol.TProtocol oprot, commit_result struct) throws org.apache.thrift.TException {
         struct.validate();
 
         oprot.writeStructBegin(STRUCT_DESC);
@@ -6172,17 +5904,17 @@ public class Command {
 
     }
 
-    private static class prepareGet_resultTupleSchemeFactory implements org.apache.thrift.scheme.SchemeFactory {
+    private static class commit_resultTupleSchemeFactory implements org.apache.thrift.scheme.SchemeFactory {
       @Override
-      public prepareGet_resultTupleScheme getScheme() {
-        return new prepareGet_resultTupleScheme();
+      public commit_resultTupleScheme getScheme() {
+        return new commit_resultTupleScheme();
       }
     }
 
-    private static class prepareGet_resultTupleScheme extends org.apache.thrift.scheme.TupleScheme<prepareGet_result> {
+    private static class commit_resultTupleScheme extends org.apache.thrift.scheme.TupleScheme<commit_result> {
 
       @Override
-      public void write(org.apache.thrift.protocol.TProtocol prot, prepareGet_result struct) throws org.apache.thrift.TException {
+      public void write(org.apache.thrift.protocol.TProtocol prot, commit_result struct) throws org.apache.thrift.TException {
         org.apache.thrift.protocol.TTupleProtocol oprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
         java.util.BitSet optionals = new java.util.BitSet();
         if (struct.isSetSuccess()) {
@@ -6195,873 +5927,11 @@ public class Command {
       }
 
       @Override
-      public void read(org.apache.thrift.protocol.TProtocol prot, prepareGet_result struct) throws org.apache.thrift.TException {
+      public void read(org.apache.thrift.protocol.TProtocol prot, commit_result struct) throws org.apache.thrift.TException {
         org.apache.thrift.protocol.TTupleProtocol iprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
         java.util.BitSet incoming = iprot.readBitSet(1);
         if (incoming.get(0)) {
-          struct.success = new PrepareResult();
-          struct.success.read(iprot);
-          struct.setSuccessIsSet(true);
-        }
-      }
-    }
-
-    private static <S extends org.apache.thrift.scheme.IScheme> S scheme(org.apache.thrift.protocol.TProtocol proto) {
-      return (org.apache.thrift.scheme.StandardScheme.class.equals(proto.getScheme()) ? STANDARD_SCHEME_FACTORY : TUPLE_SCHEME_FACTORY).getScheme();
-    }
-  }
-
-  @SuppressWarnings({"cast", "rawtypes", "serial", "unchecked", "unused"})
-  public static class prepareDelete_args implements org.apache.thrift.TBase<prepareDelete_args, prepareDelete_args._Fields>, java.io.Serializable, Cloneable, Comparable<prepareDelete_args>   {
-    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("prepareDelete_args");
-
-    private static final org.apache.thrift.protocol.TField KEY_FIELD_DESC = new org.apache.thrift.protocol.TField("key", org.apache.thrift.protocol.TType.I32, (short)1);
-    private static final org.apache.thrift.protocol.TField REQ_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("reqId", org.apache.thrift.protocol.TType.STRING, (short)2);
-
-    private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new prepareDelete_argsStandardSchemeFactory();
-    private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new prepareDelete_argsTupleSchemeFactory();
-
-    public int key; // required
-    public @org.apache.thrift.annotation.Nullable java.lang.String reqId; // required
-
-    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
-    public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-      KEY((short)1, "key"),
-      REQ_ID((short)2, "reqId");
-
-      private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
-
-      static {
-        for (_Fields field : java.util.EnumSet.allOf(_Fields.class)) {
-          byName.put(field.getFieldName(), field);
-        }
-      }
-
-      /**
-       * Find the _Fields constant that matches fieldId, or null if its not found.
-       */
-      @org.apache.thrift.annotation.Nullable
-      public static _Fields findByThriftId(int fieldId) {
-        switch(fieldId) {
-          case 1: // KEY
-            return KEY;
-          case 2: // REQ_ID
-            return REQ_ID;
-          default:
-            return null;
-        }
-      }
-
-      /**
-       * Find the _Fields constant that matches fieldId, throwing an exception
-       * if it is not found.
-       */
-      public static _Fields findByThriftIdOrThrow(int fieldId) {
-        _Fields fields = findByThriftId(fieldId);
-        if (fields == null) throw new java.lang.IllegalArgumentException("Field " + fieldId + " doesn't exist!");
-        return fields;
-      }
-
-      /**
-       * Find the _Fields constant that matches name, or null if its not found.
-       */
-      @org.apache.thrift.annotation.Nullable
-      public static _Fields findByName(java.lang.String name) {
-        return byName.get(name);
-      }
-
-      private final short _thriftId;
-      private final java.lang.String _fieldName;
-
-      _Fields(short thriftId, java.lang.String fieldName) {
-        _thriftId = thriftId;
-        _fieldName = fieldName;
-      }
-
-      @Override
-      public short getThriftFieldId() {
-        return _thriftId;
-      }
-
-      @Override
-      public java.lang.String getFieldName() {
-        return _fieldName;
-      }
-    }
-
-    // isset id assignments
-    private static final int __KEY_ISSET_ID = 0;
-    private byte __isset_bitfield = 0;
-    public static final java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
-    static {
-      java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new java.util.EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
-      tmpMap.put(_Fields.KEY, new org.apache.thrift.meta_data.FieldMetaData("key", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
-      tmpMap.put(_Fields.REQ_ID, new org.apache.thrift.meta_data.FieldMetaData("reqId", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-      metaDataMap = java.util.Collections.unmodifiableMap(tmpMap);
-      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(prepareDelete_args.class, metaDataMap);
-    }
-
-    public prepareDelete_args() {
-    }
-
-    public prepareDelete_args(
-      int key,
-      java.lang.String reqId)
-    {
-      this();
-      this.key = key;
-      setKeyIsSet(true);
-      this.reqId = reqId;
-    }
-
-    /**
-     * Performs a deep copy on <i>other</i>.
-     */
-    public prepareDelete_args(prepareDelete_args other) {
-      __isset_bitfield = other.__isset_bitfield;
-      this.key = other.key;
-      if (other.isSetReqId()) {
-        this.reqId = other.reqId;
-      }
-    }
-
-    @Override
-    public prepareDelete_args deepCopy() {
-      return new prepareDelete_args(this);
-    }
-
-    @Override
-    public void clear() {
-      setKeyIsSet(false);
-      this.key = 0;
-      this.reqId = null;
-    }
-
-    public int getKey() {
-      return this.key;
-    }
-
-    public prepareDelete_args setKey(int key) {
-      this.key = key;
-      setKeyIsSet(true);
-      return this;
-    }
-
-    public void unsetKey() {
-      __isset_bitfield = org.apache.thrift.EncodingUtils.clearBit(__isset_bitfield, __KEY_ISSET_ID);
-    }
-
-    /** Returns true if field key is set (has been assigned a value) and false otherwise */
-    public boolean isSetKey() {
-      return org.apache.thrift.EncodingUtils.testBit(__isset_bitfield, __KEY_ISSET_ID);
-    }
-
-    public void setKeyIsSet(boolean value) {
-      __isset_bitfield = org.apache.thrift.EncodingUtils.setBit(__isset_bitfield, __KEY_ISSET_ID, value);
-    }
-
-    @org.apache.thrift.annotation.Nullable
-    public java.lang.String getReqId() {
-      return this.reqId;
-    }
-
-    public prepareDelete_args setReqId(@org.apache.thrift.annotation.Nullable java.lang.String reqId) {
-      this.reqId = reqId;
-      return this;
-    }
-
-    public void unsetReqId() {
-      this.reqId = null;
-    }
-
-    /** Returns true if field reqId is set (has been assigned a value) and false otherwise */
-    public boolean isSetReqId() {
-      return this.reqId != null;
-    }
-
-    public void setReqIdIsSet(boolean value) {
-      if (!value) {
-        this.reqId = null;
-      }
-    }
-
-    @Override
-    public void setFieldValue(_Fields field, @org.apache.thrift.annotation.Nullable java.lang.Object value) {
-      switch (field) {
-      case KEY:
-        if (value == null) {
-          unsetKey();
-        } else {
-          setKey((java.lang.Integer)value);
-        }
-        break;
-
-      case REQ_ID:
-        if (value == null) {
-          unsetReqId();
-        } else {
-          setReqId((java.lang.String)value);
-        }
-        break;
-
-      }
-    }
-
-    @org.apache.thrift.annotation.Nullable
-    @Override
-    public java.lang.Object getFieldValue(_Fields field) {
-      switch (field) {
-      case KEY:
-        return getKey();
-
-      case REQ_ID:
-        return getReqId();
-
-      }
-      throw new java.lang.IllegalStateException();
-    }
-
-    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
-    @Override
-    public boolean isSet(_Fields field) {
-      if (field == null) {
-        throw new java.lang.IllegalArgumentException();
-      }
-
-      switch (field) {
-      case KEY:
-        return isSetKey();
-      case REQ_ID:
-        return isSetReqId();
-      }
-      throw new java.lang.IllegalStateException();
-    }
-
-    @Override
-    public boolean equals(java.lang.Object that) {
-      if (that instanceof prepareDelete_args)
-        return this.equals((prepareDelete_args)that);
-      return false;
-    }
-
-    public boolean equals(prepareDelete_args that) {
-      if (that == null)
-        return false;
-      if (this == that)
-        return true;
-
-      boolean this_present_key = true;
-      boolean that_present_key = true;
-      if (this_present_key || that_present_key) {
-        if (!(this_present_key && that_present_key))
-          return false;
-        if (this.key != that.key)
-          return false;
-      }
-
-      boolean this_present_reqId = true && this.isSetReqId();
-      boolean that_present_reqId = true && that.isSetReqId();
-      if (this_present_reqId || that_present_reqId) {
-        if (!(this_present_reqId && that_present_reqId))
-          return false;
-        if (!this.reqId.equals(that.reqId))
-          return false;
-      }
-
-      return true;
-    }
-
-    @Override
-    public int hashCode() {
-      int hashCode = 1;
-
-      hashCode = hashCode * 8191 + key;
-
-      hashCode = hashCode * 8191 + ((isSetReqId()) ? 131071 : 524287);
-      if (isSetReqId())
-        hashCode = hashCode * 8191 + reqId.hashCode();
-
-      return hashCode;
-    }
-
-    @Override
-    public int compareTo(prepareDelete_args other) {
-      if (!getClass().equals(other.getClass())) {
-        return getClass().getName().compareTo(other.getClass().getName());
-      }
-
-      int lastComparison = 0;
-
-      lastComparison = java.lang.Boolean.compare(isSetKey(), other.isSetKey());
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-      if (isSetKey()) {
-        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.key, other.key);
-        if (lastComparison != 0) {
-          return lastComparison;
-        }
-      }
-      lastComparison = java.lang.Boolean.compare(isSetReqId(), other.isSetReqId());
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-      if (isSetReqId()) {
-        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.reqId, other.reqId);
-        if (lastComparison != 0) {
-          return lastComparison;
-        }
-      }
-      return 0;
-    }
-
-    @org.apache.thrift.annotation.Nullable
-    @Override
-    public _Fields fieldForId(int fieldId) {
-      return _Fields.findByThriftId(fieldId);
-    }
-
-    @Override
-    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
-      scheme(iprot).read(iprot, this);
-    }
-
-    @Override
-    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
-      scheme(oprot).write(oprot, this);
-    }
-
-    @Override
-    public java.lang.String toString() {
-      java.lang.StringBuilder sb = new java.lang.StringBuilder("prepareDelete_args(");
-      boolean first = true;
-
-      sb.append("key:");
-      sb.append(this.key);
-      first = false;
-      if (!first) sb.append(", ");
-      sb.append("reqId:");
-      if (this.reqId == null) {
-        sb.append("null");
-      } else {
-        sb.append(this.reqId);
-      }
-      first = false;
-      sb.append(")");
-      return sb.toString();
-    }
-
-    public void validate() throws org.apache.thrift.TException {
-      // check for required fields
-      // check for sub-struct validity
-    }
-
-    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
-      try {
-        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
-      } catch (org.apache.thrift.TException te) {
-        throw new java.io.IOException(te);
-      }
-    }
-
-    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, java.lang.ClassNotFoundException {
-      try {
-        // it doesn't seem like you should have to do this, but java serialization is wacky, and doesn't call the default constructor.
-        __isset_bitfield = 0;
-        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
-      } catch (org.apache.thrift.TException te) {
-        throw new java.io.IOException(te);
-      }
-    }
-
-    private static class prepareDelete_argsStandardSchemeFactory implements org.apache.thrift.scheme.SchemeFactory {
-      @Override
-      public prepareDelete_argsStandardScheme getScheme() {
-        return new prepareDelete_argsStandardScheme();
-      }
-    }
-
-    private static class prepareDelete_argsStandardScheme extends org.apache.thrift.scheme.StandardScheme<prepareDelete_args> {
-
-      @Override
-      public void read(org.apache.thrift.protocol.TProtocol iprot, prepareDelete_args struct) throws org.apache.thrift.TException {
-        org.apache.thrift.protocol.TField schemeField;
-        iprot.readStructBegin();
-        while (true)
-        {
-          schemeField = iprot.readFieldBegin();
-          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
-            break;
-          }
-          switch (schemeField.id) {
-            case 1: // KEY
-              if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
-                struct.key = iprot.readI32();
-                struct.setKeyIsSet(true);
-              } else { 
-                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-              }
-              break;
-            case 2: // REQ_ID
-              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-                struct.reqId = iprot.readString();
-                struct.setReqIdIsSet(true);
-              } else { 
-                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-              }
-              break;
-            default:
-              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-          }
-          iprot.readFieldEnd();
-        }
-        iprot.readStructEnd();
-
-        // check for required fields of primitive type, which can't be checked in the validate method
-        struct.validate();
-      }
-
-      @Override
-      public void write(org.apache.thrift.protocol.TProtocol oprot, prepareDelete_args struct) throws org.apache.thrift.TException {
-        struct.validate();
-
-        oprot.writeStructBegin(STRUCT_DESC);
-        oprot.writeFieldBegin(KEY_FIELD_DESC);
-        oprot.writeI32(struct.key);
-        oprot.writeFieldEnd();
-        if (struct.reqId != null) {
-          oprot.writeFieldBegin(REQ_ID_FIELD_DESC);
-          oprot.writeString(struct.reqId);
-          oprot.writeFieldEnd();
-        }
-        oprot.writeFieldStop();
-        oprot.writeStructEnd();
-      }
-
-    }
-
-    private static class prepareDelete_argsTupleSchemeFactory implements org.apache.thrift.scheme.SchemeFactory {
-      @Override
-      public prepareDelete_argsTupleScheme getScheme() {
-        return new prepareDelete_argsTupleScheme();
-      }
-    }
-
-    private static class prepareDelete_argsTupleScheme extends org.apache.thrift.scheme.TupleScheme<prepareDelete_args> {
-
-      @Override
-      public void write(org.apache.thrift.protocol.TProtocol prot, prepareDelete_args struct) throws org.apache.thrift.TException {
-        org.apache.thrift.protocol.TTupleProtocol oprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
-        java.util.BitSet optionals = new java.util.BitSet();
-        if (struct.isSetKey()) {
-          optionals.set(0);
-        }
-        if (struct.isSetReqId()) {
-          optionals.set(1);
-        }
-        oprot.writeBitSet(optionals, 2);
-        if (struct.isSetKey()) {
-          oprot.writeI32(struct.key);
-        }
-        if (struct.isSetReqId()) {
-          oprot.writeString(struct.reqId);
-        }
-      }
-
-      @Override
-      public void read(org.apache.thrift.protocol.TProtocol prot, prepareDelete_args struct) throws org.apache.thrift.TException {
-        org.apache.thrift.protocol.TTupleProtocol iprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
-        java.util.BitSet incoming = iprot.readBitSet(2);
-        if (incoming.get(0)) {
-          struct.key = iprot.readI32();
-          struct.setKeyIsSet(true);
-        }
-        if (incoming.get(1)) {
-          struct.reqId = iprot.readString();
-          struct.setReqIdIsSet(true);
-        }
-      }
-    }
-
-    private static <S extends org.apache.thrift.scheme.IScheme> S scheme(org.apache.thrift.protocol.TProtocol proto) {
-      return (org.apache.thrift.scheme.StandardScheme.class.equals(proto.getScheme()) ? STANDARD_SCHEME_FACTORY : TUPLE_SCHEME_FACTORY).getScheme();
-    }
-  }
-
-  @SuppressWarnings({"cast", "rawtypes", "serial", "unchecked", "unused"})
-  public static class prepareDelete_result implements org.apache.thrift.TBase<prepareDelete_result, prepareDelete_result._Fields>, java.io.Serializable, Cloneable, Comparable<prepareDelete_result>   {
-    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("prepareDelete_result");
-
-    private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.STRUCT, (short)0);
-
-    private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new prepareDelete_resultStandardSchemeFactory();
-    private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new prepareDelete_resultTupleSchemeFactory();
-
-    public @org.apache.thrift.annotation.Nullable PrepareResult success; // required
-
-    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
-    public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-      SUCCESS((short)0, "success");
-
-      private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
-
-      static {
-        for (_Fields field : java.util.EnumSet.allOf(_Fields.class)) {
-          byName.put(field.getFieldName(), field);
-        }
-      }
-
-      /**
-       * Find the _Fields constant that matches fieldId, or null if its not found.
-       */
-      @org.apache.thrift.annotation.Nullable
-      public static _Fields findByThriftId(int fieldId) {
-        switch(fieldId) {
-          case 0: // SUCCESS
-            return SUCCESS;
-          default:
-            return null;
-        }
-      }
-
-      /**
-       * Find the _Fields constant that matches fieldId, throwing an exception
-       * if it is not found.
-       */
-      public static _Fields findByThriftIdOrThrow(int fieldId) {
-        _Fields fields = findByThriftId(fieldId);
-        if (fields == null) throw new java.lang.IllegalArgumentException("Field " + fieldId + " doesn't exist!");
-        return fields;
-      }
-
-      /**
-       * Find the _Fields constant that matches name, or null if its not found.
-       */
-      @org.apache.thrift.annotation.Nullable
-      public static _Fields findByName(java.lang.String name) {
-        return byName.get(name);
-      }
-
-      private final short _thriftId;
-      private final java.lang.String _fieldName;
-
-      _Fields(short thriftId, java.lang.String fieldName) {
-        _thriftId = thriftId;
-        _fieldName = fieldName;
-      }
-
-      @Override
-      public short getThriftFieldId() {
-        return _thriftId;
-      }
-
-      @Override
-      public java.lang.String getFieldName() {
-        return _fieldName;
-      }
-    }
-
-    // isset id assignments
-    public static final java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
-    static {
-      java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new java.util.EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
-      tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, PrepareResult.class)));
-      metaDataMap = java.util.Collections.unmodifiableMap(tmpMap);
-      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(prepareDelete_result.class, metaDataMap);
-    }
-
-    public prepareDelete_result() {
-    }
-
-    public prepareDelete_result(
-      PrepareResult success)
-    {
-      this();
-      this.success = success;
-    }
-
-    /**
-     * Performs a deep copy on <i>other</i>.
-     */
-    public prepareDelete_result(prepareDelete_result other) {
-      if (other.isSetSuccess()) {
-        this.success = new PrepareResult(other.success);
-      }
-    }
-
-    @Override
-    public prepareDelete_result deepCopy() {
-      return new prepareDelete_result(this);
-    }
-
-    @Override
-    public void clear() {
-      this.success = null;
-    }
-
-    @org.apache.thrift.annotation.Nullable
-    public PrepareResult getSuccess() {
-      return this.success;
-    }
-
-    public prepareDelete_result setSuccess(@org.apache.thrift.annotation.Nullable PrepareResult success) {
-      this.success = success;
-      return this;
-    }
-
-    public void unsetSuccess() {
-      this.success = null;
-    }
-
-    /** Returns true if field success is set (has been assigned a value) and false otherwise */
-    public boolean isSetSuccess() {
-      return this.success != null;
-    }
-
-    public void setSuccessIsSet(boolean value) {
-      if (!value) {
-        this.success = null;
-      }
-    }
-
-    @Override
-    public void setFieldValue(_Fields field, @org.apache.thrift.annotation.Nullable java.lang.Object value) {
-      switch (field) {
-      case SUCCESS:
-        if (value == null) {
-          unsetSuccess();
-        } else {
-          setSuccess((PrepareResult)value);
-        }
-        break;
-
-      }
-    }
-
-    @org.apache.thrift.annotation.Nullable
-    @Override
-    public java.lang.Object getFieldValue(_Fields field) {
-      switch (field) {
-      case SUCCESS:
-        return getSuccess();
-
-      }
-      throw new java.lang.IllegalStateException();
-    }
-
-    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
-    @Override
-    public boolean isSet(_Fields field) {
-      if (field == null) {
-        throw new java.lang.IllegalArgumentException();
-      }
-
-      switch (field) {
-      case SUCCESS:
-        return isSetSuccess();
-      }
-      throw new java.lang.IllegalStateException();
-    }
-
-    @Override
-    public boolean equals(java.lang.Object that) {
-      if (that instanceof prepareDelete_result)
-        return this.equals((prepareDelete_result)that);
-      return false;
-    }
-
-    public boolean equals(prepareDelete_result that) {
-      if (that == null)
-        return false;
-      if (this == that)
-        return true;
-
-      boolean this_present_success = true && this.isSetSuccess();
-      boolean that_present_success = true && that.isSetSuccess();
-      if (this_present_success || that_present_success) {
-        if (!(this_present_success && that_present_success))
-          return false;
-        if (!this.success.equals(that.success))
-          return false;
-      }
-
-      return true;
-    }
-
-    @Override
-    public int hashCode() {
-      int hashCode = 1;
-
-      hashCode = hashCode * 8191 + ((isSetSuccess()) ? 131071 : 524287);
-      if (isSetSuccess())
-        hashCode = hashCode * 8191 + success.hashCode();
-
-      return hashCode;
-    }
-
-    @Override
-    public int compareTo(prepareDelete_result other) {
-      if (!getClass().equals(other.getClass())) {
-        return getClass().getName().compareTo(other.getClass().getName());
-      }
-
-      int lastComparison = 0;
-
-      lastComparison = java.lang.Boolean.compare(isSetSuccess(), other.isSetSuccess());
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-      if (isSetSuccess()) {
-        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.success, other.success);
-        if (lastComparison != 0) {
-          return lastComparison;
-        }
-      }
-      return 0;
-    }
-
-    @org.apache.thrift.annotation.Nullable
-    @Override
-    public _Fields fieldForId(int fieldId) {
-      return _Fields.findByThriftId(fieldId);
-    }
-
-    @Override
-    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
-      scheme(iprot).read(iprot, this);
-    }
-
-    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
-      scheme(oprot).write(oprot, this);
-      }
-
-    @Override
-    public java.lang.String toString() {
-      java.lang.StringBuilder sb = new java.lang.StringBuilder("prepareDelete_result(");
-      boolean first = true;
-
-      sb.append("success:");
-      if (this.success == null) {
-        sb.append("null");
-      } else {
-        sb.append(this.success);
-      }
-      first = false;
-      sb.append(")");
-      return sb.toString();
-    }
-
-    public void validate() throws org.apache.thrift.TException {
-      // check for required fields
-      // check for sub-struct validity
-      if (success != null) {
-        success.validate();
-      }
-    }
-
-    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
-      try {
-        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
-      } catch (org.apache.thrift.TException te) {
-        throw new java.io.IOException(te);
-      }
-    }
-
-    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, java.lang.ClassNotFoundException {
-      try {
-        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
-      } catch (org.apache.thrift.TException te) {
-        throw new java.io.IOException(te);
-      }
-    }
-
-    private static class prepareDelete_resultStandardSchemeFactory implements org.apache.thrift.scheme.SchemeFactory {
-      @Override
-      public prepareDelete_resultStandardScheme getScheme() {
-        return new prepareDelete_resultStandardScheme();
-      }
-    }
-
-    private static class prepareDelete_resultStandardScheme extends org.apache.thrift.scheme.StandardScheme<prepareDelete_result> {
-
-      @Override
-      public void read(org.apache.thrift.protocol.TProtocol iprot, prepareDelete_result struct) throws org.apache.thrift.TException {
-        org.apache.thrift.protocol.TField schemeField;
-        iprot.readStructBegin();
-        while (true)
-        {
-          schemeField = iprot.readFieldBegin();
-          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
-            break;
-          }
-          switch (schemeField.id) {
-            case 0: // SUCCESS
-              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.success = new PrepareResult();
-                struct.success.read(iprot);
-                struct.setSuccessIsSet(true);
-              } else { 
-                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-              }
-              break;
-            default:
-              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-          }
-          iprot.readFieldEnd();
-        }
-        iprot.readStructEnd();
-
-        // check for required fields of primitive type, which can't be checked in the validate method
-        struct.validate();
-      }
-
-      @Override
-      public void write(org.apache.thrift.protocol.TProtocol oprot, prepareDelete_result struct) throws org.apache.thrift.TException {
-        struct.validate();
-
-        oprot.writeStructBegin(STRUCT_DESC);
-        if (struct.success != null) {
-          oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
-          struct.success.write(oprot);
-          oprot.writeFieldEnd();
-        }
-        oprot.writeFieldStop();
-        oprot.writeStructEnd();
-      }
-
-    }
-
-    private static class prepareDelete_resultTupleSchemeFactory implements org.apache.thrift.scheme.SchemeFactory {
-      @Override
-      public prepareDelete_resultTupleScheme getScheme() {
-        return new prepareDelete_resultTupleScheme();
-      }
-    }
-
-    private static class prepareDelete_resultTupleScheme extends org.apache.thrift.scheme.TupleScheme<prepareDelete_result> {
-
-      @Override
-      public void write(org.apache.thrift.protocol.TProtocol prot, prepareDelete_result struct) throws org.apache.thrift.TException {
-        org.apache.thrift.protocol.TTupleProtocol oprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
-        java.util.BitSet optionals = new java.util.BitSet();
-        if (struct.isSetSuccess()) {
-          optionals.set(0);
-        }
-        oprot.writeBitSet(optionals, 1);
-        if (struct.isSetSuccess()) {
-          struct.success.write(oprot);
-        }
-      }
-
-      @Override
-      public void read(org.apache.thrift.protocol.TProtocol prot, prepareDelete_result struct) throws org.apache.thrift.TException {
-        org.apache.thrift.protocol.TTupleProtocol iprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
-        java.util.BitSet incoming = iprot.readBitSet(1);
-        if (incoming.get(0)) {
-          struct.success = new PrepareResult();
+          struct.success = new CommitResult();
           struct.success.read(iprot);
           struct.setSuccessIsSet(true);
         }
