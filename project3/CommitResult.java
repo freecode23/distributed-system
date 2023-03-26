@@ -5,6 +5,7 @@
  *  @generated
  */
 @SuppressWarnings({"cast", "rawtypes", "serial", "unchecked", "unused"})
+
 public class CommitResult implements org.apache.thrift.TBase<CommitResult, CommitResult._Fields>, java.io.Serializable, Cloneable, Comparable<CommitResult> {
   private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("CommitResult");
 

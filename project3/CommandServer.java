@@ -141,6 +141,26 @@ public class CommandServer {
 
             return allAcksReceived;
         }
+        
+        private void abortReplicas(String reqId) {
+            for (int replicaPort : replicaPorts) {
+                if (replicaPort != port) {
+                    try {
+                        TTransport replicaTransport = new TSocket("localhost", replicaPort);
+                        replicaTransport.open();
+                        TBinaryProtocol protocol = new TBinaryProtocol(replicaTransport);
+                        Command.Client replicaClient = new Command.Client(protocol);
+                        replicaClient.abort(reqId);
+                        replicaTransport.close();
+                    } catch (TException ex) {
+                        // You can decide how to handle exceptions here.
+                        // For example, you might log the exception or simply ignore it.
+                        System.out.println("Error aborting replicas: " + e.getMessage());
+                    }
+                }
+            }
+        }
+        
         // 3. Override thrifts interface
         /**
          * A replica will prepare itself to perform the operation received by another
@@ -325,6 +345,7 @@ public class CommandServer {
 
             } else {
                 // -3 abortReplicas(key, val, reqId);
+                abortReplicas(reqId);
                 result.status = "ERROR";
                 result.msg = "Not acknowledged";
                 result.value = 0;
@@ -391,6 +412,17 @@ public class CommandServer {
             return result;
         }
 
+        @Override
+        public void abort(String reqId) {
+            PreparedOperation op = preparedOperations.get(reqId);
+            if (op != null) {
+                int key = op.key;
+                synchronized (locks[key]) {
+                    lockedKeys.remove(Integer.valueOf(key));
+                    preparedOperations.remove(reqId);
+                }
+            }
+        }
         /**
          * 2.Print log on server side
          * 
