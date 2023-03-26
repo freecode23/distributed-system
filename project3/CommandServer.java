@@ -42,8 +42,8 @@ public class CommandServer {
         //  1. init keyvalue store
         private Map<Integer, Integer> keyVal = new ConcurrentHashMap<>();
 
-        // 2. list of TTransport to manage communication with other servers
-        private List<TTransport> replicaTransports;
+        // 2. list of ports of the other servers
+        private List<Integer> replicaPorts;
 
         // 3. Array of locks that this server will use. the index represent the key that it will lock
         private Object[] locks = new Object[1000]; 
@@ -62,20 +62,13 @@ public class CommandServer {
          */
         public CommandHandler(int currPort, int[] replicaPorts) {
 
-            // 1. Init TTransport for each replica so current server can communicate with others
-            replicaTransports = new ArrayList<>();
             this.port = currPort;
+            
+            // 1. Add all ports
+            this.replicaPorts = new ArrayList<>();
             for (int replicaPort : replicaPorts) {
                 if (replicaPort != currPort) {
-                    try {
-                        TSocket socket = new TSocket("localhost", replicaPort);
-                        replicaTransports.add(socket);
-                    } catch (TTransportException ex) {
-
-                        // handle other TTransportException
-                        System.out.println(ex.getMessage());
-
-                    }
+                    this.replicaPorts.add(replicaPort);
                 }
             }
 
@@ -93,24 +86,26 @@ public class CommandServer {
         private boolean prepareReplicas(int key, int value, String command, String reqId, String clientIp, int clientPort) {
 
             // 0. for each replica
-            for (TTransport transport : replicaTransports) {
-                try {
-                    // 1. init new request to other replicas
-                    transport.open();
-                    TBinaryProtocol protocol = new TBinaryProtocol(transport);
-                    Command.Client replica = new Command.Client(protocol);
+            for (int replicaPort : replicaPorts) {
+                if (replicaPort != port) {
+                    try {
+                        TTransport replicaTransport = new TSocket("localhost", replicaPort);
+                        // 1. init new request to other replicas
+                        replicaTransport.open();
+                        TBinaryProtocol protocol = new TBinaryProtocol(replicaTransport);
+                        Command.Client replica = new Command.Client(protocol);
 
-                    // 2. make sure no other replica is modifying this
-                    PrepareResult prepResult = replica.prepare(key, value, command, reqId, clientIp, clientPort);
+                        // 2. make sure no other replica is modifying this
+                        PrepareResult prepResult = replica.prepare(key, value, command, reqId, clientIp, clientPort);
 
-                    if (!"PREPARED".equals(prepResult.msg)) {
+                        if (!"PREPARED".equals(prepResult.msg)) {
+                            return false;
+                        }
+                        replicaTransport.close();
+                    } catch (TException e) {
+                        e.printStackTrace();
                         return false;
                     }
-                } catch (TException e) {
-                    e.printStackTrace();
-                    return false;
-                } finally {
-                    transport.close();
                 }
             }
             return true;
@@ -120,26 +115,27 @@ public class CommandServer {
             boolean allAcksReceived = true;
 
             // 0. for each replica
-            for (TTransport transport : replicaTransports) {
-                try {
-                    transport.open();
+            for (int replicaPort : replicaPorts) {
+                if (replicaPort != port) {
+                    try {
+                        TTransport replicaTransport = new TSocket("localhost", replicaPort);
+                        replicaTransport.open();
 
-                    TBinaryProtocol protocol = new TBinaryProtocol(transport);
-                    Command.Client replica = new Command.Client(protocol);
+                        TBinaryProtocol protocol = new TBinaryProtocol(replicaTransport);
+                        Command.Client replica = new Command.Client(protocol);
 
-                    // 1. Send commit message to the replica
-                    CommitResult commitResult = replica.commit(reqId);
+                        // 1. Send commit message to the replica
+                        CommitResult commitResult = replica.commit(reqId);
 
-                    // Check if the replica sent an ACK
-                    if (!"ACK".equals(commitResult.msg)) {
+                        // Check if the replica sent an ACK
+                        if (!"ACK".equals(commitResult.msg)) {
+                            allAcksReceived = false;
+                        }
+                        replicaTransport.close();
+                    } catch (TException e) {
                         allAcksReceived = false;
-                    }
-
-                } catch (TException e) {
-                    allAcksReceived = false;
-                    System.out.println("Error while sending commit message: " + e.getMessage());
-                } finally {
-                    transport.close();
+                        System.out.println("Error while sending commit message: " + e.getMessage());
+                    } 
                 }
             }
 
