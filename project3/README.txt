@@ -31,7 +31,7 @@ However, extending the RPC to multiple servers also introduces some challenges. 
 Technical Impression:
 0. Additional classes: 
 - ServerDriver: 
-Now instead of running a single server we have a ServerDriver class that declares all the ports for the 5 servers. It will then initialize this servers with each having its own port number and it will start the server. These 5 servers are wrapped undera class ReplicatedServer. 
+Now instead of running a single server we have a ServerDriver class that declares all the ports for each of the 5 servers. It will then initialize these servers and start them. These 5 servers are wrapped under the class ReplicatedServer. 
 - ReplicatedServer: 
 It's a class that contains a list of the 5 servers (a CommandServer object) and has public method startServers() that will be called by the ServerDriver object above.
 
@@ -52,14 +52,14 @@ This function is called to commit a previously prepared operation identified by 
 This function is used to abort a previously prepared operation identified by the provided request ID. It cancels the operation, releases the lock on the key, and removes the prepared operation from the server. This can be used in scenarios where an operation needs to be canceled due to another server replica is already operating on the same key it wants to operate on
 
 3. How it all works:
-Now that we have defined all of the changes lets take an example of what happen when a client decide to make "put 1 1" request to server at port 9000. Let's call this server9000:
-    1. It will call the remote put method of server9000. 
-    2. server9000 will prepare all the other replicas (server9001 to server 9004). This is to say that it will call the prepare() function of the other 4 servers and pass them the request id, key, value, and other info needed for it to perform the operation. 
-    3. Each of the 4 replica servers will just check if the key that server9001 wants to operate on is already locked. If it's already locked it will send a NACK and server9001 will simply abort the whole "put 1 1" operation. If it's not already locked, it will lock this key and then create a PreparedOperation object and add it to its own list of preparedOperations for it to commit later on.
-    4. If server9000 receive ACKs for all the replicas at the prepareReplicas(), it will go to the next step which is commitReplicas()
+Now that we have defined all of the changes lets take an example of what happen when a client decide to make "put 1 1" request to server at port 9000. Let's call this coordinator server9000:
+    1. Client will call the remote "put" method of server9000. 
+    2. server9000 will prepare all the other replicas (server9001 to server 9004). This is to say that it will call the prepare() function of the other 4 servers and pass them the request id, key, value, and other info needed for them to perform this operation for their own keyValue store. 
+    3. Each of the 4 replica servers will then check if the key that server9001 wants to operate on is already locked. If it's already locked it will send a NACK and server9001 will simply abort the whole "put 1 1" operation. If it's not already locked, the replica will lock this key and create a PreparedOperation object, add this object to its own list of preparedOperations for it to commit later on.
+    4. If server9000 receive ACKs from all of the replicas at the prepareReplicas(), it will go to the next step which is commitReplicas()
     5. In commitReplicas(), server9000 will call every replica's commit() remote function to execute the operation with the requestID it sends. In this case the requestId will correspond to the "put 1 1" operation. 
-    6. All the replica server9001 to server9004 will grab this PreparedOperation object from hashmap and perform the operation using its local putHelper method. Once this operation is done, it will unlock this key so it can be used by other operations. 
-    7. If all the replicas successfully committed this operation, it will also call a local putHelper() method to put 1 1 to its own keyValue store. It will then print a log on the server and return the result object as before to the client. 
+    6. All the replicas (server9001 to server9004) will grab this PreparedOperation object from hashmap and perform the operation using its local putHelper method. Once this operation is done, it will unlock this key so it can be used by other operations. 
+    7. If all the replicas successfully committed this operation, the chosen coordinator server9001 will also call a local putHelper() method to put 1 1 to its own keyValue store. It will then print a log and return the result object as before to the client. 
     8. If any of the replicas cannot commit to this operation it will abort this operation and send an error message back to the client
 
 4. Conclusion:
