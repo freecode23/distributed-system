@@ -12,6 +12,7 @@ import java.net.Socket;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Random;
 import java.util.Scanner;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
@@ -199,26 +200,31 @@ public class CommandClient {
 
     }
 
+    private static int getRandomServerIndex(int serverCount) {
+        Random random = new Random();
+        return random.nextInt(serverCount);
+    }
+
 
     public static void main(String[] args) {
-        if (args.length != 2) {
+        if (args.length != 1) {
             System.out.println(
-                    "please enter the argument of the host ip address followed by port number. e.g 127.0.0.1 5050");
+                    "please enter the argument of the host ip address. e.g 127.0.0.1");
             return;
         }
-        if (!isWordNumeric(args[1])) {
-            System.out.println(
-                    "Invalid argument, port number should be numeric");
-            return;
-        }
+
+        int[] serverPorts = { 9000, 9001, 9002, 9003, 9004 };
+
+
         String serverhost = args[0];
-        int serverport = Integer.parseInt(args[1]);
         int timeout = 5000; //5000 ms timeout
+
         // 1. prepopulate
         try {
-            
+            int serverIndex = getRandomServerIndex(5);
+            int serverPort = serverPorts[serverIndex];
             // 1.1 init client and socket
-            TTransport transport = new TSocket(serverhost, serverport, timeout);
+            TTransport transport = new TSocket(serverhost, serverPort, timeout);
             transport.open();
             TBinaryProtocol protocol = new TBinaryProtocol(transport);
             Command.Client client = new Command.Client(protocol);
@@ -252,9 +258,10 @@ public class CommandClient {
             executor.execute(new Runnable(){
                 public void run(){
                     try {
-
+                        int serverIndex = getRandomServerIndex(5);
+                        int serverPort = serverPorts[serverIndex];
                         // 2.1 init client and timout
-                        TTransport transportM = new TSocket(serverhost, serverport, timeout);
+                        TTransport transportM = new TSocket(serverhost, serverPort, timeout);
                         transportM.open();
                         TBinaryProtocol protocolM = new TBinaryProtocol(transportM);
                         Command.Client clientM = new Command.Client(protocolM);
