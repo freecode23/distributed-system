@@ -41,9 +41,10 @@ Our CommandHandler class which is the RPC service implementation now holds sever
 - replicaPorts: These are the list of ports of the other servers that the client can connect to
 - Object[] locks : This is an array of locks that the server will use to ensure consistency across servers. The indices of the array represent the key that it will lock when it tries to operate on this key. When a server receives a request to perform an operation, it will first lock the key using the synchronized (locks[key]) block. If the key is already locked by another operation within this server, it will send a negative acknowledgment (NACK) with the message "Key is locked by another operation." 
 - Set<Integer> lockedKeys: This is another data structure that we will used together with the locks array above. If the key is not used by another thread, we will add this key to the lockedKeys set to ensure that another thread will not use this. 
-- Map<String, PreparedOperation> preparedOperations: This is a concurrentHashmap of operations that this server will need to execute. 
+- Map<String, PreparedOperation> preparedOperations: This is a concurrentHashmap of operations that this server will need to execute or commit. 
 
 2. RPC Additional services:
+In addition to the put, delete, and get method that are services for the clients, we also need to add prepare, commit, and abort methods in our RPC services so that the selected coordinator server can call these remote functions. Here are the explanations for each of them:
 - PrepareResult prepare(1: i32 key, 2: i32 value, 3: string command, 4: string reqId, 5: string clientIp, 6:i32 clientPort)
 This function is used to prepare an operation on a given key with the specified value. It takes in the command (e.g., "put" or "delete"), a unique request ID, and the client's IP and port. It checks if the key is locked by another operation; if not, it locks the key and prepares the operation. The function returns a PrepareResult that contains the status of the preparation (OK or KEY_LOCKED) and a message indicating the result.
 - CommitResult commit(1: string reqId)
