@@ -371,7 +371,8 @@ public class CommandServer {
                 result = deleteHelper(key, reqId);
 
             } else {
-                // -3 abortReplicas(key, val, reqId);
+                // -2 cannot perform operation as another server is still performing operation on this key
+                abortReplicas(reqId);
                 result.status = "ERROR";
                 result.msg = "Not acknowledged";
                 result.value = 0;
