@@ -63,5 +63,5 @@ Now that we have defined all of the changes lets take an example of what happen 
     8. If any of the replicas cannot commit to this operation it will abort this operation and send an error message back to the client
 
 4. Conclusion:
-With this 2 phase commit method we are able to maintain consistency of our keyvalue store across servers. However there are some potential single points of failure. If the server that initiates the prepare and commit/abort process fails, the operation might not complete, and other replicas might be left waiting for commit or abort instructions. We can mitigate these risks by implementing a more fault-tolerant consensus algorithm, like the Paxos. These algorithms are designed to handle failures and ensure consistent operations across multiple replicas.
+With this 2 phase commit method we are able to maintain consistency of our keyvalue store across servers. However there are some potential single points of failure. If the server that initiates the prepare and commit/abort process fails, the operation might not complete, and other replicas might be left waiting for commit or abort instructions. We can mitigate these risks by implementing a more fault-tolerant consensus algorithm, like the Paxos. This algorithm is designed to handle failures and ensure consistent operations across multiple replicas.
 
