@@ -11,7 +11,6 @@ Step 2. Compile and put all class files to bin folder
 javac -cp .:./lib/libthrift.jar:./lib/slf4j.jar -d bin/ *.java
 
 Step 3. Run server. Set to look for the jar file lib directory and class files in bin directory.
-note 9090 is the chosen port number for server
 e.g:
 java -cp ./bin:./lib/libthrift.jar:./lib/slf4j.jar CommandServer
 
