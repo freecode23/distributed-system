@@ -15,13 +15,13 @@ note 9090 is the chosen port number for server
 e.g:
 java -cp ./bin:./lib/libthrift.jar:./lib/slf4j.jar CommandServer
 
-Step 4. Run client add the host address and the port number as argument
+Step 4. Run client add the host address
 e.g:
 java -cp ./bin:./lib/libthrift.jar:./lib/slf4j.jar CommandClient 127.0.0.1
 
 
 Executive Summary
-Assignment Overview
+Assignment Overview:
 The objective of this project is to enhance our system by creating five replica servers, enabling clients to make RPC calls to any of the servers and receive consistent data. This distributed architecture offers several benefits, such as improved scalability. With multiple servers, the system can handle a higher volume of incoming requests by distributing the load among the replicas.
 
 This approach also provides fault tolerance. If one or more replica servers fail, the remaining servers can continue to process client requests, ensuring the system's overall availability.
@@ -64,7 +64,5 @@ Now that we have defined all of the changes lets take an example of what happen 
     8. If any of the replicas cannot commit to this operation it will abort this operation and send an error message back to the client
 
 4. Conclusion:
-With this 2 phase commit method we are able to maintain consistency of our keyvalue store across servers. However there are some potential single points of failure:
-
-If the server that initiates the prepare and commit/abort process fails, the operation might not complete, and other replicas might be left waiting for commit or abort instructions. We can mitigate these risks by implementing a more fault-tolerant consensus algorithm, like the Paxos. These algorithms are designed to handle failures and ensure consistent operations across multiple replicas.
+With this 2 phase commit method we are able to maintain consistency of our keyvalue store across servers. However there are some potential single points of failure. If the server that initiates the prepare and commit/abort process fails, the operation might not complete, and other replicas might be left waiting for commit or abort instructions. We can mitigate these risks by implementing a more fault-tolerant consensus algorithm, like the Paxos. These algorithms are designed to handle failures and ensure consistent operations across multiple replicas.
 
