@@ -5,7 +5,6 @@
  *  @generated
  */
 
-
 public enum PrepareStatus implements org.apache.thrift.TEnum {
   OK(1),
   KEY_LOCKED(2),

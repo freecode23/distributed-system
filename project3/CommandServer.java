@@ -155,7 +155,7 @@ public class CommandServer {
                     } catch (TException ex) {
                         // You can decide how to handle exceptions here.
                         // For example, you might log the exception or simply ignore it.
-                        System.out.println("Error aborting replicas: " + e.getMessage());
+                        System.out.println("Error aborting replicas: " + ex.getMessage());
                     }
                 }
             }
@@ -337,11 +337,18 @@ public class CommandServer {
             if (prepareReplicas(key, val, command, reqId, clientIp, clientPort)) {
 
                 // -0 all replicas need to commit this request
-                commitReplicas(key, reqId);
+                if (commitReplicas(key, reqId)) {
 
-                // -1 perform local operation
-                result = putHelper(key, val, reqId);
+                    // -1 perform local operation
+                    result = putHelper(key, val, reqId);
+                } else {
 
+                    // -2 abortReplicas(key, val, reqId);
+                    abortReplicas(reqId);
+                    result.status = "ERROR";
+                    result.msg = "Commit failed on one or more replicas";
+                    result.value = 0;
+                }
 
             } else {
                 // -3 abortReplicas(key, val, reqId);
@@ -417,7 +424,7 @@ public class CommandServer {
         public void abort(String reqId) {
             PreparedOperation op = preparedOperations.get(reqId);
             if (op != null) {
-                int key = op.key;
+                int key = op.getKey();
                 synchronized (locks[key]) {
                     lockedKeys.remove(Integer.valueOf(key));
                     preparedOperations.remove(reqId);

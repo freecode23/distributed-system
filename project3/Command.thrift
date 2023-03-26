@@ -27,5 +27,5 @@ service Command {
   Result delete(1: i32 key, 2: string reqId, 3:string ip, 4:i32 port),
   PrepareResult prepare(1: i32 key, 2: i32 value, 3: string command, 4: string reqId, 5: string clientIp, 6:i32 clientPort),
   CommitResult commit(1: string reqId),
-  void aboirt(1:  string reqId)
+  void abort(1:  string reqId)
 }

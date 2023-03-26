@@ -45,7 +45,19 @@ Our CommandHandler class which is the RPC service implementation now holds sever
 
 2. RPC Additional services:
 - PrepareResult prepare(1: i32 key, 2: i32 value, 3: string command, 4: string reqId, 5: string clientIp, 6:i32 clientPort)
-
+This function is used to prepare an operation on a given key with the specified value. It takes in the command (e.g., "put" or "delete"), a unique request ID, and the client's IP and port. It checks if the key is locked by another operation; if not, it locks the key and prepares the operation. The function returns a PrepareResult that contains the status of the preparation (OK or KEY_LOCKED) and a message indicating the result.
 - CommitResult commit(1: string reqId)
+This function is called to commit a previously prepared operation identified by the provided request ID. It executes the operation (e.g., put or delete) on the key-value store and releases the lock on the key. It then returns a CommitResult that contains the status of the commit (SUCCESS, KEY_NOT_FOUND, or OPERATION_NOT_PREPARED) and a message indicating the result.
+- void abort(1: string reqId)
+This function is used to abort a previously prepared operation identified by the provided request ID. It cancels the operation, releases the lock on the key, and removes the prepared operation from the server. This can be used in scenarios where an operation needs to be canceled due to another server replica is already operating on the same key it wants to operate on
 
+3. How it all works:
+Now that we have defined all of the changes lets take an example of what happen when a client decide to make "put 1 1" request to server at port 9000. Let's call this server9000:
+    1. It will call the remote put method of server9000. 
+    2. server9000 will prepare all the other replicas (server9001 to server 9004). This is to say that it will call the prepare() function of the other 4 servers and pass them the request id, key, value, and other info needed for it to perform the operation. 
+    3. Each of the 4 replica servers will just check if the key that server9001 wants to operate on is already locked. If it's already locked it will send a NACK and server9001 will simply abort the whole "put 1 1" operation. If it's not already locked, it will lock this key and then create a PreparedOperation object and add it to its own list of preparedOperations for it to commit later on.
+    4. If server9000 receive ACKs for all the replicas at the prepareReplicas(), it will go to the next step which is commitReplicas()
+    5. In commitReplicas(), server9000 will call every replica's commit() remote function to execute the operation with the requestID it sends. In this case the requestId will correspond to the "put 1 1" operation. 
+    6. All the replica server9001 to server9004 will grab this PreparedOperation object from hashmap and perform the operation using its local putHelper method. Once this operation is done, it will unlock this key so it can be used by other operations. 
+    7. If all the replicas successfully committed this operation, 
 
