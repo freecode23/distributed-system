@@ -59,5 +59,11 @@ Now that we have defined all of the changes lets take an example of what happen 
     4. If server9000 receive ACKs for all the replicas at the prepareReplicas(), it will go to the next step which is commitReplicas()
     5. In commitReplicas(), server9000 will call every replica's commit() remote function to execute the operation with the requestID it sends. In this case the requestId will correspond to the "put 1 1" operation. 
     6. All the replica server9001 to server9004 will grab this PreparedOperation object from hashmap and perform the operation using its local putHelper method. Once this operation is done, it will unlock this key so it can be used by other operations. 
-    7. If all the replicas successfully committed this operation, 
+    7. If all the replicas successfully committed this operation, it will also call a local putHelper() method to put 1 1 to its own keyValue store. It will then print a log on the server and return the result object as before to the client. 
+    8. If any of the replicas cannot commit to this operation it will abort this operation and send an error message back to the client
+
+4. Conclusion:
+With this 2 phase commit method we are able to maintain consistency of our keyvalue store across servers. However there are some potential single points of failure:
+
+If the server that initiates the prepare and commit/abort process fails, the operation might not complete, and other replicas might be left waiting for commit or abort instructions. We can mitigate these risks by implementing a more fault-tolerant consensus algorithm, like the Paxos. These algorithms are designed to handle failures and ensure consistent operations across multiple replicas.
 

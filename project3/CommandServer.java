@@ -333,7 +333,7 @@ public class CommandServer {
             Result result = new Result();
             String command = "put";
 
-            // 2. Perform operation
+            //  Perform operation
             if (prepareReplicas(key, val, command, reqId, clientIp, clientPort)) {
 
                 // -0 all replicas need to commit this request
@@ -346,7 +346,7 @@ public class CommandServer {
                     // -2 abortReplicas(key, val, reqId);
                     abortReplicas(reqId);
                     result.status = "ERROR";
-                    result.msg = "Commit failed on one or more replicas";
+                    result.msg = "Put commit failed on one or more replicas";
                     result.value = 0;
                 }
 
@@ -367,15 +367,23 @@ public class CommandServer {
         public Result delete(int key, String reqId, String clientIp, int clientPort) throws TException {
             Result result = new Result();
             String command = "delete";
-
-            // 2. Perform operation
+   
+            // Perform operation
             if (prepareReplicas(key, -1, command, reqId, clientIp, clientPort)) {
 
                 // -0 all replicas need to commit this request
-                commitReplicas(key, reqId);
+                if (commitReplicas(key, reqId)) {
 
-                // -1 perform local operation
-                result = deleteHelper(key, reqId);
+                    // -1 perform local operation
+                    result = deleteHelper(key, reqId);
+                } else {
+
+                    // -2 abortReplicas(key, val, reqId);
+                    abortReplicas(reqId);
+                    result.status = "ERROR";
+                    result.msg = "Delete commit failed on one or more replicas";
+                    result.value = 0;
+                }
 
             } else {
                 // -2 cannot perform operation as another server is still performing operation on this key
