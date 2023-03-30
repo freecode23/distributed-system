@@ -1,0 +1,7 @@
+put 5 5
+put 6 6
+delete 1
+get 5
+get 4
+get 3
+get 2
