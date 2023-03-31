@@ -5,14 +5,14 @@
  *  @generated
  */
 @SuppressWarnings({"cast", "rawtypes", "serial", "unchecked", "unused"})
-public class PrepareResponse implements org.apache.thrift.TBase<PrepareResponse, PrepareResponse._Fields>, java.io.Serializable, Cloneable, Comparable<PrepareResponse> {
-  private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("PrepareResponse");
+public class Response implements org.apache.thrift.TBase<Response, Response._Fields>, java.io.Serializable, Cloneable, Comparable<Response> {
+  private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("Response");
 
   private static final org.apache.thrift.protocol.TField HIGHEST_PROPOSAL_NUMBER_FIELD_DESC = new org.apache.thrift.protocol.TField("highestProposalNumber", org.apache.thrift.protocol.TType.I32, (short)1);
   private static final org.apache.thrift.protocol.TField ACCEPTED_VALUE_FIELD_DESC = new org.apache.thrift.protocol.TField("acceptedValue", org.apache.thrift.protocol.TType.I32, (short)2);
 
-  private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new PrepareResponseStandardSchemeFactory();
-  private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new PrepareResponseTupleSchemeFactory();
+  private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new ResponseStandardSchemeFactory();
+  private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new ResponseTupleSchemeFactory();
 
   public int highestProposalNumber; // required
   public int acceptedValue; // required
@@ -94,13 +94,13 @@ public class PrepareResponse implements org.apache.thrift.TBase<PrepareResponse,
     tmpMap.put(_Fields.ACCEPTED_VALUE, new org.apache.thrift.meta_data.FieldMetaData("acceptedValue", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
     metaDataMap = java.util.Collections.unmodifiableMap(tmpMap);
-    org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(PrepareResponse.class, metaDataMap);
+    org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(Response.class, metaDataMap);
   }
 
-  public PrepareResponse() {
+  public Response() {
   }
 
-  public PrepareResponse(
+  public Response(
     int highestProposalNumber,
     int acceptedValue)
   {
@@ -114,15 +114,15 @@ public class PrepareResponse implements org.apache.thrift.TBase<PrepareResponse,
   /**
    * Performs a deep copy on <i>other</i>.
    */
-  public PrepareResponse(PrepareResponse other) {
+  public Response(Response other) {
     __isset_bitfield = other.__isset_bitfield;
     this.highestProposalNumber = other.highestProposalNumber;
     this.acceptedValue = other.acceptedValue;
   }
 
   @Override
-  public PrepareResponse deepCopy() {
-    return new PrepareResponse(this);
+  public Response deepCopy() {
+    return new Response(this);
   }
 
   @Override
@@ -137,7 +137,7 @@ public class PrepareResponse implements org.apache.thrift.TBase<PrepareResponse,
     return this.highestProposalNumber;
   }
 
-  public PrepareResponse setHighestProposalNumber(int highestProposalNumber) {
+  public Response setHighestProposalNumber(int highestProposalNumber) {
     this.highestProposalNumber = highestProposalNumber;
     setHighestProposalNumberIsSet(true);
     return this;
@@ -160,7 +160,7 @@ public class PrepareResponse implements org.apache.thrift.TBase<PrepareResponse,
     return this.acceptedValue;
   }
 
-  public PrepareResponse setAcceptedValue(int acceptedValue) {
+  public Response setAcceptedValue(int acceptedValue) {
     this.acceptedValue = acceptedValue;
     setAcceptedValueIsSet(true);
     return this;
@@ -233,12 +233,12 @@ public class PrepareResponse implements org.apache.thrift.TBase<PrepareResponse,
 
   @Override
   public boolean equals(java.lang.Object that) {
-    if (that instanceof PrepareResponse)
-      return this.equals((PrepareResponse)that);
+    if (that instanceof Response)
+      return this.equals((Response)that);
     return false;
   }
 
-  public boolean equals(PrepareResponse that) {
+  public boolean equals(Response that) {
     if (that == null)
       return false;
     if (this == that)
@@ -277,7 +277,7 @@ public class PrepareResponse implements org.apache.thrift.TBase<PrepareResponse,
   }
 
   @Override
-  public int compareTo(PrepareResponse other) {
+  public int compareTo(Response other) {
     if (!getClass().equals(other.getClass())) {
       return getClass().getName().compareTo(other.getClass().getName());
     }
@@ -325,7 +325,7 @@ public class PrepareResponse implements org.apache.thrift.TBase<PrepareResponse,
 
   @Override
   public java.lang.String toString() {
-    java.lang.StringBuilder sb = new java.lang.StringBuilder("PrepareResponse(");
+    java.lang.StringBuilder sb = new java.lang.StringBuilder("Response(");
     boolean first = true;
 
     sb.append("highestProposalNumber:");
@@ -362,17 +362,17 @@ public class PrepareResponse implements org.apache.thrift.TBase<PrepareResponse,
     }
   }
 
-  private static class PrepareResponseStandardSchemeFactory implements org.apache.thrift.scheme.SchemeFactory {
+  private static class ResponseStandardSchemeFactory implements org.apache.thrift.scheme.SchemeFactory {
     @Override
-    public PrepareResponseStandardScheme getScheme() {
-      return new PrepareResponseStandardScheme();
+    public ResponseStandardScheme getScheme() {
+      return new ResponseStandardScheme();
     }
   }
 
-  private static class PrepareResponseStandardScheme extends org.apache.thrift.scheme.StandardScheme<PrepareResponse> {
+  private static class ResponseStandardScheme extends org.apache.thrift.scheme.StandardScheme<Response> {
 
     @Override
-    public void read(org.apache.thrift.protocol.TProtocol iprot, PrepareResponse struct) throws org.apache.thrift.TException {
+    public void read(org.apache.thrift.protocol.TProtocol iprot, Response struct) throws org.apache.thrift.TException {
       org.apache.thrift.protocol.TField schemeField;
       iprot.readStructBegin();
       while (true)
@@ -410,7 +410,7 @@ public class PrepareResponse implements org.apache.thrift.TBase<PrepareResponse,
     }
 
     @Override
-    public void write(org.apache.thrift.protocol.TProtocol oprot, PrepareResponse struct) throws org.apache.thrift.TException {
+    public void write(org.apache.thrift.protocol.TProtocol oprot, Response struct) throws org.apache.thrift.TException {
       struct.validate();
 
       oprot.writeStructBegin(STRUCT_DESC);
@@ -426,17 +426,17 @@ public class PrepareResponse implements org.apache.thrift.TBase<PrepareResponse,
 
   }
 
-  private static class PrepareResponseTupleSchemeFactory implements org.apache.thrift.scheme.SchemeFactory {
+  private static class ResponseTupleSchemeFactory implements org.apache.thrift.scheme.SchemeFactory {
     @Override
-    public PrepareResponseTupleScheme getScheme() {
-      return new PrepareResponseTupleScheme();
+    public ResponseTupleScheme getScheme() {
+      return new ResponseTupleScheme();
     }
   }
 
-  private static class PrepareResponseTupleScheme extends org.apache.thrift.scheme.TupleScheme<PrepareResponse> {
+  private static class ResponseTupleScheme extends org.apache.thrift.scheme.TupleScheme<Response> {
 
     @Override
-    public void write(org.apache.thrift.protocol.TProtocol prot, PrepareResponse struct) throws org.apache.thrift.TException {
+    public void write(org.apache.thrift.protocol.TProtocol prot, Response struct) throws org.apache.thrift.TException {
       org.apache.thrift.protocol.TTupleProtocol oprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
       java.util.BitSet optionals = new java.util.BitSet();
       if (struct.isSetHighestProposalNumber()) {
@@ -455,7 +455,7 @@ public class PrepareResponse implements org.apache.thrift.TBase<PrepareResponse,
     }
 
     @Override
-    public void read(org.apache.thrift.protocol.TProtocol prot, PrepareResponse struct) throws org.apache.thrift.TException {
+    public void read(org.apache.thrift.protocol.TProtocol prot, Response struct) throws org.apache.thrift.TException {
       org.apache.thrift.protocol.TTupleProtocol iprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
       java.util.BitSet incoming = iprot.readBitSet(2);
       if (incoming.get(0)) {

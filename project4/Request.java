@@ -5,19 +5,25 @@
  *  @generated
  */
 @SuppressWarnings({"cast", "rawtypes", "serial", "unchecked", "unused"})
-public class AcceptResponse implements org.apache.thrift.TBase<AcceptResponse, AcceptResponse._Fields>, java.io.Serializable, Cloneable, Comparable<AcceptResponse> {
-  private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("AcceptResponse");
+public class Request implements org.apache.thrift.TBase<Request, Request._Fields>, java.io.Serializable, Cloneable, Comparable<Request> {
+  private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("Request");
 
   private static final org.apache.thrift.protocol.TField PROPOSAL_NUMBER_FIELD_DESC = new org.apache.thrift.protocol.TField("proposalNumber", org.apache.thrift.protocol.TType.I32, (short)1);
+  private static final org.apache.thrift.protocol.TField VALUE_FIELD_DESC = new org.apache.thrift.protocol.TField("value", org.apache.thrift.protocol.TType.I32, (short)2);
+  private static final org.apache.thrift.protocol.TField REQ_TYPE_FIELD_DESC = new org.apache.thrift.protocol.TField("reqType", org.apache.thrift.protocol.TType.STRING, (short)3);
 
-  private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new AcceptResponseStandardSchemeFactory();
-  private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new AcceptResponseTupleSchemeFactory();
+  private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new RequestStandardSchemeFactory();
+  private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new RequestTupleSchemeFactory();
 
   public int proposalNumber; // required
+  public int value; // required
+  public @org.apache.thrift.annotation.Nullable java.lang.String reqType; // required
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-    PROPOSAL_NUMBER((short)1, "proposalNumber");
+    PROPOSAL_NUMBER((short)1, "proposalNumber"),
+    VALUE((short)2, "value"),
+    REQ_TYPE((short)3, "reqType");
 
     private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
 
@@ -35,6 +41,10 @@ public class AcceptResponse implements org.apache.thrift.TBase<AcceptResponse, A
       switch(fieldId) {
         case 1: // PROPOSAL_NUMBER
           return PROPOSAL_NUMBER;
+        case 2: // VALUE
+          return VALUE;
+        case 3: // REQ_TYPE
+          return REQ_TYPE;
         default:
           return null;
       }
@@ -79,51 +89,68 @@ public class AcceptResponse implements org.apache.thrift.TBase<AcceptResponse, A
 
   // isset id assignments
   private static final int __PROPOSALNUMBER_ISSET_ID = 0;
+  private static final int __VALUE_ISSET_ID = 1;
   private byte __isset_bitfield = 0;
   public static final java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new java.util.EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
     tmpMap.put(_Fields.PROPOSAL_NUMBER, new org.apache.thrift.meta_data.FieldMetaData("proposalNumber", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
+    tmpMap.put(_Fields.VALUE, new org.apache.thrift.meta_data.FieldMetaData("value", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
+    tmpMap.put(_Fields.REQ_TYPE, new org.apache.thrift.meta_data.FieldMetaData("reqType", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     metaDataMap = java.util.Collections.unmodifiableMap(tmpMap);
-    org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(AcceptResponse.class, metaDataMap);
+    org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(Request.class, metaDataMap);
   }
 
-  public AcceptResponse() {
+  public Request() {
   }
 
-  public AcceptResponse(
-    int proposalNumber)
+  public Request(
+    int proposalNumber,
+    int value,
+    java.lang.String reqType)
   {
     this();
     this.proposalNumber = proposalNumber;
     setProposalNumberIsSet(true);
+    this.value = value;
+    setValueIsSet(true);
+    this.reqType = reqType;
   }
 
   /**
    * Performs a deep copy on <i>other</i>.
    */
-  public AcceptResponse(AcceptResponse other) {
+  public Request(Request other) {
     __isset_bitfield = other.__isset_bitfield;
     this.proposalNumber = other.proposalNumber;
+    this.value = other.value;
+    if (other.isSetReqType()) {
+      this.reqType = other.reqType;
+    }
   }
 
   @Override
-  public AcceptResponse deepCopy() {
-    return new AcceptResponse(this);
+  public Request deepCopy() {
+    return new Request(this);
   }
 
   @Override
   public void clear() {
     setProposalNumberIsSet(false);
     this.proposalNumber = 0;
+    setValueIsSet(false);
+    this.value = 0;
+    this.reqType = null;
   }
 
   public int getProposalNumber() {
     return this.proposalNumber;
   }
 
-  public AcceptResponse setProposalNumber(int proposalNumber) {
+  public Request setProposalNumber(int proposalNumber) {
     this.proposalNumber = proposalNumber;
     setProposalNumberIsSet(true);
     return this;
@@ -142,6 +169,54 @@ public class AcceptResponse implements org.apache.thrift.TBase<AcceptResponse, A
     __isset_bitfield = org.apache.thrift.EncodingUtils.setBit(__isset_bitfield, __PROPOSALNUMBER_ISSET_ID, value);
   }
 
+  public int getValue() {
+    return this.value;
+  }
+
+  public Request setValue(int value) {
+    this.value = value;
+    setValueIsSet(true);
+    return this;
+  }
+
+  public void unsetValue() {
+    __isset_bitfield = org.apache.thrift.EncodingUtils.clearBit(__isset_bitfield, __VALUE_ISSET_ID);
+  }
+
+  /** Returns true if field value is set (has been assigned a value) and false otherwise */
+  public boolean isSetValue() {
+    return org.apache.thrift.EncodingUtils.testBit(__isset_bitfield, __VALUE_ISSET_ID);
+  }
+
+  public void setValueIsSet(boolean value) {
+    __isset_bitfield = org.apache.thrift.EncodingUtils.setBit(__isset_bitfield, __VALUE_ISSET_ID, value);
+  }
+
+  @org.apache.thrift.annotation.Nullable
+  public java.lang.String getReqType() {
+    return this.reqType;
+  }
+
+  public Request setReqType(@org.apache.thrift.annotation.Nullable java.lang.String reqType) {
+    this.reqType = reqType;
+    return this;
+  }
+
+  public void unsetReqType() {
+    this.reqType = null;
+  }
+
+  /** Returns true if field reqType is set (has been assigned a value) and false otherwise */
+  public boolean isSetReqType() {
+    return this.reqType != null;
+  }
+
+  public void setReqTypeIsSet(boolean value) {
+    if (!value) {
+      this.reqType = null;
+    }
+  }
+
   @Override
   public void setFieldValue(_Fields field, @org.apache.thrift.annotation.Nullable java.lang.Object value) {
     switch (field) {
@@ -150,6 +225,22 @@ public class AcceptResponse implements org.apache.thrift.TBase<AcceptResponse, A
         unsetProposalNumber();
       } else {
         setProposalNumber((java.lang.Integer)value);
+      }
+      break;
+
+    case VALUE:
+      if (value == null) {
+        unsetValue();
+      } else {
+        setValue((java.lang.Integer)value);
+      }
+      break;
+
+    case REQ_TYPE:
+      if (value == null) {
+        unsetReqType();
+      } else {
+        setReqType((java.lang.String)value);
       }
       break;
 
@@ -162,6 +253,12 @@ public class AcceptResponse implements org.apache.thrift.TBase<AcceptResponse, A
     switch (field) {
     case PROPOSAL_NUMBER:
       return getProposalNumber();
+
+    case VALUE:
+      return getValue();
+
+    case REQ_TYPE:
+      return getReqType();
 
     }
     throw new java.lang.IllegalStateException();
@@ -177,18 +274,22 @@ public class AcceptResponse implements org.apache.thrift.TBase<AcceptResponse, A
     switch (field) {
     case PROPOSAL_NUMBER:
       return isSetProposalNumber();
+    case VALUE:
+      return isSetValue();
+    case REQ_TYPE:
+      return isSetReqType();
     }
     throw new java.lang.IllegalStateException();
   }
 
   @Override
   public boolean equals(java.lang.Object that) {
-    if (that instanceof AcceptResponse)
-      return this.equals((AcceptResponse)that);
+    if (that instanceof Request)
+      return this.equals((Request)that);
     return false;
   }
 
-  public boolean equals(AcceptResponse that) {
+  public boolean equals(Request that) {
     if (that == null)
       return false;
     if (this == that)
@@ -203,6 +304,24 @@ public class AcceptResponse implements org.apache.thrift.TBase<AcceptResponse, A
         return false;
     }
 
+    boolean this_present_value = true;
+    boolean that_present_value = true;
+    if (this_present_value || that_present_value) {
+      if (!(this_present_value && that_present_value))
+        return false;
+      if (this.value != that.value)
+        return false;
+    }
+
+    boolean this_present_reqType = true && this.isSetReqType();
+    boolean that_present_reqType = true && that.isSetReqType();
+    if (this_present_reqType || that_present_reqType) {
+      if (!(this_present_reqType && that_present_reqType))
+        return false;
+      if (!this.reqType.equals(that.reqType))
+        return false;
+    }
+
     return true;
   }
 
@@ -212,11 +331,17 @@ public class AcceptResponse implements org.apache.thrift.TBase<AcceptResponse, A
 
     hashCode = hashCode * 8191 + proposalNumber;
 
+    hashCode = hashCode * 8191 + value;
+
+    hashCode = hashCode * 8191 + ((isSetReqType()) ? 131071 : 524287);
+    if (isSetReqType())
+      hashCode = hashCode * 8191 + reqType.hashCode();
+
     return hashCode;
   }
 
   @Override
-  public int compareTo(AcceptResponse other) {
+  public int compareTo(Request other) {
     if (!getClass().equals(other.getClass())) {
       return getClass().getName().compareTo(other.getClass().getName());
     }
@@ -229,6 +354,26 @@ public class AcceptResponse implements org.apache.thrift.TBase<AcceptResponse, A
     }
     if (isSetProposalNumber()) {
       lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.proposalNumber, other.proposalNumber);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = java.lang.Boolean.compare(isSetValue(), other.isSetValue());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetValue()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.value, other.value);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = java.lang.Boolean.compare(isSetReqType(), other.isSetReqType());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetReqType()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.reqType, other.reqType);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -254,11 +399,23 @@ public class AcceptResponse implements org.apache.thrift.TBase<AcceptResponse, A
 
   @Override
   public java.lang.String toString() {
-    java.lang.StringBuilder sb = new java.lang.StringBuilder("AcceptResponse(");
+    java.lang.StringBuilder sb = new java.lang.StringBuilder("Request(");
     boolean first = true;
 
     sb.append("proposalNumber:");
     sb.append(this.proposalNumber);
+    first = false;
+    if (!first) sb.append(", ");
+    sb.append("value:");
+    sb.append(this.value);
+    first = false;
+    if (!first) sb.append(", ");
+    sb.append("reqType:");
+    if (this.reqType == null) {
+      sb.append("null");
+    } else {
+      sb.append(this.reqType);
+    }
     first = false;
     sb.append(")");
     return sb.toString();
@@ -287,17 +444,17 @@ public class AcceptResponse implements org.apache.thrift.TBase<AcceptResponse, A
     }
   }
 
-  private static class AcceptResponseStandardSchemeFactory implements org.apache.thrift.scheme.SchemeFactory {
+  private static class RequestStandardSchemeFactory implements org.apache.thrift.scheme.SchemeFactory {
     @Override
-    public AcceptResponseStandardScheme getScheme() {
-      return new AcceptResponseStandardScheme();
+    public RequestStandardScheme getScheme() {
+      return new RequestStandardScheme();
     }
   }
 
-  private static class AcceptResponseStandardScheme extends org.apache.thrift.scheme.StandardScheme<AcceptResponse> {
+  private static class RequestStandardScheme extends org.apache.thrift.scheme.StandardScheme<Request> {
 
     @Override
-    public void read(org.apache.thrift.protocol.TProtocol iprot, AcceptResponse struct) throws org.apache.thrift.TException {
+    public void read(org.apache.thrift.protocol.TProtocol iprot, Request struct) throws org.apache.thrift.TException {
       org.apache.thrift.protocol.TField schemeField;
       iprot.readStructBegin();
       while (true)
@@ -315,6 +472,22 @@ public class AcceptResponse implements org.apache.thrift.TBase<AcceptResponse, A
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 2: // VALUE
+            if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
+              struct.value = iprot.readI32();
+              struct.setValueIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 3: // REQ_TYPE
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.reqType = iprot.readString();
+              struct.setReqTypeIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -327,48 +500,76 @@ public class AcceptResponse implements org.apache.thrift.TBase<AcceptResponse, A
     }
 
     @Override
-    public void write(org.apache.thrift.protocol.TProtocol oprot, AcceptResponse struct) throws org.apache.thrift.TException {
+    public void write(org.apache.thrift.protocol.TProtocol oprot, Request struct) throws org.apache.thrift.TException {
       struct.validate();
 
       oprot.writeStructBegin(STRUCT_DESC);
       oprot.writeFieldBegin(PROPOSAL_NUMBER_FIELD_DESC);
       oprot.writeI32(struct.proposalNumber);
       oprot.writeFieldEnd();
+      oprot.writeFieldBegin(VALUE_FIELD_DESC);
+      oprot.writeI32(struct.value);
+      oprot.writeFieldEnd();
+      if (struct.reqType != null) {
+        oprot.writeFieldBegin(REQ_TYPE_FIELD_DESC);
+        oprot.writeString(struct.reqType);
+        oprot.writeFieldEnd();
+      }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
 
   }
 
-  private static class AcceptResponseTupleSchemeFactory implements org.apache.thrift.scheme.SchemeFactory {
+  private static class RequestTupleSchemeFactory implements org.apache.thrift.scheme.SchemeFactory {
     @Override
-    public AcceptResponseTupleScheme getScheme() {
-      return new AcceptResponseTupleScheme();
+    public RequestTupleScheme getScheme() {
+      return new RequestTupleScheme();
     }
   }
 
-  private static class AcceptResponseTupleScheme extends org.apache.thrift.scheme.TupleScheme<AcceptResponse> {
+  private static class RequestTupleScheme extends org.apache.thrift.scheme.TupleScheme<Request> {
 
     @Override
-    public void write(org.apache.thrift.protocol.TProtocol prot, AcceptResponse struct) throws org.apache.thrift.TException {
+    public void write(org.apache.thrift.protocol.TProtocol prot, Request struct) throws org.apache.thrift.TException {
       org.apache.thrift.protocol.TTupleProtocol oprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
       java.util.BitSet optionals = new java.util.BitSet();
       if (struct.isSetProposalNumber()) {
         optionals.set(0);
       }
-      oprot.writeBitSet(optionals, 1);
+      if (struct.isSetValue()) {
+        optionals.set(1);
+      }
+      if (struct.isSetReqType()) {
+        optionals.set(2);
+      }
+      oprot.writeBitSet(optionals, 3);
       if (struct.isSetProposalNumber()) {
         oprot.writeI32(struct.proposalNumber);
+      }
+      if (struct.isSetValue()) {
+        oprot.writeI32(struct.value);
+      }
+      if (struct.isSetReqType()) {
+        oprot.writeString(struct.reqType);
       }
     }
 
     @Override
-    public void read(org.apache.thrift.protocol.TProtocol prot, AcceptResponse struct) throws org.apache.thrift.TException {
+    public void read(org.apache.thrift.protocol.TProtocol prot, Request struct) throws org.apache.thrift.TException {
       org.apache.thrift.protocol.TTupleProtocol iprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
-      java.util.BitSet incoming = iprot.readBitSet(1);
+      java.util.BitSet incoming = iprot.readBitSet(3);
       if (incoming.get(0)) {
         struct.proposalNumber = iprot.readI32();
         struct.setProposalNumberIsSet(true);
+      }
+      if (incoming.get(1)) {
+        struct.value = iprot.readI32();
+        struct.setValueIsSet(true);
+      }
+      if (incoming.get(2)) {
+        struct.reqType = iprot.readString();
+        struct.setReqTypeIsSet(true);
       }
     }
   }

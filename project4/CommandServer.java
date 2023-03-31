@@ -30,27 +30,19 @@ import java.util.Set;
 public class CommandServer {
 
     private final int port;
-    private int[] replicaPorts;
+    private List<Integer>replicaPorts;
 
 
-    public CommandServer(int port, int[] replicaPorts) {
+    public CommandServer(int port, List<Integer> replicaPorts) {
         this.port = port;
         this.replicaPorts = replicaPorts;
     }
-
-
     
     public static class CommandHandler implements Command.Iface {
 
         private final int port;
-        //  1. init keyvalue store
         private Map<Integer, Integer> keyVal = new ConcurrentHashMap<>();
-
-        // 2. list of ports of the other servers
-        private List<Integer> replicaPorts;
-
         private PaxosCoordinator paxosCoordinator;
-
 
 
         /**
@@ -58,18 +50,12 @@ public class CommandServer {
          * @param currPort the port that the current server belongs to
          * @param replicaPorts  array of port numbers representing all the replicated servers, including the current server instance.
          */
-        public CommandHandler(int currPort, int[] replicaPorts) {
+        public CommandHandler(int currPort, List<Integer> replicaPorts) {
 
             this.port = currPort;
-            // 1. Add all ports including itself
-            this.replicaPorts = new ArrayList<>();
-            for (int replicaPort : replicaPorts) {
-                this.replicaPorts.add(replicaPort);
-            }
-
-            List<Acceptor> acceptors = initializeAcceptors(this.replicaPorts);
+            List<Acceptor> acceptors = initializeAcceptors(replicaPorts);
             Learner learner = new Learner();
-            paxosCoordinator = new PaxosCoordinator(acceptors, learner);
+            this.paxosCoordinator = new PaxosCoordinator(acceptors, learner);
       
         }
 
@@ -84,7 +70,7 @@ public class CommandServer {
 
         
         @Override
-        public PrepareResponse prepare(PrepareRequest request) {
+        public Response prepare(Request request) {
             int proposalNumber = request.getProposalNumber();
             List<Promise> promises = paxosCoordinator.coordPrepare(proposalNumber);
 
@@ -108,30 +94,33 @@ public class CommandServer {
                     acceptedValue = new Random().nextInt();
                 }
 
-                return new PrepareResponse(highestProposalNumber, acceptedValue);
+                return new Response(highestProposalNumber, acceptedValue);
             } else {
-                return new PrepareResponse(-1, -1); // Indicate that no promises were sent
+                return new Response(-1, -1); // Indicate that no promises were sent
             }
         }
 
         @Override
-        public AcceptResponse accept(AcceptRequest request) {
-            int proposalNumber = request.getProposal().getProposalNumber();
-            int proposedValue = request.getProposal().getValue();
+        public Response accept(Request request) {
+            int proposalNumber = request.proposalNumber;
+            int proposedValue = request.value;
 
             int acceptCount = paxosCoordinator.coordAccept(proposalNumber, proposedValue);
-
+            
+            Response response = new Response();
             if (acceptCount >= 3) {
-                return new AcceptResponse(proposalNumber);
+                response.highestProposalNumber = proposalNumber;
+                return response;
             } else {
-                return new AcceptResponse(-1); // Indicate that the accept response was not sent
+                response.highestProposalNumber = -1;
+                return response; // Indicate that the accept response was not sent
             }
         }
 
         @Override
-        public void learn(LearnRequest request) {
-            int proposalNumber = request.getProposal().getProposalNumber();
-            int proposedValue = request.getProposal().getValue();
+        public void learn(Request request) {
+            int proposalNumber = request.proposalNumber;
+            int proposedValue = request.value;
 
             paxosCoordinator.coordLearn(new Proposal(proposalNumber, proposedValue));
         }

@@ -4,7 +4,7 @@ import java.util.List;
 public class ReplicatedServer {
     private List<CommandServer> servers;
 
-    public ReplicatedServer(int[] ports) {
+    public ReplicatedServer(List<Integer> ports) {
         servers = new ArrayList<>();
         for (int port : ports) {
             CommandServer server = new CommandServer(port, ports);
