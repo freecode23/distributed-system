@@ -41,7 +41,9 @@ public class CommandServer {
 
         private final int port;
         private Map<Integer, Integer> keyVal = new ConcurrentHashMap<>();
-        private PaxosCoordinator paxosCoordinator;
+        private Proposer proposer;
+        private Acceptor acceptor;
+        private Learner learner;
 
         /**
          * 1. Constructor that will create a new TSocket for each replica server with a different port number than the current server instance
@@ -50,9 +52,14 @@ public class CommandServer {
          */
         public CommandHandler(int currPort, List<Integer> replicaPorts) {
             this.port = currPort;
+
+            // - init acceptors and learners
+            this.acceptor = new Acceptor(currPort);
             List<Acceptor> acceptors = initializeAcceptors(replicaPorts);
-            Learner learner = new Learner();
-            this.paxosCoordinator = new PaxosCoordinator(acceptors, learner);
+            this.learner = new Learner();
+
+            // - init proposers
+            this.proposer = new Proposer(acceptors);
       
         }
 
@@ -65,7 +72,7 @@ public class CommandServer {
         }
 
         @Override
-        public Response prepare(Request request) {
+        public Response prepare(Request prepareRequest) {
             int proposalNumber = request.getProposalNumber();
             List<Promise> promises = paxosCoordinator.coordPrepare(proposalNumber);
 
@@ -96,7 +103,7 @@ public class CommandServer {
         }
 
         @Override
-        public Response accept(Request request) {
+        public Response accept(Request acceptRequest) {
             int proposalNumber = request.proposalNumber;
             int proposedValue = request.value;
 
@@ -113,7 +120,7 @@ public class CommandServer {
         }
 
         @Override
-        public void learn(Request request) {
+        public void learn(Request learnRequest) {
             int proposalNumber = request.proposalNumber;
             int proposedValue = request.value;
 
@@ -174,6 +181,32 @@ public class CommandServer {
 
             Result result = new Result();
             String command = "put";
+
+
+            // Proposer starts the Paxos algorithm
+            proposer.incrementProposalNumber();
+            proposer.sendPrepareRequest();
+
+            // In a real-world scenario, the Proposer would wait for a quorum of acceptors
+            // to respond with promises
+
+            // Handle prepare responses (assuming all acceptors sent a promise)
+            proposer.handlePrepareResponse();
+
+            // Send accept request
+            proposer.sendAcceptRequest();
+
+            // In a real-world scenario, the Proposer would wait for a quorum of acceptors
+            // to respond with accept responses
+
+            // Handle accept responses (assuming all acceptors sent an accept response)
+            proposer.handleAcceptResponse();
+
+            // In a real-world scenario, the Proposer would notify the learners when a value
+            // has been chosen
+
+            // Perform the local operation
+            result = putHelper(key, val, reqId);
 
             // print and return result to client
             printLog(key, val, reqId, command, result.status, result.msg, clientIp, clientPort);

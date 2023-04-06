@@ -1,39 +1,16 @@
 import java.util.List;
 public class Proposer {
     private int proposalNumber;
-    private int roundNumber;
-    private List<Acceptor> acceptors;
-    private Learner learner;
+    private List<Command.Client> replicas;
 
-    public Proposer(List<Acceptor> acceptors, Learner learner) {
-        this.acceptors = acceptors;
-        this.learner = learner;
+    public Proposer(List<Command.Client> replicas) {
+        this.replicas = replicas;
         this.proposalNumber = 0;
-        this.roundNumber = 0;
     }
 
-    public void incrementProposalNumber() {
-        // Increment the round number
-        proposalNumber = (roundNumber * acceptors.size()) + 1;
-        roundNumber++;
-    }
 
-    public void sendPrepareRequest() {
-        // Send prepare request to a quorum of acceptors
-        int quorum = (acceptors.size() / 2) + 1;
-        int prepareResponses = 0;
-
-        incrementProposalNumber();
-
-        for (Acceptor acceptor : acceptors) {
-            if (acceptor.handlePrepare(proposalNumber)) {
-                prepareResponses++;
-                if (prepareResponses >= quorum) {
-                    handlePrepareResponse();
-                    break;
-                }
-            }
-        }
+    public void getConsensus(Proposal prop) {
+       
     }
 
     public void handlePrepareResponse() {
