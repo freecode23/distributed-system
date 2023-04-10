@@ -4,9 +4,19 @@ import java.util.List;
 
 public class ServerDriver {
     public static void main(String[] args) {
-        // The ports you want the servers to run on
-        List<Integer> ports = new ArrayList<>(Arrays.asList(9000, 9001, 9002, 9003, 9004));
-        ReplicatedServer replicatedServer = new ReplicatedServer(ports);
-        replicatedServer.startServers();
+        if (args.length < 1) {
+            System.err.println("Usage: java ServerDriver <port> [<host:port>...]");
+            System.exit(1);
+        }
+
+        int port = Integer.parseInt(args[0]);
+
+        List<Integer> replicaPorts = new ArrayList<>();
+        for (int i = 1; i < args.length; i++) {
+            replicaPorts.add(Integer.valueOf(args[i]));
+        }
+
+        KeyValueServer server = new KeyValueServer(port, replicaPorts);
+        server.start();
     }
 }

@@ -5,7 +5,7 @@ slf4j-api-2.0.6.jar
 
 Step 1. Generate java files from thrift files (OPTIONAL)
 You need to have thrift installed to do this. If the java file is already generated you can skip this step
-thrift --gen java -out ./ Command.thrift
+thrift --gen java -out ./ KeyValueService.thrift
 
 Step 2. Compile and put all class files to bin folder
 javac -cp .:./lib/libthrift.jar:./lib/slf4j.jar -d bin/ *.java

@@ -27,111 +27,44 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
-public class CommandServer {
+public class KeyValueServer {
 
     private final int port;
     private List<Integer>replicaPorts;
 
-    public CommandServer(int port, List<Integer> replicaPorts) {
+    public KeyValueServer(int port, List<Integer> replicaPorts) {
         this.port = port;
         this.replicaPorts = replicaPorts;
     }
     
-    public static class CommandHandler implements Command.Iface {
+    public static class KeyValueRPC implements KeyValueService.Iface {
 
         private final int port;
+        private List<Integer> replicaPorts;
+
         private Map<Integer, Integer> keyVal = new ConcurrentHashMap<>();
-        private Proposer proposer;
-        private Acceptor acceptor;
-        private Learner learner;
+        private Proposer proposerRole;
 
         /**
          * 1. Constructor that will create a new TSocket for each replica server with a different port number than the current server instance
          * @param currPort the port that the current server belongs to
          * @param replicaPorts  array of port numbers representing all the replicated servers, including the current server instance.
          */
-        public CommandHandler(int currPort, List<Integer> replicaPorts) {
+        public KeyValueRPC(int currPort, List<Integer> replicaPorts) {
             this.port = currPort;
+            this.replicaPorts = replicaPorts;
 
-            // - init acceptors and learners
-            this.acceptor = new Acceptor(currPort);
-            List<Acceptor> acceptors = initializeAcceptors(replicaPorts);
-            this.learner = new Learner();
-
-            // - init proposers
-            this.proposer = new Proposer(acceptors);
+            // - init roles
+            this.proposerRole = new Proposer(currPort, replicaPorts);
       
         }
 
-        private List<Acceptor> initializeAcceptors(List<Integer> replicaPorts) {
-            List<Acceptor> acceptors = new ArrayList<>();
-            for (int port : replicaPorts) {
-                acceptors.add(new Acceptor(port));
-            }
-            return acceptors;
-        }
-
-        @Override
-        public Response prepare(Request prepareRequest) {
-            int proposalNumber = request.getProposalNumber();
-            List<Promise> promises = paxosCoordinator.coordPrepare(proposalNumber);
-
-            if (!promises.isEmpty()) {
-                // Find the highest accepted proposal number among the promises
-                int highestProposalNumber = -1;
-                int acceptedValue = -1;
-
-                for (Promise promise : promises) {
-                    if (promise.getHighestProposalNumber() > highestProposalNumber) {
-                        highestProposalNumber = promise.getHighestProposalNumber();
-                        acceptedValue = promise.getAcceptedValue();
-                    }
-                }
-
-                // If there are no accepted values, you may use a default value or decide on a
-                // new value
-                if (acceptedValue == -1) {
-                    // Use a default value or decide on a new value
-                    // Example: Use a random value as the new value
-                    acceptedValue = new Random().nextInt();
-                }
-
-                return new Response(highestProposalNumber, acceptedValue);
-            } else {
-                return new Response(-1, -1); // Indicate that no promises were sent
-            }
-        }
-
-        @Override
-        public Response accept(Request acceptRequest) {
-            int proposalNumber = request.proposalNumber;
-            int proposedValue = request.value;
-
-            int acceptCount = paxosCoordinator.coordAccept(proposalNumber, proposedValue);
-            
-            Response response = new Response();
-            if (acceptCount >= 3) {
-                response.highestProposalNumber = proposalNumber;
-                return response;
-            } else {
-                response.highestProposalNumber = -1;
-                return response; // Indicate that the accept response was not sent
-            }
-        }
-
-        @Override
-        public void learn(Request learnRequest) {
-            int proposalNumber = request.proposalNumber;
-            int proposedValue = request.value;
-
-            paxosCoordinator.coordLearn(new Proposal(proposalNumber, proposedValue));
-        }
-
+       
         private Result putHelper(int key, int val, String reqId) {
             Result result = new Result();
             result.reqId = reqId;
             result.value = val;
-            String command = "put";
+            String KeyValueService = "put";
 
             // 1. Validate
             try {
@@ -175,6 +108,11 @@ public class CommandServer {
             return result;
 
         }
+        @Override
+        public Proposal accept( Proposal proposal) {
+
+            return new Proposal();
+        }
 
         @Override
         public Result put(int key, int val, String reqId, String clientIp, int clientPort) throws TException {
@@ -183,33 +121,7 @@ public class CommandServer {
             String command = "put";
 
 
-            // Proposer starts the Paxos algorithm
-            proposer.incrementProposalNumber();
-            proposer.sendPrepareRequest();
 
-            // In a real-world scenario, the Proposer would wait for a quorum of acceptors
-            // to respond with promises
-
-            // Handle prepare responses (assuming all acceptors sent a promise)
-            proposer.handlePrepareResponse();
-
-            // Send accept request
-            proposer.sendAcceptRequest();
-
-            // In a real-world scenario, the Proposer would wait for a quorum of acceptors
-            // to respond with accept responses
-
-            // Handle accept responses (assuming all acceptors sent an accept response)
-            proposer.handleAcceptResponse();
-
-            // In a real-world scenario, the Proposer would notify the learners when a value
-            // has been chosen
-
-            // Perform the local operation
-            result = putHelper(key, val, reqId);
-
-            // print and return result to client
-            printLog(key, val, reqId, command, result.status, result.msg, clientIp, clientPort);
             return result;
         }
         
@@ -332,7 +244,7 @@ public class CommandServer {
             TServerTransport serverTransport = new TServerSocket(port);
 
             // 2A create procesor
-            Command.Processor processor = new Command.Processor<>(new CommandHandler(port, replicaPorts));
+            KeyValueService.Processor processor = new KeyValueService.Processor<>(new KeyValueRPC(port, replicaPorts));
 
             // 3. set server args
             TThreadPoolServer.Args serverArgs = new TThreadPoolServer.Args(serverTransport);

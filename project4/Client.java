@@ -18,7 +18,7 @@ import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class CommandClient {
+public class Client {
 
     private static void validateCommand(String command) throws IllegalArgumentException {
         String currentTimestamp = getDate();
@@ -142,7 +142,7 @@ public class CommandClient {
         }
     }
     
-    private static void executeCommand(String command, Command.Client client, Socket clientSocket) {
+    private static void executeCommand(String command, KeyValueService.Client client, Socket clientSocket) {
 
         Result res = new Result();
         String reqId = generateUniqueID();
@@ -227,7 +227,7 @@ public class CommandClient {
             TTransport transport = new TSocket(serverhost, serverPort, timeout);
             transport.open();
             TBinaryProtocol protocol = new TBinaryProtocol(transport);
-            Command.Client client = new Command.Client(protocol);
+            KeyValueService.Client client = new KeyValueService.Client(protocol);
             Socket clientSocket = ((TSocket) transport).getSocket();
 
 
@@ -264,7 +264,7 @@ public class CommandClient {
                         TTransport transportM = new TSocket(serverhost, serverPort, timeout);
                         transportM.open();
                         TBinaryProtocol protocolM = new TBinaryProtocol(transportM);
-                        Command.Client clientM = new Command.Client(protocolM);
+                        KeyValueService.Client clientM = new KeyValueService.Client(protocolM);
                         Socket clientSocket = ((TSocket) transportM).getSocket();
                         
                         // 2.2 execute command
