@@ -5,28 +5,34 @@
  *  @generated
  */
 @SuppressWarnings({"cast", "rawtypes", "serial", "unchecked", "unused"})
+
 public class KeyValOperation implements org.apache.thrift.TBase<KeyValOperation, KeyValOperation._Fields>, java.io.Serializable, Cloneable, Comparable<KeyValOperation> {
   private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("KeyValOperation");
 
-  private static final org.apache.thrift.protocol.TField PROP_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("propId", org.apache.thrift.protocol.TType.STRING, (short)1);
-  private static final org.apache.thrift.protocol.TField OP_TYPE_FIELD_DESC = new org.apache.thrift.protocol.TField("opType", org.apache.thrift.protocol.TType.STRING, (short)2);
-  private static final org.apache.thrift.protocol.TField KEY_FIELD_DESC = new org.apache.thrift.protocol.TField("key", org.apache.thrift.protocol.TType.I32, (short)3);
-  private static final org.apache.thrift.protocol.TField VAL_FIELD_DESC = new org.apache.thrift.protocol.TField("val", org.apache.thrift.protocol.TType.I32, (short)4);
+  private static final org.apache.thrift.protocol.TField OP_TYPE_FIELD_DESC = new org.apache.thrift.protocol.TField("opType", org.apache.thrift.protocol.TType.I32, (short)1);
+  private static final org.apache.thrift.protocol.TField KEY_FIELD_DESC = new org.apache.thrift.protocol.TField("key", org.apache.thrift.protocol.TType.I32, (short)2);
+  private static final org.apache.thrift.protocol.TField VAL_FIELD_DESC = new org.apache.thrift.protocol.TField("val", org.apache.thrift.protocol.TType.I32, (short)3);
 
   private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new KeyValOperationStandardSchemeFactory();
   private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new KeyValOperationTupleSchemeFactory();
 
-  public @org.apache.thrift.annotation.Nullable java.lang.String propId; // required
-  public @org.apache.thrift.annotation.Nullable java.lang.String opType; // required
+  /**
+   * 
+   * @see OperationType
+   */
+  public @org.apache.thrift.annotation.Nullable OperationType opType; // required
   public int key; // required
   public int val; // required
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-    PROP_ID((short)1, "propId"),
-    OP_TYPE((short)2, "opType"),
-    KEY((short)3, "key"),
-    VAL((short)4, "val");
+    /**
+     * 
+     * @see OperationType
+     */
+    OP_TYPE((short)1, "opType"),
+    KEY((short)2, "key"),
+    VAL((short)3, "val");
 
     private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
 
@@ -42,13 +48,11 @@ public class KeyValOperation implements org.apache.thrift.TBase<KeyValOperation,
     @org.apache.thrift.annotation.Nullable
     public static _Fields findByThriftId(int fieldId) {
       switch(fieldId) {
-        case 1: // PROP_ID
-          return PROP_ID;
-        case 2: // OP_TYPE
+        case 1: // OP_TYPE
           return OP_TYPE;
-        case 3: // KEY
+        case 2: // KEY
           return KEY;
-        case 4: // VAL
+        case 3: // VAL
           return VAL;
         default:
           return null;
@@ -99,10 +103,8 @@ public class KeyValOperation implements org.apache.thrift.TBase<KeyValOperation,
   public static final java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new java.util.EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
-    tmpMap.put(_Fields.PROP_ID, new org.apache.thrift.meta_data.FieldMetaData("propId", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.OP_TYPE, new org.apache.thrift.meta_data.FieldMetaData("opType", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+        new org.apache.thrift.meta_data.EnumMetaData(org.apache.thrift.protocol.TType.ENUM, OperationType.class)));
     tmpMap.put(_Fields.KEY, new org.apache.thrift.meta_data.FieldMetaData("key", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
     tmpMap.put(_Fields.VAL, new org.apache.thrift.meta_data.FieldMetaData("val", org.apache.thrift.TFieldRequirementType.DEFAULT, 
@@ -115,13 +117,11 @@ public class KeyValOperation implements org.apache.thrift.TBase<KeyValOperation,
   }
 
   public KeyValOperation(
-    java.lang.String propId,
-    java.lang.String opType,
+    OperationType opType,
     int key,
     int val)
   {
     this();
-    this.propId = propId;
     this.opType = opType;
     this.key = key;
     setKeyIsSet(true);
@@ -134,9 +134,6 @@ public class KeyValOperation implements org.apache.thrift.TBase<KeyValOperation,
    */
   public KeyValOperation(KeyValOperation other) {
     __isset_bitfield = other.__isset_bitfield;
-    if (other.isSetPropId()) {
-      this.propId = other.propId;
-    }
     if (other.isSetOpType()) {
       this.opType = other.opType;
     }
@@ -151,7 +148,6 @@ public class KeyValOperation implements org.apache.thrift.TBase<KeyValOperation,
 
   @Override
   public void clear() {
-    this.propId = null;
     this.opType = null;
     setKeyIsSet(false);
     this.key = 0;
@@ -159,37 +155,20 @@ public class KeyValOperation implements org.apache.thrift.TBase<KeyValOperation,
     this.val = 0;
   }
 
+  /**
+   * 
+   * @see OperationType
+   */
   @org.apache.thrift.annotation.Nullable
-  public java.lang.String getPropId() {
-    return this.propId;
-  }
-
-  public KeyValOperation setPropId(@org.apache.thrift.annotation.Nullable java.lang.String propId) {
-    this.propId = propId;
-    return this;
-  }
-
-  public void unsetPropId() {
-    this.propId = null;
-  }
-
-  /** Returns true if field propId is set (has been assigned a value) and false otherwise */
-  public boolean isSetPropId() {
-    return this.propId != null;
-  }
-
-  public void setPropIdIsSet(boolean value) {
-    if (!value) {
-      this.propId = null;
-    }
-  }
-
-  @org.apache.thrift.annotation.Nullable
-  public java.lang.String getOpType() {
+  public OperationType getOpType() {
     return this.opType;
   }
 
-  public KeyValOperation setOpType(@org.apache.thrift.annotation.Nullable java.lang.String opType) {
+  /**
+   * 
+   * @see OperationType
+   */
+  public KeyValOperation setOpType(@org.apache.thrift.annotation.Nullable OperationType opType) {
     this.opType = opType;
     return this;
   }
@@ -258,19 +237,11 @@ public class KeyValOperation implements org.apache.thrift.TBase<KeyValOperation,
   @Override
   public void setFieldValue(_Fields field, @org.apache.thrift.annotation.Nullable java.lang.Object value) {
     switch (field) {
-    case PROP_ID:
-      if (value == null) {
-        unsetPropId();
-      } else {
-        setPropId((java.lang.String)value);
-      }
-      break;
-
     case OP_TYPE:
       if (value == null) {
         unsetOpType();
       } else {
-        setOpType((java.lang.String)value);
+        setOpType((OperationType)value);
       }
       break;
 
@@ -297,9 +268,6 @@ public class KeyValOperation implements org.apache.thrift.TBase<KeyValOperation,
   @Override
   public java.lang.Object getFieldValue(_Fields field) {
     switch (field) {
-    case PROP_ID:
-      return getPropId();
-
     case OP_TYPE:
       return getOpType();
 
@@ -321,8 +289,6 @@ public class KeyValOperation implements org.apache.thrift.TBase<KeyValOperation,
     }
 
     switch (field) {
-    case PROP_ID:
-      return isSetPropId();
     case OP_TYPE:
       return isSetOpType();
     case KEY:
@@ -345,15 +311,6 @@ public class KeyValOperation implements org.apache.thrift.TBase<KeyValOperation,
       return false;
     if (this == that)
       return true;
-
-    boolean this_present_propId = true && this.isSetPropId();
-    boolean that_present_propId = true && that.isSetPropId();
-    if (this_present_propId || that_present_propId) {
-      if (!(this_present_propId && that_present_propId))
-        return false;
-      if (!this.propId.equals(that.propId))
-        return false;
-    }
 
     boolean this_present_opType = true && this.isSetOpType();
     boolean that_present_opType = true && that.isSetOpType();
@@ -389,13 +346,9 @@ public class KeyValOperation implements org.apache.thrift.TBase<KeyValOperation,
   public int hashCode() {
     int hashCode = 1;
 
-    hashCode = hashCode * 8191 + ((isSetPropId()) ? 131071 : 524287);
-    if (isSetPropId())
-      hashCode = hashCode * 8191 + propId.hashCode();
-
     hashCode = hashCode * 8191 + ((isSetOpType()) ? 131071 : 524287);
     if (isSetOpType())
-      hashCode = hashCode * 8191 + opType.hashCode();
+      hashCode = hashCode * 8191 + opType.getValue();
 
     hashCode = hashCode * 8191 + key;
 
@@ -412,16 +365,6 @@ public class KeyValOperation implements org.apache.thrift.TBase<KeyValOperation,
 
     int lastComparison = 0;
 
-    lastComparison = java.lang.Boolean.compare(isSetPropId(), other.isSetPropId());
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    if (isSetPropId()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.propId, other.propId);
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-    }
     lastComparison = java.lang.Boolean.compare(isSetOpType(), other.isSetOpType());
     if (lastComparison != 0) {
       return lastComparison;
@@ -476,14 +419,6 @@ public class KeyValOperation implements org.apache.thrift.TBase<KeyValOperation,
     java.lang.StringBuilder sb = new java.lang.StringBuilder("KeyValOperation(");
     boolean first = true;
 
-    sb.append("propId:");
-    if (this.propId == null) {
-      sb.append("null");
-    } else {
-      sb.append(this.propId);
-    }
-    first = false;
-    if (!first) sb.append(", ");
     sb.append("opType:");
     if (this.opType == null) {
       sb.append("null");
@@ -546,23 +481,15 @@ public class KeyValOperation implements org.apache.thrift.TBase<KeyValOperation,
           break;
         }
         switch (schemeField.id) {
-          case 1: // PROP_ID
-            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-              struct.propId = iprot.readString();
-              struct.setPropIdIsSet(true);
-            } else { 
-              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-            }
-            break;
-          case 2: // OP_TYPE
-            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-              struct.opType = iprot.readString();
+          case 1: // OP_TYPE
+            if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
+              struct.opType = OperationType.findByValue(iprot.readI32());
               struct.setOpTypeIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 3: // KEY
+          case 2: // KEY
             if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
               struct.key = iprot.readI32();
               struct.setKeyIsSet(true);
@@ -570,7 +497,7 @@ public class KeyValOperation implements org.apache.thrift.TBase<KeyValOperation,
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 4: // VAL
+          case 3: // VAL
             if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
               struct.val = iprot.readI32();
               struct.setValIsSet(true);
@@ -594,14 +521,9 @@ public class KeyValOperation implements org.apache.thrift.TBase<KeyValOperation,
       struct.validate();
 
       oprot.writeStructBegin(STRUCT_DESC);
-      if (struct.propId != null) {
-        oprot.writeFieldBegin(PROP_ID_FIELD_DESC);
-        oprot.writeString(struct.propId);
-        oprot.writeFieldEnd();
-      }
       if (struct.opType != null) {
         oprot.writeFieldBegin(OP_TYPE_FIELD_DESC);
-        oprot.writeString(struct.opType);
+        oprot.writeI32(struct.opType.getValue());
         oprot.writeFieldEnd();
       }
       oprot.writeFieldBegin(KEY_FIELD_DESC);
@@ -629,24 +551,18 @@ public class KeyValOperation implements org.apache.thrift.TBase<KeyValOperation,
     public void write(org.apache.thrift.protocol.TProtocol prot, KeyValOperation struct) throws org.apache.thrift.TException {
       org.apache.thrift.protocol.TTupleProtocol oprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
       java.util.BitSet optionals = new java.util.BitSet();
-      if (struct.isSetPropId()) {
+      if (struct.isSetOpType()) {
         optionals.set(0);
       }
-      if (struct.isSetOpType()) {
+      if (struct.isSetKey()) {
         optionals.set(1);
       }
-      if (struct.isSetKey()) {
+      if (struct.isSetVal()) {
         optionals.set(2);
       }
-      if (struct.isSetVal()) {
-        optionals.set(3);
-      }
-      oprot.writeBitSet(optionals, 4);
-      if (struct.isSetPropId()) {
-        oprot.writeString(struct.propId);
-      }
+      oprot.writeBitSet(optionals, 3);
       if (struct.isSetOpType()) {
-        oprot.writeString(struct.opType);
+        oprot.writeI32(struct.opType.getValue());
       }
       if (struct.isSetKey()) {
         oprot.writeI32(struct.key);
@@ -659,20 +575,16 @@ public class KeyValOperation implements org.apache.thrift.TBase<KeyValOperation,
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, KeyValOperation struct) throws org.apache.thrift.TException {
       org.apache.thrift.protocol.TTupleProtocol iprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
-      java.util.BitSet incoming = iprot.readBitSet(4);
+      java.util.BitSet incoming = iprot.readBitSet(3);
       if (incoming.get(0)) {
-        struct.propId = iprot.readString();
-        struct.setPropIdIsSet(true);
-      }
-      if (incoming.get(1)) {
-        struct.opType = iprot.readString();
+        struct.opType = OperationType.findByValue(iprot.readI32());
         struct.setOpTypeIsSet(true);
       }
-      if (incoming.get(2)) {
+      if (incoming.get(1)) {
         struct.key = iprot.readI32();
         struct.setKeyIsSet(true);
       }
-      if (incoming.get(3)) {
+      if (incoming.get(2)) {
         struct.val = iprot.readI32();
         struct.setValIsSet(true);
       }

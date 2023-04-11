@@ -6,22 +6,30 @@
  */
 @SuppressWarnings({"cast", "rawtypes", "serial", "unchecked", "unused"})
 
-public class Proposal implements org.apache.thrift.TBase<Proposal, Proposal._Fields>, java.io.Serializable, Cloneable, Comparable<Proposal> {
-  private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("Proposal");
+public class Promise implements org.apache.thrift.TBase<Promise, Promise._Fields>, java.io.Serializable, Cloneable, Comparable<Promise> {
+  private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("Promise");
 
-  private static final org.apache.thrift.protocol.TField PROP_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("propId", org.apache.thrift.protocol.TType.I32, (short)1);
-  private static final org.apache.thrift.protocol.TField OPERATION_FIELD_DESC = new org.apache.thrift.protocol.TField("operation", org.apache.thrift.protocol.TType.STRUCT, (short)2);
+  private static final org.apache.thrift.protocol.TField STATUS_FIELD_DESC = new org.apache.thrift.protocol.TField("status", org.apache.thrift.protocol.TType.I32, (short)1);
+  private static final org.apache.thrift.protocol.TField PROPOSAL_FIELD_DESC = new org.apache.thrift.protocol.TField("proposal", org.apache.thrift.protocol.TType.STRUCT, (short)2);
 
-  private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new ProposalStandardSchemeFactory();
-  private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new ProposalTupleSchemeFactory();
+  private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new PromiseStandardSchemeFactory();
+  private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new PromiseTupleSchemeFactory();
 
-  public int propId; // required
-  public @org.apache.thrift.annotation.Nullable KeyValOperation operation; // required
+  /**
+   * 
+   * @see Status
+   */
+  public @org.apache.thrift.annotation.Nullable Status status; // required
+  public @org.apache.thrift.annotation.Nullable Proposal proposal; // required
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-    PROP_ID((short)1, "propId"),
-    OPERATION((short)2, "operation");
+    /**
+     * 
+     * @see Status
+     */
+    STATUS((short)1, "status"),
+    PROPOSAL((short)2, "proposal");
 
     private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
 
@@ -37,10 +45,10 @@ public class Proposal implements org.apache.thrift.TBase<Proposal, Proposal._Fie
     @org.apache.thrift.annotation.Nullable
     public static _Fields findByThriftId(int fieldId) {
       switch(fieldId) {
-        case 1: // PROP_ID
-          return PROP_ID;
-        case 2: // OPERATION
-          return OPERATION;
+        case 1: // STATUS
+          return STATUS;
+        case 2: // PROPOSAL
+          return PROPOSAL;
         default:
           return null;
       }
@@ -84,119 +92,126 @@ public class Proposal implements org.apache.thrift.TBase<Proposal, Proposal._Fie
   }
 
   // isset id assignments
-  private static final int __PROPID_ISSET_ID = 0;
-  private byte __isset_bitfield = 0;
   public static final java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new java.util.EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
-    tmpMap.put(_Fields.PROP_ID, new org.apache.thrift.meta_data.FieldMetaData("propId", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
-    tmpMap.put(_Fields.OPERATION, new org.apache.thrift.meta_data.FieldMetaData("operation", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-        new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, KeyValOperation.class)));
+    tmpMap.put(_Fields.STATUS, new org.apache.thrift.meta_data.FieldMetaData("status", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+        new org.apache.thrift.meta_data.EnumMetaData(org.apache.thrift.protocol.TType.ENUM, Status.class)));
+    tmpMap.put(_Fields.PROPOSAL, new org.apache.thrift.meta_data.FieldMetaData("proposal", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+        new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, Proposal.class)));
     metaDataMap = java.util.Collections.unmodifiableMap(tmpMap);
-    org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(Proposal.class, metaDataMap);
+    org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(Promise.class, metaDataMap);
   }
 
-  public Proposal() {
+  public Promise() {
   }
 
-  public Proposal(
-    int propId,
-    KeyValOperation operation)
+  public Promise(
+    Status status,
+    Proposal proposal)
   {
     this();
-    this.propId = propId;
-    setPropIdIsSet(true);
-    this.operation = operation;
+    this.status = status;
+    this.proposal = proposal;
   }
 
   /**
    * Performs a deep copy on <i>other</i>.
    */
-  public Proposal(Proposal other) {
-    __isset_bitfield = other.__isset_bitfield;
-    this.propId = other.propId;
-    if (other.isSetOperation()) {
-      this.operation = new KeyValOperation(other.operation);
+  public Promise(Promise other) {
+    if (other.isSetStatus()) {
+      this.status = other.status;
+    }
+    if (other.isSetProposal()) {
+      this.proposal = new Proposal(other.proposal);
     }
   }
 
   @Override
-  public Proposal deepCopy() {
-    return new Proposal(this);
+  public Promise deepCopy() {
+    return new Promise(this);
   }
 
   @Override
   public void clear() {
-    setPropIdIsSet(false);
-    this.propId = 0;
-    this.operation = null;
+    this.status = null;
+    this.proposal = null;
   }
 
-  public int getPropId() {
-    return this.propId;
+  /**
+   * 
+   * @see Status
+   */
+  @org.apache.thrift.annotation.Nullable
+  public Status getStatus() {
+    return this.status;
   }
 
-  public Proposal setPropId(int propId) {
-    this.propId = propId;
-    setPropIdIsSet(true);
+  /**
+   * 
+   * @see Status
+   */
+  public Promise setStatus(@org.apache.thrift.annotation.Nullable Status status) {
+    this.status = status;
     return this;
   }
 
-  public void unsetPropId() {
-    __isset_bitfield = org.apache.thrift.EncodingUtils.clearBit(__isset_bitfield, __PROPID_ISSET_ID);
+  public void unsetStatus() {
+    this.status = null;
   }
 
-  /** Returns true if field propId is set (has been assigned a value) and false otherwise */
-  public boolean isSetPropId() {
-    return org.apache.thrift.EncodingUtils.testBit(__isset_bitfield, __PROPID_ISSET_ID);
+  /** Returns true if field status is set (has been assigned a value) and false otherwise */
+  public boolean isSetStatus() {
+    return this.status != null;
   }
 
-  public void setPropIdIsSet(boolean value) {
-    __isset_bitfield = org.apache.thrift.EncodingUtils.setBit(__isset_bitfield, __PROPID_ISSET_ID, value);
+  public void setStatusIsSet(boolean value) {
+    if (!value) {
+      this.status = null;
+    }
   }
 
   @org.apache.thrift.annotation.Nullable
-  public KeyValOperation getOperation() {
-    return this.operation;
+  public Proposal getProposal() {
+    return this.proposal;
   }
 
-  public Proposal setOperation(@org.apache.thrift.annotation.Nullable KeyValOperation operation) {
-    this.operation = operation;
+  public Promise setProposal(@org.apache.thrift.annotation.Nullable Proposal proposal) {
+    this.proposal = proposal;
     return this;
   }
 
-  public void unsetOperation() {
-    this.operation = null;
+  public void unsetProposal() {
+    this.proposal = null;
   }
 
-  /** Returns true if field operation is set (has been assigned a value) and false otherwise */
-  public boolean isSetOperation() {
-    return this.operation != null;
+  /** Returns true if field proposal is set (has been assigned a value) and false otherwise */
+  public boolean isSetProposal() {
+    return this.proposal != null;
   }
 
-  public void setOperationIsSet(boolean value) {
+  public void setProposalIsSet(boolean value) {
     if (!value) {
-      this.operation = null;
+      this.proposal = null;
     }
   }
 
   @Override
   public void setFieldValue(_Fields field, @org.apache.thrift.annotation.Nullable java.lang.Object value) {
     switch (field) {
-    case PROP_ID:
+    case STATUS:
       if (value == null) {
-        unsetPropId();
+        unsetStatus();
       } else {
-        setPropId((java.lang.Integer)value);
+        setStatus((Status)value);
       }
       break;
 
-    case OPERATION:
+    case PROPOSAL:
       if (value == null) {
-        unsetOperation();
+        unsetProposal();
       } else {
-        setOperation((KeyValOperation)value);
+        setProposal((Proposal)value);
       }
       break;
 
@@ -207,11 +222,11 @@ public class Proposal implements org.apache.thrift.TBase<Proposal, Proposal._Fie
   @Override
   public java.lang.Object getFieldValue(_Fields field) {
     switch (field) {
-    case PROP_ID:
-      return getPropId();
+    case STATUS:
+      return getStatus();
 
-    case OPERATION:
-      return getOperation();
+    case PROPOSAL:
+      return getProposal();
 
     }
     throw new java.lang.IllegalStateException();
@@ -225,42 +240,42 @@ public class Proposal implements org.apache.thrift.TBase<Proposal, Proposal._Fie
     }
 
     switch (field) {
-    case PROP_ID:
-      return isSetPropId();
-    case OPERATION:
-      return isSetOperation();
+    case STATUS:
+      return isSetStatus();
+    case PROPOSAL:
+      return isSetProposal();
     }
     throw new java.lang.IllegalStateException();
   }
 
   @Override
   public boolean equals(java.lang.Object that) {
-    if (that instanceof Proposal)
-      return this.equals((Proposal)that);
+    if (that instanceof Promise)
+      return this.equals((Promise)that);
     return false;
   }
 
-  public boolean equals(Proposal that) {
+  public boolean equals(Promise that) {
     if (that == null)
       return false;
     if (this == that)
       return true;
 
-    boolean this_present_propId = true;
-    boolean that_present_propId = true;
-    if (this_present_propId || that_present_propId) {
-      if (!(this_present_propId && that_present_propId))
+    boolean this_present_status = true && this.isSetStatus();
+    boolean that_present_status = true && that.isSetStatus();
+    if (this_present_status || that_present_status) {
+      if (!(this_present_status && that_present_status))
         return false;
-      if (this.propId != that.propId)
+      if (!this.status.equals(that.status))
         return false;
     }
 
-    boolean this_present_operation = true && this.isSetOperation();
-    boolean that_present_operation = true && that.isSetOperation();
-    if (this_present_operation || that_present_operation) {
-      if (!(this_present_operation && that_present_operation))
+    boolean this_present_proposal = true && this.isSetProposal();
+    boolean that_present_proposal = true && that.isSetProposal();
+    if (this_present_proposal || that_present_proposal) {
+      if (!(this_present_proposal && that_present_proposal))
         return false;
-      if (!this.operation.equals(that.operation))
+      if (!this.proposal.equals(that.proposal))
         return false;
     }
 
@@ -271,39 +286,41 @@ public class Proposal implements org.apache.thrift.TBase<Proposal, Proposal._Fie
   public int hashCode() {
     int hashCode = 1;
 
-    hashCode = hashCode * 8191 + propId;
+    hashCode = hashCode * 8191 + ((isSetStatus()) ? 131071 : 524287);
+    if (isSetStatus())
+      hashCode = hashCode * 8191 + status.getValue();
 
-    hashCode = hashCode * 8191 + ((isSetOperation()) ? 131071 : 524287);
-    if (isSetOperation())
-      hashCode = hashCode * 8191 + operation.hashCode();
+    hashCode = hashCode * 8191 + ((isSetProposal()) ? 131071 : 524287);
+    if (isSetProposal())
+      hashCode = hashCode * 8191 + proposal.hashCode();
 
     return hashCode;
   }
 
   @Override
-  public int compareTo(Proposal other) {
+  public int compareTo(Promise other) {
     if (!getClass().equals(other.getClass())) {
       return getClass().getName().compareTo(other.getClass().getName());
     }
 
     int lastComparison = 0;
 
-    lastComparison = java.lang.Boolean.compare(isSetPropId(), other.isSetPropId());
+    lastComparison = java.lang.Boolean.compare(isSetStatus(), other.isSetStatus());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    if (isSetPropId()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.propId, other.propId);
+    if (isSetStatus()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.status, other.status);
       if (lastComparison != 0) {
         return lastComparison;
       }
     }
-    lastComparison = java.lang.Boolean.compare(isSetOperation(), other.isSetOperation());
+    lastComparison = java.lang.Boolean.compare(isSetProposal(), other.isSetProposal());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    if (isSetOperation()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.operation, other.operation);
+    if (isSetProposal()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.proposal, other.proposal);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -329,18 +346,22 @@ public class Proposal implements org.apache.thrift.TBase<Proposal, Proposal._Fie
 
   @Override
   public java.lang.String toString() {
-    java.lang.StringBuilder sb = new java.lang.StringBuilder("Proposal(");
+    java.lang.StringBuilder sb = new java.lang.StringBuilder("Promise(");
     boolean first = true;
 
-    sb.append("propId:");
-    sb.append(this.propId);
-    first = false;
-    if (!first) sb.append(", ");
-    sb.append("operation:");
-    if (this.operation == null) {
+    sb.append("status:");
+    if (this.status == null) {
       sb.append("null");
     } else {
-      sb.append(this.operation);
+      sb.append(this.status);
+    }
+    first = false;
+    if (!first) sb.append(", ");
+    sb.append("proposal:");
+    if (this.proposal == null) {
+      sb.append("null");
+    } else {
+      sb.append(this.proposal);
     }
     first = false;
     sb.append(")");
@@ -350,8 +371,8 @@ public class Proposal implements org.apache.thrift.TBase<Proposal, Proposal._Fie
   public void validate() throws org.apache.thrift.TException {
     // check for required fields
     // check for sub-struct validity
-    if (operation != null) {
-      operation.validate();
+    if (proposal != null) {
+      proposal.validate();
     }
   }
 
@@ -365,25 +386,23 @@ public class Proposal implements org.apache.thrift.TBase<Proposal, Proposal._Fie
 
   private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, java.lang.ClassNotFoundException {
     try {
-      // it doesn't seem like you should have to do this, but java serialization is wacky, and doesn't call the default constructor.
-      __isset_bitfield = 0;
       read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
     } catch (org.apache.thrift.TException te) {
       throw new java.io.IOException(te);
     }
   }
 
-  private static class ProposalStandardSchemeFactory implements org.apache.thrift.scheme.SchemeFactory {
+  private static class PromiseStandardSchemeFactory implements org.apache.thrift.scheme.SchemeFactory {
     @Override
-    public ProposalStandardScheme getScheme() {
-      return new ProposalStandardScheme();
+    public PromiseStandardScheme getScheme() {
+      return new PromiseStandardScheme();
     }
   }
 
-  private static class ProposalStandardScheme extends org.apache.thrift.scheme.StandardScheme<Proposal> {
+  private static class PromiseStandardScheme extends org.apache.thrift.scheme.StandardScheme<Promise> {
 
     @Override
-    public void read(org.apache.thrift.protocol.TProtocol iprot, Proposal struct) throws org.apache.thrift.TException {
+    public void read(org.apache.thrift.protocol.TProtocol iprot, Promise struct) throws org.apache.thrift.TException {
       org.apache.thrift.protocol.TField schemeField;
       iprot.readStructBegin();
       while (true)
@@ -393,19 +412,19 @@ public class Proposal implements org.apache.thrift.TBase<Proposal, Proposal._Fie
           break;
         }
         switch (schemeField.id) {
-          case 1: // PROP_ID
+          case 1: // STATUS
             if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
-              struct.propId = iprot.readI32();
-              struct.setPropIdIsSet(true);
+              struct.status = Status.findByValue(iprot.readI32());
+              struct.setStatusIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 2: // OPERATION
+          case 2: // PROPOSAL
             if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-              struct.operation = new KeyValOperation();
-              struct.operation.read(iprot);
-              struct.setOperationIsSet(true);
+              struct.proposal = new Proposal();
+              struct.proposal.read(iprot);
+              struct.setProposalIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
@@ -422,16 +441,18 @@ public class Proposal implements org.apache.thrift.TBase<Proposal, Proposal._Fie
     }
 
     @Override
-    public void write(org.apache.thrift.protocol.TProtocol oprot, Proposal struct) throws org.apache.thrift.TException {
+    public void write(org.apache.thrift.protocol.TProtocol oprot, Promise struct) throws org.apache.thrift.TException {
       struct.validate();
 
       oprot.writeStructBegin(STRUCT_DESC);
-      oprot.writeFieldBegin(PROP_ID_FIELD_DESC);
-      oprot.writeI32(struct.propId);
-      oprot.writeFieldEnd();
-      if (struct.operation != null) {
-        oprot.writeFieldBegin(OPERATION_FIELD_DESC);
-        struct.operation.write(oprot);
+      if (struct.status != null) {
+        oprot.writeFieldBegin(STATUS_FIELD_DESC);
+        oprot.writeI32(struct.status.getValue());
+        oprot.writeFieldEnd();
+      }
+      if (struct.proposal != null) {
+        oprot.writeFieldBegin(PROPOSAL_FIELD_DESC);
+        struct.proposal.write(oprot);
         oprot.writeFieldEnd();
       }
       oprot.writeFieldStop();
@@ -440,46 +461,46 @@ public class Proposal implements org.apache.thrift.TBase<Proposal, Proposal._Fie
 
   }
 
-  private static class ProposalTupleSchemeFactory implements org.apache.thrift.scheme.SchemeFactory {
+  private static class PromiseTupleSchemeFactory implements org.apache.thrift.scheme.SchemeFactory {
     @Override
-    public ProposalTupleScheme getScheme() {
-      return new ProposalTupleScheme();
+    public PromiseTupleScheme getScheme() {
+      return new PromiseTupleScheme();
     }
   }
 
-  private static class ProposalTupleScheme extends org.apache.thrift.scheme.TupleScheme<Proposal> {
+  private static class PromiseTupleScheme extends org.apache.thrift.scheme.TupleScheme<Promise> {
 
     @Override
-    public void write(org.apache.thrift.protocol.TProtocol prot, Proposal struct) throws org.apache.thrift.TException {
+    public void write(org.apache.thrift.protocol.TProtocol prot, Promise struct) throws org.apache.thrift.TException {
       org.apache.thrift.protocol.TTupleProtocol oprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
       java.util.BitSet optionals = new java.util.BitSet();
-      if (struct.isSetPropId()) {
+      if (struct.isSetStatus()) {
         optionals.set(0);
       }
-      if (struct.isSetOperation()) {
+      if (struct.isSetProposal()) {
         optionals.set(1);
       }
       oprot.writeBitSet(optionals, 2);
-      if (struct.isSetPropId()) {
-        oprot.writeI32(struct.propId);
+      if (struct.isSetStatus()) {
+        oprot.writeI32(struct.status.getValue());
       }
-      if (struct.isSetOperation()) {
-        struct.operation.write(oprot);
+      if (struct.isSetProposal()) {
+        struct.proposal.write(oprot);
       }
     }
 
     @Override
-    public void read(org.apache.thrift.protocol.TProtocol prot, Proposal struct) throws org.apache.thrift.TException {
+    public void read(org.apache.thrift.protocol.TProtocol prot, Promise struct) throws org.apache.thrift.TException {
       org.apache.thrift.protocol.TTupleProtocol iprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
       java.util.BitSet incoming = iprot.readBitSet(2);
       if (incoming.get(0)) {
-        struct.propId = iprot.readI32();
-        struct.setPropIdIsSet(true);
+        struct.status = Status.findByValue(iprot.readI32());
+        struct.setStatusIsSet(true);
       }
       if (incoming.get(1)) {
-        struct.operation = new KeyValOperation();
-        struct.operation.read(iprot);
-        struct.setOperationIsSet(true);
+        struct.proposal = new Proposal();
+        struct.proposal.read(iprot);
+        struct.setProposalIsSet(true);
       }
     }
   }

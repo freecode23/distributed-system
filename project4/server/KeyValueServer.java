@@ -1,4 +1,3 @@
-package project4.server;
 import org.apache.thrift.TException;
 import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.server.TServer;
@@ -12,9 +11,6 @@ import org.apache.thrift.transport.TSocket;
 import org.apache.thrift.transport.TTransport;
 import org.apache.thrift.transport.TTransportException;
 
-import project4.services.KeyValueService;
-import project4.services.Proposal;
-import project4.services.Result;
 
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
@@ -113,6 +109,7 @@ public class KeyValueServer {
             return result;
 
         }
+        
         @Override
         public Proposal accept( Proposal proposal) {
 
@@ -121,11 +118,14 @@ public class KeyValueServer {
 
         @Override
         public Result put(int key, int val, String reqId, String clientIp, int clientPort) throws TException {
+            System.out.println("CALLING PUT operation>>>>>>>>>>>>>");
 
             Result result = new Result();
             String command = "put";
 
-
+            // init operation
+            KeyValOperation operation = new KeyValOperation(OperationType.PUT, key, val);
+            
 
             return result;
         }

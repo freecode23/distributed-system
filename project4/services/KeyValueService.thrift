@@ -5,11 +5,27 @@ struct Result {
   4: string msg,
 }
 
+enum OperationType {
+  PUT = 1,
+  GET = 2,
+  DELETE = 3
+}
+
+
 struct KeyValOperation {
-  1: string propId,
-  2: string opType,
-  3: i32 key,
-  4: i32 val,
+  1: OperationType opType,
+  2: i32 key,
+  3: i32 val,
+}
+
+enum Status {
+  ACCEPTED = 1,
+  REJECTED = 2
+}
+
+struct Promise {
+  1: Status status,
+  2: Proposal proposal,
 }
 
 struct Proposal {
