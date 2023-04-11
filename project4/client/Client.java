@@ -230,8 +230,8 @@ public class Client {
             TTransport transport = new TSocket(serverhost, serverPort, timeout);
             transport.open();
             TBinaryProtocol protocol = new TBinaryProtocol(transport);
-            KeyValueService.Client client = new KeyValueService.Client(protocol);
-            Socket clientSocket = ((TSocket) transport).getSocket();
+            KeyValueService.Client server = new KeyValueService.Client(protocol);
+            Socket serverSocket = ((TSocket) transport).getSocket();
 
 
             // 1.2 read commands from textfile
@@ -240,7 +240,7 @@ public class Client {
 
             // 1.3 prepopulate key store
             for(String preCommand: preCommands) {
-                executeCommand(preCommand, client, clientSocket);
+                executeCommand(preCommand, server, serverSocket);
             }
             transport.close();
         } catch (TTransportException ex) {
@@ -267,11 +267,11 @@ public class Client {
                         TTransport transportM = new TSocket(serverhost, serverPort, timeout);
                         transportM.open();
                         TBinaryProtocol protocolM = new TBinaryProtocol(transportM);
-                        KeyValueService.Client clientM = new KeyValueService.Client(protocolM);
-                        Socket clientSocket = ((TSocket) transportM).getSocket();
+                        KeyValueService.Client serverM = new KeyValueService.Client(protocolM);
+                        Socket serverSocket = ((TSocket) transportM).getSocket();
                         
                         // 2.2 execute command
-                        executeCommand(actCommand, clientM, clientSocket);
+                        executeCommand(actCommand, serverM, serverSocket);
                         transportM.close();
                  
                     } catch (TTransportException ex) {

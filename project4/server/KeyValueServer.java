@@ -19,6 +19,9 @@ import java.net.Socket;
 import java.net.URI;
 
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.FutureTask;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -42,9 +45,11 @@ public class KeyValueServer {
 
         private final int port;
         private List<Integer> replicaPorts;
-
-        private Map<Integer, Integer> keyVal = new ConcurrentHashMap<>();
+        private Map<Integer, Integer> keyVal;
+        private long maxAcceptedPropId;
+        private Proposal acceptedProposal;
         private Proposer proposerRole;
+        
 
         /**
          * 1. Constructor that will create a new TSocket for each replica server with a different port number than the current server instance
@@ -54,6 +59,9 @@ public class KeyValueServer {
         public KeyValueServiceDefault(int currPort, List<Integer> replicaPorts) {
             this.port = currPort;
             this.replicaPorts = replicaPorts;
+            this.keyVal = new ConcurrentHashMap<>();
+            this.maxAcceptedPropId = 0;
+            this.acceptedProposal = null;
 
             // - init roles
             this.proposerRole = new Proposer(currPort, replicaPorts);
@@ -110,6 +118,28 @@ public class KeyValueServer {
 
         }
         
+        @Override
+        public Promise prepare(Proposal proposal) {
+            System.out.println(
+                    String.format("acceptor#[%d] is preparing", this.port));
+
+            // init executor service so that this can be executed asynchronously
+            ExecutorService executor = Executors.newSingleThreadExecutor();
+            FutureTask<Promise> futureTask = new FutureTask<>(new Callable<Promise>() {
+
+                // function that will return new promise object depending on the value id of this proposal
+
+                // case1: proposal Id is <= the maximum id that this acceptor has accepted
+                if (proposal.getId())
+
+                    // reject
+                
+                // case: proposal Id is >= the maximum id thhis acceptor has accepted 
+
+            })
+            
+        }
+
         @Override
         public Proposal accept( Proposal proposal) {
 
