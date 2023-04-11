@@ -7,7 +7,6 @@ javac -cp ./lib/libthrift.jar:./lib/slf4j.jar -d bin/services services/*.java
 # Step 2. Compile java files from server dir and put all class files to  bin/server folder
 javac -cp ./services:./lib/libthrift.jar:./lib/slf4j.jar -d bin/server server/*.java
 
-
 # Step 3. Run server. Set to look for the jar file lib directory and class files in bin directory.
 ports=(9000 9001 9002 9003 9004)
 

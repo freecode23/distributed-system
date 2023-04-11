@@ -9,6 +9,9 @@ public class Proposer {
         this.replicaPorts = replicaPorts;
     }
 
+    public boolean getConsensus(Proposal proposal) {
 
+        return true;
+    }
 
 }

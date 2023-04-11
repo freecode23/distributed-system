@@ -118,15 +118,25 @@ public class KeyValueServer {
 
         @Override
         public Result put(int key, int val, String reqId, String clientIp, int clientPort) throws TException {
-            System.out.println("CALLING PUT operation>>>>>>>>>>>>>");
+
 
             Result result = new Result();
             String command = "put";
 
-            // init operation
+            // 1. init operation
             KeyValOperation operation = new KeyValOperation(OperationType.PUT, key, val);
-            
 
+            // 2. generate new proposal
+            Proposal newProposal = ProposalExtended.generateProposal(operation);
+
+            // 3. get consesnsus for this proposal
+            if (proposerRole.getConsensus(newProposal)) {
+                result.status = "OK";
+                result.msg = "op successful";
+                result.value = val;
+            }
+
+            printLog(key, val, reqId, command, result.status, result.msg, clientIp, clientPort);
             return result;
         }
         
@@ -134,7 +144,18 @@ public class KeyValueServer {
         public Result delete(int key, String reqId, String clientIp, int clientPort) throws TException {
             Result result = new Result();
             String command = "delete";
-   
+
+            // 1. init operation
+            KeyValOperation operation = new KeyValOperation(OperationType.DELETE, key, -1);
+
+            // 2. generate new proposal
+            Proposal newProposal = ProposalExtended.generateProposal(operation);
+
+            // 3. get consesnsus for this proposal
+            if (proposerRole.getConsensus(newProposal)) {
+                result.status = "OK";
+                result.msg = "op successful";
+            }
            
             // print and return result to client
             printLog(key, -1, reqId, command, result.status, result.msg, clientIp, clientPort);
