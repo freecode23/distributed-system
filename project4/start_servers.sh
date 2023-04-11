@@ -1,7 +1,14 @@
 #!/bin/zsh
 
 # Step 1. Compile and put all class files to bin folder
-javac -cp .:./lib/libthrift.jar:./lib/slf4j.jar -d bin/ *.java
+# compile using the java files from:
+# ./services
+# ./server
+# using jar files from:
+# ./lib/libthrift.jar
+# ./lib/slf4j.jar
+# put the .class file in bin/ folder
+javac -cp ./services:./server:./lib/libthrift.jar:./lib/slf4j.jar -d bin/ *.java
 
 
 # Step 2. Run server. Set to look for the jar file lib directory and class files in bin directory.

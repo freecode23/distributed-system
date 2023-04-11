@@ -1,3 +1,4 @@
+package project4.server;
 import org.apache.thrift.TException;
 import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.server.TServer;
@@ -10,6 +11,10 @@ import org.apache.thrift.transport.TServerSocket;
 import org.apache.thrift.transport.TSocket;
 import org.apache.thrift.transport.TTransport;
 import org.apache.thrift.transport.TTransportException;
+
+import project4.services.KeyValueService;
+import project4.services.Proposal;
+import project4.services.Result;
 
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
@@ -37,7 +42,7 @@ public class KeyValueServer {
         this.replicaPorts = replicaPorts;
     }
     
-    public static class KeyValueRPC implements KeyValueService.Iface {
+    public static class KeyValueServiceDefault implements KeyValueService.Iface {
 
         private final int port;
         private List<Integer> replicaPorts;
@@ -50,7 +55,7 @@ public class KeyValueServer {
          * @param currPort the port that the current server belongs to
          * @param replicaPorts  array of port numbers representing all the replicated servers, including the current server instance.
          */
-        public KeyValueRPC(int currPort, List<Integer> replicaPorts) {
+        public KeyValueServiceDefault(int currPort, List<Integer> replicaPorts) {
             this.port = currPort;
             this.replicaPorts = replicaPorts;
 
@@ -244,7 +249,7 @@ public class KeyValueServer {
             TServerTransport serverTransport = new TServerSocket(port);
 
             // 2A create procesor
-            KeyValueService.Processor processor = new KeyValueService.Processor<>(new KeyValueRPC(port, replicaPorts));
+            KeyValueService.Processor processor = new KeyValueService.Processor<>(new KeyValueServiceDefault(port, replicaPorts));
 
             // 3. set server args
             TThreadPoolServer.Args serverArgs = new TThreadPoolServer.Args(serverTransport);
