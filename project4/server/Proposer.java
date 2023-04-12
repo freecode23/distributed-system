@@ -115,7 +115,8 @@ public class Proposer {
             }
         }
         if (acceptCount < half) {
-            return false;
+            consResult.isConsensusReached = false;
+            return consResult;
         }
 
         // phase3: sends learn

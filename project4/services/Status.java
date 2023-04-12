@@ -5,6 +5,7 @@
  *  @generated
  */
 
+
 public enum Status implements org.apache.thrift.TEnum {
   ACCEPTED(1),
   REJECTED(2);

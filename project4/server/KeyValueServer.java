@@ -259,7 +259,7 @@ public class KeyValueServer {
         public Result learn(Proposal proposal) {
 
             KeyValOperation opToCommit = proposal.operation;
-            if (opToCommit.operationType == OperationType.PUT) {
+            if (opToCommit.opType == OperationType.PUT) {
                 // 2. init result and command
                 String command = "put";
 
@@ -314,33 +314,31 @@ public class KeyValueServer {
             // 3. get consesnsus for this proposal. 
             // it will return the commit result of only its own port
             // doesn't care if others
-            Result commitResult = new Result();
-            ConsensusResult res = proposerRole.getConsensus(newProposal);
+            ConsensusResult consRes = proposerRole.getConsensus(newProposal);
+            Result commitResult = consRes.proposerCommitResult;
 
-            printLog(key, val, reqId, command, result.status, result.msg, clientIp, clientPort);
-            return result;
+            printLog(key, val, reqId, command, commitResult.status, commitResult.msg, clientIp, clientPort);
+            return commitResult;
         }
         
         @Override
         public Result delete(int key, String reqId, String clientIp, int clientPort) throws TException {
-            Result result = new Result();
             String command = "delete";
 
             // 1. init operation
-            KeyValOperation operation = new KeyValOperation(OperationType.DELETE, key, -1);
+            KeyValOperation operation = new KeyValOperation(OperationType.PUT, key, -1, reqId, clientIp, clientPort);
 
             // 2. generate new proposal
             Proposal newProposal = ProposalExtended.generateProposal(operation);
 
-            // 3. get consesnsus for this proposal
-            if (proposerRole.getConsensus(newProposal)) {
-                result.status = "OK";
-                result.msg = "op successful";
-            }
-           
-            // print and return result to client
-            printLog(key, -1, reqId, command, result.status, result.msg, clientIp, clientPort);
-            return result;
+            // 3. get consesnsus for this proposal.
+            // it will return the commit result of only its own port
+            // doesn't care if others
+            ConsensusResult consRes = proposerRole.getConsensus(newProposal);
+            Result commitResult = consRes.proposerCommitResult;
+
+            printLog(key, -1, reqId, command, commitResult.status, commitResult.msg, clientIp, clientPort);
+            return commitResult;
         }
 
         @Override

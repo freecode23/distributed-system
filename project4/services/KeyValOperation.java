@@ -14,7 +14,7 @@ public class KeyValOperation implements org.apache.thrift.TBase<KeyValOperation,
   private static final org.apache.thrift.protocol.TField VAL_FIELD_DESC = new org.apache.thrift.protocol.TField("val", org.apache.thrift.protocol.TType.I32, (short)3);
   private static final org.apache.thrift.protocol.TField REQ_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("reqId", org.apache.thrift.protocol.TType.STRING, (short)4);
   private static final org.apache.thrift.protocol.TField CLIENT_IP_FIELD_DESC = new org.apache.thrift.protocol.TField("clientIp", org.apache.thrift.protocol.TType.STRING, (short)5);
-  private static final org.apache.thrift.protocol.TField CLIENT_PORT_FIELD_DESC = new org.apache.thrift.protocol.TField("clientPort", org.apache.thrift.protocol.TType.STRING, (short)6);
+  private static final org.apache.thrift.protocol.TField CLIENT_PORT_FIELD_DESC = new org.apache.thrift.protocol.TField("clientPort", org.apache.thrift.protocol.TType.I32, (short)6);
 
   private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new KeyValOperationStandardSchemeFactory();
   private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new KeyValOperationTupleSchemeFactory();
@@ -28,7 +28,7 @@ public class KeyValOperation implements org.apache.thrift.TBase<KeyValOperation,
   public int val; // required
   public @org.apache.thrift.annotation.Nullable java.lang.String reqId; // required
   public @org.apache.thrift.annotation.Nullable java.lang.String clientIp; // required
-  public @org.apache.thrift.annotation.Nullable java.lang.String clientPort; // required
+  public int clientPort; // required
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -114,6 +114,7 @@ public class KeyValOperation implements org.apache.thrift.TBase<KeyValOperation,
   // isset id assignments
   private static final int __KEY_ISSET_ID = 0;
   private static final int __VAL_ISSET_ID = 1;
+  private static final int __CLIENTPORT_ISSET_ID = 2;
   private byte __isset_bitfield = 0;
   public static final java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
@@ -129,7 +130,7 @@ public class KeyValOperation implements org.apache.thrift.TBase<KeyValOperation,
     tmpMap.put(_Fields.CLIENT_IP, new org.apache.thrift.meta_data.FieldMetaData("clientIp", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.CLIENT_PORT, new org.apache.thrift.meta_data.FieldMetaData("clientPort", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
     metaDataMap = java.util.Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(KeyValOperation.class, metaDataMap);
   }
@@ -143,7 +144,7 @@ public class KeyValOperation implements org.apache.thrift.TBase<KeyValOperation,
     int val,
     java.lang.String reqId,
     java.lang.String clientIp,
-    java.lang.String clientPort)
+    int clientPort)
   {
     this();
     this.opType = opType;
@@ -154,6 +155,7 @@ public class KeyValOperation implements org.apache.thrift.TBase<KeyValOperation,
     this.reqId = reqId;
     this.clientIp = clientIp;
     this.clientPort = clientPort;
+    setClientPortIsSet(true);
   }
 
   /**
@@ -172,9 +174,7 @@ public class KeyValOperation implements org.apache.thrift.TBase<KeyValOperation,
     if (other.isSetClientIp()) {
       this.clientIp = other.clientIp;
     }
-    if (other.isSetClientPort()) {
-      this.clientPort = other.clientPort;
-    }
+    this.clientPort = other.clientPort;
   }
 
   @Override
@@ -191,7 +191,8 @@ public class KeyValOperation implements org.apache.thrift.TBase<KeyValOperation,
     this.val = 0;
     this.reqId = null;
     this.clientIp = null;
-    this.clientPort = null;
+    setClientPortIsSet(false);
+    this.clientPort = 0;
   }
 
   /**
@@ -323,29 +324,27 @@ public class KeyValOperation implements org.apache.thrift.TBase<KeyValOperation,
     }
   }
 
-  @org.apache.thrift.annotation.Nullable
-  public java.lang.String getClientPort() {
+  public int getClientPort() {
     return this.clientPort;
   }
 
-  public KeyValOperation setClientPort(@org.apache.thrift.annotation.Nullable java.lang.String clientPort) {
+  public KeyValOperation setClientPort(int clientPort) {
     this.clientPort = clientPort;
+    setClientPortIsSet(true);
     return this;
   }
 
   public void unsetClientPort() {
-    this.clientPort = null;
+    __isset_bitfield = org.apache.thrift.EncodingUtils.clearBit(__isset_bitfield, __CLIENTPORT_ISSET_ID);
   }
 
   /** Returns true if field clientPort is set (has been assigned a value) and false otherwise */
   public boolean isSetClientPort() {
-    return this.clientPort != null;
+    return org.apache.thrift.EncodingUtils.testBit(__isset_bitfield, __CLIENTPORT_ISSET_ID);
   }
 
   public void setClientPortIsSet(boolean value) {
-    if (!value) {
-      this.clientPort = null;
-    }
+    __isset_bitfield = org.apache.thrift.EncodingUtils.setBit(__isset_bitfield, __CLIENTPORT_ISSET_ID, value);
   }
 
   @Override
@@ -395,7 +394,7 @@ public class KeyValOperation implements org.apache.thrift.TBase<KeyValOperation,
       if (value == null) {
         unsetClientPort();
       } else {
-        setClientPort((java.lang.String)value);
+        setClientPort((java.lang.Integer)value);
       }
       break;
 
@@ -510,12 +509,12 @@ public class KeyValOperation implements org.apache.thrift.TBase<KeyValOperation,
         return false;
     }
 
-    boolean this_present_clientPort = true && this.isSetClientPort();
-    boolean that_present_clientPort = true && that.isSetClientPort();
+    boolean this_present_clientPort = true;
+    boolean that_present_clientPort = true;
     if (this_present_clientPort || that_present_clientPort) {
       if (!(this_present_clientPort && that_present_clientPort))
         return false;
-      if (!this.clientPort.equals(that.clientPort))
+      if (this.clientPort != that.clientPort)
         return false;
     }
 
@@ -542,9 +541,7 @@ public class KeyValOperation implements org.apache.thrift.TBase<KeyValOperation,
     if (isSetClientIp())
       hashCode = hashCode * 8191 + clientIp.hashCode();
 
-    hashCode = hashCode * 8191 + ((isSetClientPort()) ? 131071 : 524287);
-    if (isSetClientPort())
-      hashCode = hashCode * 8191 + clientPort.hashCode();
+    hashCode = hashCode * 8191 + clientPort;
 
     return hashCode;
   }
@@ -674,11 +671,7 @@ public class KeyValOperation implements org.apache.thrift.TBase<KeyValOperation,
     first = false;
     if (!first) sb.append(", ");
     sb.append("clientPort:");
-    if (this.clientPort == null) {
-      sb.append("null");
-    } else {
-      sb.append(this.clientPort);
-    }
+    sb.append(this.clientPort);
     first = false;
     sb.append(")");
     return sb.toString();
@@ -768,8 +761,8 @@ public class KeyValOperation implements org.apache.thrift.TBase<KeyValOperation,
             }
             break;
           case 6: // CLIENT_PORT
-            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-              struct.clientPort = iprot.readString();
+            if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
+              struct.clientPort = iprot.readI32();
               struct.setClientPortIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
@@ -812,11 +805,9 @@ public class KeyValOperation implements org.apache.thrift.TBase<KeyValOperation,
         oprot.writeString(struct.clientIp);
         oprot.writeFieldEnd();
       }
-      if (struct.clientPort != null) {
-        oprot.writeFieldBegin(CLIENT_PORT_FIELD_DESC);
-        oprot.writeString(struct.clientPort);
-        oprot.writeFieldEnd();
-      }
+      oprot.writeFieldBegin(CLIENT_PORT_FIELD_DESC);
+      oprot.writeI32(struct.clientPort);
+      oprot.writeFieldEnd();
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -871,7 +862,7 @@ public class KeyValOperation implements org.apache.thrift.TBase<KeyValOperation,
         oprot.writeString(struct.clientIp);
       }
       if (struct.isSetClientPort()) {
-        oprot.writeString(struct.clientPort);
+        oprot.writeI32(struct.clientPort);
       }
     }
 
@@ -900,7 +891,7 @@ public class KeyValOperation implements org.apache.thrift.TBase<KeyValOperation,
         struct.setClientIpIsSet(true);
       }
       if (incoming.get(5)) {
-        struct.clientPort = iprot.readString();
+        struct.clientPort = iprot.readI32();
         struct.setClientPortIsSet(true);
       }
     }

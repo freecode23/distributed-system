@@ -23,7 +23,7 @@ struct KeyValOperation {
   3: i32 val,
   4: string reqId,
   5: string clientIp,
-  6: string clientPort
+  6: i32 clientPort
 }
 
 enum Status {
