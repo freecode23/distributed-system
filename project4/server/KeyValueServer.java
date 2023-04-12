@@ -49,7 +49,7 @@ public class KeyValueServer {
         private final int port;
         private List<Integer> replicaPorts;
         private Map<Integer, Integer> keyVal;
-        private long maxAcceptedPropId;
+        private long promisedPropId;
         private Proposal acceptedProposal;
         private Proposer proposerRole;
         
@@ -63,7 +63,7 @@ public class KeyValueServer {
             this.port = currPort;
             this.replicaPorts = replicaPorts;
             this.keyVal = new ConcurrentHashMap<>();
-            this.maxAcceptedPropId = 0;
+            this.promisedPropId = 0;
             this.acceptedProposal = null;
 
             // - init roles
@@ -121,6 +121,35 @@ public class KeyValueServer {
 
         }
         
+        private class AcceptCallable implements Callable<Proposal> {
+            private Proposal incomingProposal;
+
+            public AcceptCallable(Proposal incomingProposal) {
+                this.incomingProposal = incomingProposal;
+            }
+
+            @Override
+            public Proposal call() throws Exception {
+                long promisedPropId = KeyValueServiceDefault.this.promisedPropId;
+
+                //  1. ignore id less than accepted
+                if (incomingProposal.id < promisedPropId) {
+                    return null;
+                } else {
+                    // 2. reply with the accepted incoming proposal and send to learners
+                    // - assign as its last accepted proposal
+                    KeyValueServiceDefault.this.acceptedProposal = new Proposal(this.incomingProposal.id, this.incomingProposal.operation);
+
+                    // - Question: send to learners
+                    // for all acceptorServers, call their learn() method
+
+                    // - return the same proposal to proposer
+                    return this.incomingProposal;
+                }
+               
+            }
+        }
+
         private class PrepareCallable implements Callable<Promise> {
             private Proposal incomingProposal;
 
@@ -131,19 +160,19 @@ public class KeyValueServer {
             @Override
             public Promise call() throws Exception {
 
-                long maxAcceptedPropId = KeyValueServiceDefault.this.maxAcceptedPropId;
+                long promisedPropId = KeyValueServiceDefault.this.promisedPropId;
                 Proposal oldProposal = KeyValueServiceDefault.this.acceptedProposal;
 
                 // case1: incoming id <= maximumAccepted proposal id that this acceptor has accepted
-                if (this.incomingProposal.id <= maxAcceptedPropId) {
+                if (this.incomingProposal.id <= promisedPropId) {
                     System.out.println(String.format("proposalID [%d] is the same as max",
-                            maxAcceptedPropId));
+                            promisedPropId));
                     return new Promise(Status.REJECTED, null);
 
                 // incoming id > the maximum id this acceptor has accepted
                 } else {
                     // assign new maxID
-                    KeyValueServiceDefault.this.maxAcceptedPropId = this.incomingProposal.id;
+                    KeyValueServiceDefault.this.promisedPropId = this.incomingProposal.id;
 
                     // case2: incoming id > the maximum 
                     // have accepted proposal with smaller id, return the old proposal (with smaller id)
@@ -168,7 +197,8 @@ public class KeyValueServer {
         @Override
         public Promise prepare(Proposal proposal) {
 
-            System.out.println(String.format("acceptor#[%d] is preparing", this.port));
+            System.out.println(String.format("acceptor#[%d] is preparing id#%s", this.port, 
+            Integer.toString(proposal.id).substring(Integer.toString(proposal.id).length() - 4)));
 
             // 1. init executor that will execute the callable
             ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -193,7 +223,29 @@ public class KeyValueServer {
         @Override
         public Proposal accept( Proposal proposal) {
 
-            return new Proposal();
+            System.out.println(String.format("acceptor#[%d] is accepting id#%s %s(%d)", 
+            this.port, 
+            Integer.toString(proposal.id).substring(Integer.toString(proposal.id).length() - 4),
+            proposal.operation.opType,
+            proposal.operation.val ));
+
+            // 1. init executor that will execute the callable
+            ExecutorService executor = Executors.newSingleThreadExecutor();
+
+            // 2. the callable that will check if the proposal id is valid and return an accpted proposal
+            AcceptCallable acceptCallable = new AcceptCallable(proposal);
+            FutureTask<Proposal> futureAccepting = new FutureTask<>(acceptCallable);
+
+            // 3. execute the task
+            try {
+                executor.submit(futureAccepting);
+                // will return the accepted proposal
+                return futureAccepting.get(10, TimeUnit.SECONDS);
+
+            } catch (Exception e) {
+                System.out.println("ERROR acceptor cannot execute accepting");
+                return null;
+            }
         }
 
         @Override
