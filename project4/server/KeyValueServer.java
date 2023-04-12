@@ -165,7 +165,7 @@ public class KeyValueServer {
 
                 // case1: incoming id <= maximumAccepted proposal id that this acceptor has accepted
                 if (this.incomingProposal.id <= promisedPropId) {
-                    System.out.println(String.format("proposalID [%d] is the same as max",
+                    System.out.println(String.format("proposalID [%d] is less or the same as last seen propId",
                             promisedPropId));
                     return new Promise(Status.REJECTED, null);
 
@@ -197,8 +197,17 @@ public class KeyValueServer {
         @Override
         public Promise prepare(Proposal proposal) {
 
-            System.out.println(String.format("acceptor#[%d] is preparing id#%s", this.port, 
-            Integer.toString(proposal.id).substring(Integer.toString(proposal.id).length() - 4)));
+            // System.out.println(String.format("acceptor#[%d] is preparing id#%s", this.port, 
+            // Integer.toString(proposal.id).substring(Integer.toString(proposal.id).length() - 4)));
+
+            // create random failure
+            if (Math.random() <= 0.1) {
+                System.out.println(String.format("acceptor#[%d] random failure when preparing id#%s",
+                this.port,
+                Integer.toString(proposal.id).substring(Integer.toString(proposal.id).length()
+                - 4)));
+                return null;
+            }
 
             // 1. init executor that will execute the callable
             ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -216,18 +225,24 @@ public class KeyValueServer {
                 System.out.println("ERROR acceptor cannot return Promise");
                 return null;
             }
-
-            
         }
 
         @Override
         public Proposal accept( Proposal proposal) {
 
-            System.out.println(String.format("acceptor#[%d] is accepting id#%s %s(%d)", 
-            this.port, 
-            Integer.toString(proposal.id).substring(Integer.toString(proposal.id).length() - 4),
-            proposal.operation.opType,
-            proposal.operation.val ));
+            // System.out.println(String.format("acceptor#[%d] is accepting id#%s %s(%d)", 
+            // this.port, 
+            // Integer.toString(proposal.id).substring(Integer.toString(proposal.id).length() - 4),
+            // proposal.operation.opType,
+            // proposal.operation.val ));
+            if (Math.random() <= 0.1) {
+                System.out.println(String.format("acceptor#[%d] random failure when accepting id#%s",
+                        this.port,
+                        Integer.toString(proposal.id).substring(Integer.toString(proposal.id).length() - 4),
+                        proposal.operation.opType,
+                        proposal.operation.val));
+                return null;
+            }
 
             // 1. init executor that will execute the callable
             ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -257,46 +272,50 @@ public class KeyValueServer {
          * @return 
          */
         public Result learn(Proposal proposal) {
+            // System.out.println(String.format("acceptor#[%d] is learning id#%s", this.port, 
+            // Integer.toString(proposal.id).substring(Integer.toString(proposal.id).length() - 4)));
+
 
             KeyValOperation opToCommit = proposal.operation;
+            Result commitResult = new Result();
+            String command = "no command";
+
             if (opToCommit.opType == OperationType.PUT) {
                 // 2. init result and command
-                String command = "put";
+                command = "put";
 
-                // 3. Call your internal put method here, e.g., put(op.key, op.value)
-                Result result = putHelper(opToCommit.key, opToCommit.val, opToCommit.reqId);
-
-                // 4. print result of put operation by this replica
-                System.out.print("------");
-                printLog(opToCommit.key,
-                        opToCommit.val,
-                        opToCommit.reqId,
-                        command,
-                        result.status,
-                        result.msg,
-                        opToCommit.clientIp,
-                        opToCommit.clientPort);
+                // 3. Call your internal put method
+                commitResult = putHelper(opToCommit.key, opToCommit.val, opToCommit.reqId);
+                
 
             } else if (opToCommit.opType == OperationType.DELETE) {
                 // 2. init result and command
-                String command = "delete";
+                command = "delete";
 
                 // 3. Call your internal put method here, e.g., put(op.key, op.value)
-                Result result = deleteHelper(opToCommit.key, opToCommit.reqId);
-
-                // 4. print result of put operation by this replica
-                System.out.print("------");
-                printLog(opToCommit.getKey(),
-                        -1,
-                        opToCommit.reqId,
-                        command,
-                        result.status,
-                        result.msg,
-                        opToCommit.clientIp,
-                        opToCommit.clientPort);
+                commitResult = deleteHelper(opToCommit.key, opToCommit.reqId);
+                opToCommit.val = -1;
+                
+            } else {
+                commitResult.status = "ERROR";
+                commitResult.value = 0;
+                commitResult.msg = "invalid command";
+                commitResult.reqId = opToCommit.reqId;
             }
 
-            return new Result();
+            // 4. print result of put operation by this replica
+            System.out.print("------");
+            printLog(opToCommit.getKey(),
+                    opToCommit.val,
+                    opToCommit.reqId,
+                    command,
+                    commitResult.status,
+                    commitResult.msg,
+                    opToCommit.clientIp,
+                    opToCommit.clientPort);
+            return commitResult;
+
+            
         }
 
         @Override
@@ -318,6 +337,7 @@ public class KeyValueServer {
             Result commitResult = consRes.proposerCommitResult;
 
             printLog(key, val, reqId, command, commitResult.status, commitResult.msg, clientIp, clientPort);
+            
             return commitResult;
         }
         

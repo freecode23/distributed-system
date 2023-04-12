@@ -16,3 +16,5 @@ Step 2. run multiple servers:
 Step 3. run client
 ./start_client.sh
 
+REQUIREMENT 2 Log:
+

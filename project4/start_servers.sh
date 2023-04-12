@@ -11,7 +11,8 @@ javac -cp ./services:./lib/libthrift.jar:./lib/slf4j.jar -d bin/server server/*.
 ports=(9000 9001 9002 9003 9004)
 
 for port in $ports; do
-  other_servers=("${ports[@]/$port}")
+  other_servers=("${ports[@]}")
+  # other_servers=("${ports[@]/$port}")
   echo
   echo $"\nStarting server on port $port with other servers ${other_servers[@]}"
     java -cp ./bin/server:./bin/services:./lib/libthrift.jar:./lib/slf4j.jar ServerDriver $port ${other_servers[@]} &
