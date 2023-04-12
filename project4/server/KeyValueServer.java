@@ -12,16 +12,18 @@ import org.apache.thrift.transport.TTransport;
 import org.apache.thrift.transport.TTransportException;
 
 
+
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.text.SimpleDateFormat;
 import java.net.Socket;
 import java.net.URI;
-
+import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -31,11 +33,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+
 public class KeyValueServer {
 
     private final int port;
     private List<Integer>replicaPorts;
-
+   
     public KeyValueServer(int port, List<Integer> replicaPorts) {
         this.port = port;
         this.replicaPorts = replicaPorts;
@@ -118,25 +121,72 @@ public class KeyValueServer {
 
         }
         
+        private class PrepareCallable implements Callable<Promise> {
+            private Proposal incomingProposal;
+
+            public PrepareCallable(Proposal incomingProposal) {
+                this.incomingProposal = incomingProposal;
+            }
+
+            @Override
+            public Promise call() throws Exception {
+
+                long maxAcceptedPropId = KeyValueServiceDefault.this.maxAcceptedPropId;
+                Proposal oldProposal = KeyValueServiceDefault.this.acceptedProposal;
+
+                // case1: incoming id <= maximumAccepted proposal id that this acceptor has accepted
+                if (this.incomingProposal.id <= maxAcceptedPropId) {
+                    System.out.println(String.format("proposalID [%d] is the same as max",
+                            maxAcceptedPropId));
+                    return new Promise(Status.REJECTED, null);
+
+                // incoming id > the maximum id this acceptor has accepted
+                } else {
+                    // assign new maxID
+                    KeyValueServiceDefault.this.maxAcceptedPropId = this.incomingProposal.id;
+
+                    // case2: incoming id > the maximum 
+                    // have accepted proposal with smaller id, return the old proposal (with smaller id)
+                    if (oldProposal != null) {
+                        Proposal copyAcceptedProposal = new Proposal(
+                                oldProposal.id,
+                                oldProposal.operation);
+                        return new Promise(Status.ACCEPTED, copyAcceptedProposal);
+
+                    // case3: incoming id > the maximum 
+                    // never accepted proposal, return the incoming one
+                    } else {
+                        return new Promise(Status.ACCEPTED, null);
+                    }
+                }
+            }
+        }
+
+        /*
+         * Prepare method that will called by Proposer when trying to get consensus
+         */
         @Override
         public Promise prepare(Proposal proposal) {
-            System.out.println(
-                    String.format("acceptor#[%d] is preparing", this.port));
 
-            // init executor service so that this can be executed asynchronously
+            System.out.println(String.format("acceptor#[%d] is preparing", this.port));
+
+            // 1. init executor that will execute the callable
             ExecutorService executor = Executors.newSingleThreadExecutor();
-            FutureTask<Promise> futureTask = new FutureTask<>(new Callable<Promise>() {
 
-                // function that will return new promise object depending on the value id of this proposal
+            // 2. the callable that will check if the proposal id is valid and return a promise
+            PrepareCallable prepareCallable = new PrepareCallable(proposal);
+            FutureTask<Promise> futureTask = new FutureTask<>(prepareCallable);
 
-                // case1: proposal Id is <= the maximum id that this acceptor has accepted
-                if (proposal.getId())
+            // 3. execute the task
+            try {
+                executor.submit(futureTask);
+                // will return the promise
+                return futureTask.get(10, TimeUnit.SECONDS);
+            } catch (Exception e) {
+                System.out.println("ERROR acceptor cannot return Promise");
+                return null;
+            }
 
-                    // reject
-                
-                // case: proposal Id is >= the maximum id thhis acceptor has accepted 
-
-            })
             
         }
 

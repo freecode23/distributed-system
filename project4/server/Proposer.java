@@ -42,17 +42,42 @@ public class Proposer {
                 }
             }
         }
-
+        System.out.println("Phase1");
         // Phase 1: init prepare
-        for (KeyValueService.Client acceptor : acceptorServers) {
-
+        int promiseCount = 0;
+        int nullPromiseCount = 0;
+        int maxIdToSendAccept = -1;
+        for (int i = 0; i < acceptorServers.size(); i++) {
+            System.out.println(String.format("i=%d", i));
+            KeyValueService.Client acceptor = acceptorServers.get(i);
+            Integer portNum = replicaPorts.get(i);
             try {
                 Promise prom = acceptor.prepare(proposal);
+
+                
+                // case 1: promise is null acceptor never respond
+                if (prom.status == Status.REJECTED) {
+                    System.out.println(String.format("promise reqquest rejected by [%d]", portNum));
+
+                } else {
+                    System.out.println(String.format("promise request not rejected by [%d]", portNum));
+                    // case 2 : if not null : get the id 
+                    if (prom.proposal != null) {
+                        maxIdToSendAccept = Math.max(maxIdToSendAccept, prom.proposal.id);
+                        System.out.println("prom not null");
+                    // case 3: proposal is null , we cna use our own value
+                    } else {
+                        nullPromiseCount += 1;
+                        System.out.println("prom null");
+                    }
+                }
+                
+
             } catch (TException e) {
                 System.out.println("error when asking acceptor to prepare " + e.getMessage());
             }
         }
-
+        System.out.println(String.format("finish"));
 
         // Close communication
         for (TTransport acceptorTransport : acceptorTransports) {
