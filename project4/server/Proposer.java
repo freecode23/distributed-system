@@ -16,7 +16,7 @@ public class Proposer {
         this.replicaPorts = replicaPorts;
     }
 
-    public boolean getConsensus(Proposal proposal) {
+    public ConsensusResult getConsensus(Proposal proposal) {
         System.out
                 .println(String.format("\nproposer#[%d] proposing id#%s val=%s(%d)", 
                 this.currPort, 
@@ -27,6 +27,7 @@ public class Proposer {
         // phase 0 - populate list of acceptor server (including itself)
         List<KeyValueService.Client> acceptorServers = new ArrayList<>();
         List<TTransport> acceptorTransports = new ArrayList<>(); 
+        ConsensusResult consResult = new ConsensusResult();
 
         for (int replicaPort : replicaPorts) {
             // - create acceptor Server
@@ -44,7 +45,8 @@ public class Proposer {
                     
                 } catch (TException e) {
                     e.printStackTrace();
-                    return false;
+                    consResult.isConsensusReached = false;
+                    return consResult;
                 }
             }
         }
@@ -84,7 +86,8 @@ public class Proposer {
         // return false if in phase1 most servers died
         int half = Math.floorDiv(acceptorServers.size(), 2) + 1;
         if (promiseCount < half) {
-            return false;
+            consResult.isConsensusReached = false;
+            return consResult;
         }
 
         // phase2: sends accept
@@ -114,13 +117,23 @@ public class Proposer {
         if (acceptCount < half) {
             return false;
         }
-        // phase3: sends accept
+
+        // phase3: sends learn
+        // TODO: append insert commit result of the proposer to consResult
+        int committedLearnerCount = 0;
+        for (int i = 0; i < acceptorServers.size(); i++) {
+            KeyValueService.Client acceptor = acceptorServers.get(i);
+            Integer acceptorPort = replicaPorts.get(i);
+
+       
+        }
 
         // Close communication
         for (TTransport acceptorTransport : acceptorTransports) {
             acceptorTransport.close();
         }
-        return true;
+        // consensus has been reached. but it maybe that some learners have not committed
+        return consResult;
     }
 
 }

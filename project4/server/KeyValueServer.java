@@ -248,25 +248,74 @@ public class KeyValueServer {
             }
         }
 
+
+        /**
+         * This method will called by Proposer and invoked by the acceptor
+         * it will call the local putHelper method and commit to its keyValue map
+         * will return a result object of the last learner
+         * @param proposal
+         * @return 
+         */
+        public Result learn(Proposal proposal) {
+
+            KeyValOperation opToCommit = proposal.operation;
+            if (opToCommit.operationType == OperationType.PUT) {
+                // 2. init result and command
+                String command = "put";
+
+                // 3. Call your internal put method here, e.g., put(op.key, op.value)
+                Result result = putHelper(opToCommit.key, opToCommit.val, opToCommit.reqId);
+
+                // 4. print result of put operation by this replica
+                System.out.print("------");
+                printLog(opToCommit.key,
+                        opToCommit.val,
+                        opToCommit.reqId,
+                        command,
+                        result.status,
+                        result.msg,
+                        opToCommit.clientIp,
+                        opToCommit.clientPort);
+
+            } else if (opToCommit.opType == OperationType.DELETE) {
+                // 2. init result and command
+                String command = "delete";
+
+                // 3. Call your internal put method here, e.g., put(op.key, op.value)
+                Result result = deleteHelper(opToCommit.key, opToCommit.reqId);
+
+                // 4. print result of put operation by this replica
+                System.out.print("------");
+                printLog(opToCommit.getKey(),
+                        -1,
+                        opToCommit.reqId,
+                        command,
+                        result.status,
+                        result.msg,
+                        opToCommit.clientIp,
+                        opToCommit.clientPort);
+            }
+
+            return new Result();
+        }
+
         @Override
         public Result put(int key, int val, String reqId, String clientIp, int clientPort) throws TException {
 
 
-            Result result = new Result();
             String command = "put";
-
+            
             // 1. init operation
-            KeyValOperation operation = new KeyValOperation(OperationType.PUT, key, val);
-
+            KeyValOperation operation = new KeyValOperation(OperationType.PUT, key, val, reqId, clientIp, clientPort);
+            
             // 2. generate new proposal
             Proposal newProposal = ProposalExtended.generateProposal(operation);
-
-            // 3. get consesnsus for this proposal
-            if (proposerRole.getConsensus(newProposal)) {
-                result.status = "OK";
-                result.msg = "op successful";
-                result.value = val;
-            }
+            
+            // 3. get consesnsus for this proposal. 
+            // it will return the commit result of only its own port
+            // doesn't care if others
+            Result commitResult = new Result();
+            ConsensusResult res = proposerRole.getConsensus(newProposal);
 
             printLog(key, val, reqId, command, result.status, result.msg, clientIp, clientPort);
             return result;

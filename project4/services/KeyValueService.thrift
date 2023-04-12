@@ -11,11 +11,19 @@ enum OperationType {
   DELETE = 3
 }
 
+struct ConsensusResult {
+  1: Result proposerCommitResult,
+  2: bool isConsensusReached,
+}
+
 
 struct KeyValOperation {
   1: OperationType opType,
   2: i32 key,
   3: i32 val,
+  4: string reqId,
+  5: string clientIp,
+  6: string clientPort
 }
 
 enum Status {
@@ -38,5 +46,6 @@ service KeyValueService {
   Result get(1: i32 key, 2: string reqId, 3:string ip, 4:i32 port),
   Result delete(1: i32 key, 2: string reqId, 3:string ip, 4:i32 port),
   Promise prepare(1: Proposal proposal),
-  Proposal accept(1: Proposal proposal)
+  Proposal accept(1: Proposal proposal),
+  Result learn(1:Proposal proposal)
 }
