@@ -169,8 +169,8 @@ public class Client {
                 case "put":
                     int val = Integer.parseInt(commandArr[2]);
                     res = client.put(key, val, reqId, clientIp, clientPort);
-                    System.out.println("called put");
-                    // printLog(res, reqId, "put");
+                    // System.out.println("called put");
+                    printLog(res, reqId, "put");
                     break;
 
                 case "get":

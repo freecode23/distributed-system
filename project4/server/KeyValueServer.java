@@ -346,7 +346,7 @@ public class KeyValueServer {
             String command = "delete";
 
             // 1. init operation
-            KeyValOperation operation = new KeyValOperation(OperationType.PUT, key, -1, reqId, clientIp, clientPort);
+            KeyValOperation operation = new KeyValOperation(OperationType.DELETE, key, -1, reqId, clientIp, clientPort);
 
             // 2. generate new proposal
             Proposal newProposal = ProposalExtended.generateProposal(operation);

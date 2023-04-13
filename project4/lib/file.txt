@@ -1,0 +1,3 @@
+delete 1
+get 2
+get 3
