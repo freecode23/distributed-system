@@ -103,9 +103,11 @@ public class Proposer {
                         acceptorPort,
                         acceptorAttempt));
 
-                        // case 2 : if not null : get the id 
+                        // case 2 : if not null : get max id and use that 
                         if (prom.proposal != null) {
                             maxIdToSendAccept = Math.max(maxIdToSendAccept, prom.proposal.id);
+
+                            //
 
                         // case 3: proposal is null , we can use our own value
                         } else {
